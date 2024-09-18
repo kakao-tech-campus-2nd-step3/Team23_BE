@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      issues: write
+      pull-requests: write
+      checks: write
 
     steps:
       - uses: actions/checkout@v4
@@ -33,3 +36,11 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew clean build
+
+      # Show test result
+      - name: Show test result
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: '**/build/test-results/test/TEST-*.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
