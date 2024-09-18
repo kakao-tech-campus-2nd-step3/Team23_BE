@@ -44,3 +44,11 @@ jobs:
         with:
           files: '**/build/test-results/test/TEST-*.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Add check comments for failed code lines on test failure
+      - name: Add comments for failed code lines
+        uses: mikepenz/action-junit-report@v3
+        if: failure()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+          token: ${{ secrets.GITHUB_TOKEN }}
