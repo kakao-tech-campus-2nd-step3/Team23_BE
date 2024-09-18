@@ -1,0 +1,35 @@
+name: CI on PR to weekly-branch
+
+on:
+  pull_request:
+    branches: [ "weekly/*" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Set up JDK 21
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      # Set up properties
+      - name: Set up properties
+        run: |
+          mkdir -p ./src/main/resources
+          echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.properties
+          cat application.properties
+
+      # Build and Test
+      - name: Test with Gradle Wrapper
+        id: gradle-test
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean build
