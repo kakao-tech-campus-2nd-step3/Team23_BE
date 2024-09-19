@@ -1,8 +1,8 @@
 name: CI on PR to weekly-branch
 
 on:
-  pull_request:
-    branches: [ "Weekly/*" ]
+  pull_request_target:
+    branches: [ 'Weekly/*' ]
 
 jobs:
   test:
