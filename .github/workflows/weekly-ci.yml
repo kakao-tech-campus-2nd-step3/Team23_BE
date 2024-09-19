@@ -2,7 +2,7 @@ name: CI on PR to weekly-branch
 
 on:
   pull_request:
-    branches: [ "weekly/*" ]
+    branches: [ "Weekly/*" ]
 
 jobs:
   test:
