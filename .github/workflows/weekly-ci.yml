@@ -2,15 +2,13 @@ name: CI on PR to weekly-branch
 
 on:
   pull_request_target:
-    types: [ opened, reopened, synchronize ]
-    branches: [ 'Weekly/*' ]
+    branches: [ 'Master', 'Develop', 'Weekly/*' ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      issues: write
       pull-requests: write
       checks: write
 
@@ -22,7 +20,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '21'
-          distribution: 'temurin'
+          distribution: 'corretto'
 
       # Set up properties
       - name: Set up properties
