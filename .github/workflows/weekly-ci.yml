@@ -27,7 +27,6 @@ jobs:
         run: |
           mkdir -p ./src/main/resources
           echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.properties
-          cat application.properties
 
       # Gradle caching
       - name: Gradle Caching
