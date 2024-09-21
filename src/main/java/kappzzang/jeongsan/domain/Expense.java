@@ -2,10 +2,12 @@ package kappzzang.jeongsan.domain;
 
 import jakarta.persistence.*;
 import kappzzang.jeongsan.enums.Status;
+import lombok.Getter;
 
 import java.util.List;
 
 @Entity
+@Getter
 public class Expense {
 
     @Id

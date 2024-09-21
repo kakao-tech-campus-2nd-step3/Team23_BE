@@ -1,8 +1,10 @@
 package kappzzang.jeongsan.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class PersonalExpense {
 
     @Id
