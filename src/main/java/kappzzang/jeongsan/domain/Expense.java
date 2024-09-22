@@ -1,7 +1,7 @@
 package kappzzang.jeongsan.domain;
 
 import jakarta.persistence.*;
-import kappzzang.jeongsan.enums.Status;
+import kappzzang.jeongsan.enumeration.Status;
 import lombok.Getter;
 
 import java.util.List;
