@@ -16,7 +16,7 @@ public class Group {
 
     private String name;
     private String subject;
-    private Boolean isCompleted;
+    private Boolean isClosed;
 
     @OneToMany(mappedBy = "group")
     private List<GroupMember> groupMemberList;
