@@ -20,6 +20,6 @@ public class GroupMember {
     private Group group;
 
     private Boolean isOwner;
-    private Boolean isInviteCompleted;
+    private Boolean isInviteAccepted;
 
 }
