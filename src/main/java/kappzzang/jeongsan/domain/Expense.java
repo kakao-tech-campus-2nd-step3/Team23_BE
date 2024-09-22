@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Getter
-public class Expense {
+public class Expense extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

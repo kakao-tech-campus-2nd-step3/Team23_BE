@@ -8,7 +8,8 @@ import java.util.List;
 
 @Entity
 @Getter
-public class Group {
+@Table(name = "`group`")
+public class Group extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

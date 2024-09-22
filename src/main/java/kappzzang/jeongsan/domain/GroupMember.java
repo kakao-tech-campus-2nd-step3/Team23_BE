@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
-public class GroupMember {
+public class GroupMember extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

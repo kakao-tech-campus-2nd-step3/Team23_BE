@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
-public class PersonalExpense {
+public class PersonalExpense extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
