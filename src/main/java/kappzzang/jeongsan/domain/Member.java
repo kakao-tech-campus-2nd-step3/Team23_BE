@@ -2,11 +2,13 @@ package kappzzang.jeongsan.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Member extends BaseEntity {
 
     @Id
@@ -19,7 +21,7 @@ public class Member extends BaseEntity {
     private String profileImage;
     private String token;
 
-    @OneToOne(mappedBy = "member")
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
     private KakaoToken kakaoToken;
 
     @OneToMany(mappedBy = "member")

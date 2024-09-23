@@ -1,13 +1,17 @@
 package kappzzang.jeongsan.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import kappzzang.jeongsan.enumeration.Status;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Expense extends BaseEntity {
 
     @Id
@@ -18,7 +22,7 @@ public class Expense extends BaseEntity {
     @JoinColumn(name = "group_id")
     private Group group;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payer_id")
     private Member payer;
 
@@ -29,6 +33,9 @@ public class Expense extends BaseEntity {
     private String title;
     private String imageUrl;
     private Integer totalPrice;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime paymentTime;
 
     @Enumerated(EnumType.STRING)
     private Status status;

@@ -2,11 +2,13 @@ package kappzzang.jeongsan.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Item {
 
     @Id
@@ -19,7 +21,8 @@ public class Item {
 
     private String name;
     private Integer quantity;
-    private Integer price;
+    private Integer unitPrice;
+    private Integer totalPrice;
 
     @OneToMany(mappedBy = "item")
     private List<PersonalExpense> personalExpenses;
