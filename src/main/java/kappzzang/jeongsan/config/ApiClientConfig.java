@@ -5,6 +5,7 @@ import kappzzang.jeongsan.common.interceptor.LoggingInterceptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.ClientHttpRequestFactories;
 import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
 
@@ -22,12 +23,14 @@ public class ApiClientConfig {
         this.openAiProperties = openAiProperties;
     }
 
+    @Bean
     public RestClient clovaOcrClient() {
         return createRestClientBuilder()
             .defaultHeader("X-OCR-SECRET", clovaOcrProperties.key())
             .build();
     }
 
+    @Bean
     public RestClient openAiClient() {
         return createRestClientBuilder()
             .baseUrl(openAiProperties.url())
