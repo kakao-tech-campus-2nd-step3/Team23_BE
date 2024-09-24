@@ -1,12 +1,14 @@
 package kappzzang.jeongsan.dto.response;
 
 import java.util.List;
-import kappzzang.jeongsan.dto.Image;
 
-public record GeneralOcrResponse(String version, String requestId, List<Image> images) {
+public record GeneralOcrResponse(String version, String requestId, List<ImageResult> images) {
 
-    public record Field(String inferText, Float inferConfidence,
-                        Boolean lineBreak) {
+    public record ImageResult(String inferResult, String message, List<Field> fields) {
 
+        public record Field(String inferText, Float inferConfidence,
+                            Boolean lineBreak) {
+
+        }
     }
 }

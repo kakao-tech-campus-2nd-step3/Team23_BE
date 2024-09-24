@@ -1,5 +1,5 @@
 package kappzzang.jeongsan.dto;
 
-public record Image(String format, String name, String data, String url) {
+public record Image(String format, String url, String data, String name) {
 
 }
