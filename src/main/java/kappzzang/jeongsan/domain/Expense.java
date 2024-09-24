@@ -2,7 +2,7 @@ package kappzzang.jeongsan.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import kappzzang.jeongsan.enumeration.Status;
+import kappzzang.jeongsan.common.enumeration.Status;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

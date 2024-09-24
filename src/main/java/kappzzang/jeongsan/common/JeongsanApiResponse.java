@@ -1,6 +1,8 @@
 package kappzzang.jeongsan.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import kappzzang.jeongsan.common.enumeration.ErrorType;
+import kappzzang.jeongsan.common.enumeration.SuccessType;
 import lombok.Builder;
 import lombok.Getter;
 

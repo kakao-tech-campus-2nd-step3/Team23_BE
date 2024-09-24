@@ -1,4 +1,4 @@
-package kappzzang.jeongsan.common;
+package kappzzang.jeongsan.common.enumeration;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
