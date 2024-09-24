@@ -25,5 +25,5 @@ public class Member extends BaseEntity {
     private KakaoToken kakaoToken;
 
     @OneToMany(mappedBy = "member")
-    private List<GroupMember> groupMemberList;
+    private List<TeamMember> teamMemberList;
 }

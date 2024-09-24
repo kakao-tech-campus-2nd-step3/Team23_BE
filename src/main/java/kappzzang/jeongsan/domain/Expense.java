@@ -19,8 +19,8 @@ public class Expense extends BaseEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "group_id")
-    private Group group;
+    @JoinColumn(name = "team_id")
+    private Team team;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payer_id")

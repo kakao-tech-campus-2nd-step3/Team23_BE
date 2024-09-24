@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class GroupMember extends BaseEntity {
+public class TeamMember extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,8 +18,8 @@ public class GroupMember extends BaseEntity {
     private Member member;
 
     @ManyToOne
-    @JoinColumn(name = "group_id")
-    private Group group;
+    @JoinColumn(name = "team_id")
+    private Team team;
 
     private Boolean isOwner;
     private Boolean isInviteAccepted;

@@ -10,8 +10,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "`group`")
-public class Group extends BaseEntity {
+public class Team extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +20,6 @@ public class Group extends BaseEntity {
     private String subject; //이모지 저장 필드
     private Boolean isClosed;
 
-    @OneToMany(mappedBy = "group")
-    private List<GroupMember> groupMemberList;
+    @OneToMany(mappedBy = "team")
+    private List<TeamMember> teamMemberList;
 }
