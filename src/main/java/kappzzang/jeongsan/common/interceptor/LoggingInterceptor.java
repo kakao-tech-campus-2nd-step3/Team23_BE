@@ -2,17 +2,16 @@ package kappzzang.jeongsan.common.interceptor;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 
+@Slf4j
 public class LoggingInterceptor implements ClientHttpRequestInterceptor {
 
     private static final int MAX_BODY_LENGTH = 1000;
-    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public ClientHttpResponse intercept(
