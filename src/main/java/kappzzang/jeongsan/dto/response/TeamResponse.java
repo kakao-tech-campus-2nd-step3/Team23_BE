@@ -21,6 +21,7 @@ public record TeamResponse(
                 team.getSubject(),
                 team.getTeamMemberList()
                         .stream()
+                        .limit(3)
                         .map(teamMember -> memberPreview.from(teamMember.getMember()))
                         .toList()
                 );
