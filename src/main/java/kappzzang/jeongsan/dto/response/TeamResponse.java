@@ -1,7 +1,7 @@
 package kappzzang.jeongsan.dto.response;
 
 import kappzzang.jeongsan.domain.Team;
-import kappzzang.jeongsan.dto.memberPreview;
+import kappzzang.jeongsan.dto.MemberPreview;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ public record TeamResponse(
         String name,
         Boolean isCompleted,
         String subject,
-        List<memberPreview> memberPreviews
+        List<MemberPreview> memberPreviews
 ) {
 
     public static TeamResponse from(Team team) {
@@ -22,7 +22,7 @@ public record TeamResponse(
                 team.getTeamMemberList()
                         .stream()
                         .limit(3)
-                        .map(teamMember -> memberPreview.from(teamMember.getMember()))
+                        .map(teamMember -> MemberPreview.from(teamMember.getMember()))
                         .toList()
                 );
     }
