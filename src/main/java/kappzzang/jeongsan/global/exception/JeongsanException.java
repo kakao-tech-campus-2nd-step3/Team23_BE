@@ -1,6 +1,6 @@
-package kappzzang.jeongsan.common;
+package kappzzang.jeongsan.global.exception;
 
-import kappzzang.jeongsan.common.enumeration.ErrorType;
+import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import lombok.Getter;
 
 @Getter

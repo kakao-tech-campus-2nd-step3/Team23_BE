@@ -1,5 +1,6 @@
-package kappzzang.jeongsan.common;
+package kappzzang.jeongsan.global.exception;
 
+import kappzzang.jeongsan.global.common.JeongsanApiResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 

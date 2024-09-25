@@ -1,12 +1,12 @@
 package kappzzang.jeongsan.controller;
 
 import io.swagger.v3.oas.annotations.Hidden;
-import kappzzang.jeongsan.common.JeongsanApiResponse;
+import kappzzang.jeongsan.global.common.JeongsanApiResponse;
 import kappzzang.jeongsan.domain.Team;
 import org.springframework.web.bind.annotation.*;
 
-import static kappzzang.jeongsan.common.enumeration.ErrorType.USER_NOT_FOUND;
-import static kappzzang.jeongsan.common.enumeration.SuccessType.TEAM_CREATED;
+import static kappzzang.jeongsan.global.common.enumeration.ErrorType.USER_NOT_FOUND;
+import static kappzzang.jeongsan.global.common.enumeration.SuccessType.TEAM_CREATED;
 
 @Hidden
 @RestController
