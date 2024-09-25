@@ -12,5 +12,4 @@ public class JeongsanException extends RuntimeException {
         super(errorType.getMessage());
         this.errorType = errorType;
     }
-
 }
