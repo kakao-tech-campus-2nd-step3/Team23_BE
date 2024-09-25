@@ -24,6 +24,6 @@ public record TeamResponse(
                         .limit(3)
                         .map(teamMember -> MemberPreview.from(teamMember.getMember()))
                         .toList()
-                );
+        );
     }
 }
