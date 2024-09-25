@@ -39,6 +39,9 @@ dependencies {
 
 	// Lombok
 	implementation 'org.projectlombok:lombok'
+
+	// Security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
 tasks.named('test') {
