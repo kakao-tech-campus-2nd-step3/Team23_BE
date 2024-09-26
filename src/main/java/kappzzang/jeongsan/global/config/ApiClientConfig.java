@@ -1,4 +1,4 @@
-package kappzzang.jeongsan.config;
+package kappzzang.jeongsan.global.config;
 
 import java.time.Duration;
 import kappzzang.jeongsan.common.interceptor.LoggingInterceptor;
