@@ -24,7 +24,7 @@ public class JeongsanApiResponse<T> {
                 .build();
 
         return ResponseEntity
-                .status(successType.getHttpStatus())
+                .status(successType.getHttpStatusCode())
                 .body(response);
     }
 
@@ -36,7 +36,7 @@ public class JeongsanApiResponse<T> {
                 .build();
 
         return ResponseEntity
-                .status(successType.getHttpStatus())
+                .status(successType.getHttpStatusCode())
                 .body(response);
     }
 
@@ -48,7 +48,7 @@ public class JeongsanApiResponse<T> {
                 .build();
 
         return ResponseEntity
-                .status(errorType.getHttpStatus())
+                .status(errorType.getHttpStatusCode())
                 .body(response);
     }
 }

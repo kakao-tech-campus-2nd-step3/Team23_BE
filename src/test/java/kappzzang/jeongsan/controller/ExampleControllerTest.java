@@ -22,7 +22,7 @@ class ExampleControllerTest {
                 .when()
                 .get("/api/test/success")
                 .then()
-                .statusCode(TEAM_CREATED.getHttpStatus().value());
+                .statusCode(TEAM_CREATED.getHttpStatusCode().value());
     }
 
 
@@ -34,7 +34,7 @@ class ExampleControllerTest {
                 .when()
                 .post("/api/test/success/data")
                 .then()
-                .statusCode(TEAM_CREATED.getHttpStatus().value());
+                .statusCode(TEAM_CREATED.getHttpStatusCode().value());
     }
 
     @Test
@@ -45,6 +45,6 @@ class ExampleControllerTest {
                 .when()
                 .get("/api/test/failure")
                 .then()
-                .statusCode(USER_NOT_FOUND.getHttpStatus().value());
+                .statusCode(USER_NOT_FOUND.getHttpStatusCode().value());
     }
 }
