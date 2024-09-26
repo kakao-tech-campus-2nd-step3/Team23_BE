@@ -20,7 +20,7 @@ public class TeamController {
 
     @GetMapping
     public ResponseEntity<List<TeamResponse>> getTeams(@RequestParam("isClosed") Boolean isClosed) {
-        var data = teamService.getTeamsByIsClosed(isClosed);
+        List<TeamResponse> data = teamService.getTeamsByIsClosed(isClosed);
 
         return ResponseEntity.ok(data);
     }
