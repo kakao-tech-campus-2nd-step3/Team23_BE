@@ -3,6 +3,7 @@ package kappzzang.jeongsan.service;
 import kappzzang.jeongsan.dto.response.TeamResponse;
 import kappzzang.jeongsan.repository.TeamRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class TeamService {
         this.teamRepository = teamRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<TeamResponse> getTeamsByIsClosed(Boolean isClosed) {
         return teamRepository.findByIsClosed(isClosed)
                 .stream()
