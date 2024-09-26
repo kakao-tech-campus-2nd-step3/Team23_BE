@@ -1,4 +1,4 @@
-package kappzzang.jeongsan.security;
+package kappzzang.jeongsan.global.security;
 
 import java.util.Collection;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
