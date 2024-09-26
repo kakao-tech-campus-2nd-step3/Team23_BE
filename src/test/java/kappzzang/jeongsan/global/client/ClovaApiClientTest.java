@@ -10,8 +10,9 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import java.net.SocketTimeoutException;
 import kappzzang.jeongsan.dto.Image;
 import kappzzang.jeongsan.dto.response.GeneralOcrResponse;
+import kappzzang.jeongsan.global.client.clova.ClovaApiClient;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
-import kappzzang.jeongsan.global.config.ClovaOcrProperties;
+import kappzzang.jeongsan.global.client.clova.ClovaOcrProperties;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,7 +66,7 @@ public class ClovaApiClientTest {
     }
 
     @Test
-    void ocrApi_TimeOut_failsAfterRetries() {
+    void ocrApi_timeout_failsAfterRetries() {
 
         for (int i = 0; i < MAX_ATTEMPTS; i++) {
             mockRestServiceServer.expect(requestTo(TEST_URL))

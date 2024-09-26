@@ -1,4 +1,4 @@
-package kappzzang.jeongsan.global.client;
+package kappzzang.jeongsan.global.client.clova;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -8,7 +8,6 @@ import kappzzang.jeongsan.dto.Image;
 import kappzzang.jeongsan.dto.request.GeneralOcrRequest;
 import kappzzang.jeongsan.dto.response.GeneralOcrResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
-import kappzzang.jeongsan.global.config.ClovaOcrProperties;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpRequest;

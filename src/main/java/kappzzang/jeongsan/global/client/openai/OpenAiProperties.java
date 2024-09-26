@@ -1,4 +1,4 @@
-package kappzzang.jeongsan.global.config;
+package kappzzang.jeongsan.global.client.openai;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

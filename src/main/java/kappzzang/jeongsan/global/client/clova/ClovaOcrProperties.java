@@ -1,4 +1,4 @@
-package kappzzang.jeongsan.global.config;
+package kappzzang.jeongsan.global.client.clova;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

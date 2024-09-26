@@ -1,6 +1,8 @@
 package kappzzang.jeongsan.global.config;
 
 import java.time.Duration;
+import kappzzang.jeongsan.global.client.clova.ClovaOcrProperties;
+import kappzzang.jeongsan.global.client.openai.OpenAiProperties;
 import kappzzang.jeongsan.global.interceptor.LoggingInterceptor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
