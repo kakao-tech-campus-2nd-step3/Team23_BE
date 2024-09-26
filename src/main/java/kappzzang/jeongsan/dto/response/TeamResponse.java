@@ -12,6 +12,7 @@ public record TeamResponse(
         String subject,
         List<MemberPreview> memberPreviews
 ) {
+    private static final int MAX_PREVIEW_MEMBERS = 3;
 
     public static TeamResponse from(Team team) {
         return new TeamResponse(
@@ -21,7 +22,7 @@ public record TeamResponse(
                 team.getSubject(),
                 team.getTeamMemberList()
                         .stream()
-                        .limit(3)
+                        .limit(MAX_PREVIEW_MEMBERS)
                         .map(teamMember -> MemberPreview.from(teamMember.getMember()))
                         .toList()
         );
