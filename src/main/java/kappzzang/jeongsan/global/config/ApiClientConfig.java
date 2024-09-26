@@ -1,14 +1,17 @@
 package kappzzang.jeongsan.global.config;
 
 import java.time.Duration;
-import kappzzang.jeongsan.common.interceptor.LoggingInterceptor;
+import kappzzang.jeongsan.global.interceptor.LoggingInterceptor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.ClientHttpRequestFactories;
 import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.web.client.RestClient;
 
+@EnableRetry
 @Configuration
 public class ApiClientConfig {
 
@@ -24,21 +27,20 @@ public class ApiClientConfig {
     }
 
     @Bean
-    public RestClient clovaOcrClient() {
-        return createRestClientBuilder()
-            .defaultHeader("X-OCR-SECRET", clovaOcrProperties.key())
-            .build();
+    @Qualifier(value = "clovaOcrClientBuilder")
+    public RestClient.Builder clovaOcrClientBuilder() {
+        return getDefaultRestClientBuilder()
+            .defaultHeader("X-OCR-SECRET", clovaOcrProperties.key());
     }
 
     @Bean
-    public RestClient openAiClient() {
-        return createRestClientBuilder()
-            .baseUrl(openAiProperties.url())
-            .defaultHeader("Authorization", openAiProperties.authType() + openAiProperties.key())
-            .build();
+    @Qualifier(value = "openAiClientBuilder")
+    public RestClient.Builder openAiClientBuilder() {
+        return getDefaultRestClientBuilder()
+            .defaultHeader("Authorization", openAiProperties.authType() + openAiProperties.key());
     }
 
-    private RestClient.Builder createRestClientBuilder() {
+    private RestClient.Builder getDefaultRestClientBuilder() {
         ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
             .withConnectTimeout(Duration.ofMillis(apiTimeout))
             .withReadTimeout(Duration.ofMillis(apiTimeout));
