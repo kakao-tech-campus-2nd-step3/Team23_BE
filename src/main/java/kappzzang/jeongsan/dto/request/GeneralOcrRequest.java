@@ -2,13 +2,19 @@ package kappzzang.jeongsan.dto.request;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import kappzzang.jeongsan.dto.Image;
 
 public record GeneralOcrRequest(String version, String requestId, Long timestamp, String lang,
                                 List<Image> images) {
 
+    private static final String DEFAULT_VERSION = "V2";
+    private static final String DEFAULT_LANG = "ko";
+    private static final Long DEFAULT_TIMESTAMP = 0L;
+
     public GeneralOcrRequest(Image image) {
-        this("V2", "", 0L, "ko", new ArrayList<>());
+        this(DEFAULT_VERSION, UUID.randomUUID().toString(), DEFAULT_TIMESTAMP, DEFAULT_LANG,
+            new ArrayList<>());
         this.images.add(image);
     }
 
