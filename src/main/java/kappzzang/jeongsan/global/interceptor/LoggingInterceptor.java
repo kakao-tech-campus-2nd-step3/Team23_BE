@@ -1,4 +1,4 @@
-package kappzzang.jeongsan.common.interceptor;
+package kappzzang.jeongsan.global.interceptor;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
