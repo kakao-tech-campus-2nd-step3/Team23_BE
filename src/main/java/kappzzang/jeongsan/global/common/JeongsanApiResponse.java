@@ -5,6 +5,7 @@ import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.common.enumeration.SuccessType;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.http.ResponseEntity;
 
 @Getter
 @Builder
@@ -12,34 +13,42 @@ import lombok.Getter;
 public class JeongsanApiResponse<T> {
 
     private final String status;
-    private final int httpCode;
     private final String errorCode;
     private final String message;
     private final T data;
 
-    public static <T> JeongsanApiResponse<T> success(SuccessType successType) {
-        return JeongsanApiResponse.<T>builder()
+    public static ResponseEntity<JeongsanApiResponse<Void>> success(SuccessType successType) {
+        JeongsanApiResponse<Void> response = JeongsanApiResponse.<Void>builder()
                 .status("success")
-                .httpCode(successType.getHttpStatusCode())
                 .message(successType.getMessage())
                 .build();
+
+        return ResponseEntity
+                .status(successType.getHttpStatus())
+                .body(response);
     }
 
-    public static <T> JeongsanApiResponse<T> success(SuccessType successType, T data) {
-        return JeongsanApiResponse.<T>builder()
+    public static <T> ResponseEntity<JeongsanApiResponse<T>> success(SuccessType successType, T data) {
+        JeongsanApiResponse<T> response = JeongsanApiResponse.<T>builder()
                 .status("success")
-                .httpCode(successType.getHttpStatusCode())
                 .message(successType.getMessage())
                 .data(data)
                 .build();
+
+        return ResponseEntity
+                .status(successType.getHttpStatus())
+                .body(response);
     }
 
-    public static JeongsanApiResponse<Void> failure(ErrorType errorType) {
-        return JeongsanApiResponse.<Void>builder()
+    public static ResponseEntity<JeongsanApiResponse<Void>> failure(ErrorType errorType) {
+        JeongsanApiResponse<Void> response = JeongsanApiResponse.<Void>builder()
                 .status("failure")
-                .httpCode(errorType.getHttpStatusCode())
                 .errorCode(errorType.getErrorCode())
                 .message(errorType.getMessage())
                 .build();
+
+        return ResponseEntity
+                .status(errorType.getHttpStatus())
+                .body(response);
     }
 }
