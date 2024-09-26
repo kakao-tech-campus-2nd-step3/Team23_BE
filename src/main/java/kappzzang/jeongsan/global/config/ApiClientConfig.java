@@ -17,6 +17,9 @@ import org.springframework.web.client.RestClient;
 @Configuration
 public class ApiClientConfig {
 
+    private static final String CLOVA_OCR_SECRET_HEADER = "X-OCR-SECRET";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+
     private final Long apiTimeout;
     private final ClovaOcrProperties clovaOcrProperties;
     private final OpenAiProperties openAiProperties;
@@ -32,14 +35,15 @@ public class ApiClientConfig {
     @Qualifier(value = "clovaOcrClientBuilder")
     public RestClient.Builder clovaOcrClientBuilder() {
         return getDefaultRestClientBuilder()
-            .defaultHeader("X-OCR-SECRET", clovaOcrProperties.key());
+            .defaultHeader(CLOVA_OCR_SECRET_HEADER, clovaOcrProperties.key());
     }
 
     @Bean
     @Qualifier(value = "openAiClientBuilder")
     public RestClient.Builder openAiClientBuilder() {
         return getDefaultRestClientBuilder()
-            .defaultHeader("Authorization", openAiProperties.authType() + openAiProperties.key());
+            .defaultHeader(AUTHORIZATION_HEADER,
+                openAiProperties.authType() + openAiProperties.key());
     }
 
     private RestClient.Builder getDefaultRestClientBuilder() {
