@@ -9,7 +9,8 @@ public enum SuccessType {
 
     TEAM_CREATED(HttpStatus.CREATED, "모임이 생성되었습니다."),
     TEAM_LIST_LOADED(HttpStatus.OK, "모임 목록을 불러오는 데 성공했습니다."),
-    TEAM_CLOSED(HttpStatus.NO_CONTENT, "모임이 종료되었습니다.");
+    TEAM_CLOSED(HttpStatus.NO_CONTENT, "모임이 종료되었습니다."),
+    RECEIPT_ANALYSIS_SUCCESS(HttpStatus.OK, "영수증 분석을 성공하였습니다.");
 
     private final HttpStatusCode httpStatusCode;
     private final String message;
