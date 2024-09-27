@@ -1,6 +1,10 @@
 package kappzzang.jeongsan.service;
 
+import kappzzang.jeongsan.domain.Team;
+import kappzzang.jeongsan.dto.request.CloseTeamRequest;
 import kappzzang.jeongsan.dto.response.TeamResponse;
+import kappzzang.jeongsan.global.common.enumeration.ErrorType;
+import kappzzang.jeongsan.global.exception.JeongsanException;
 import kappzzang.jeongsan.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,5 +24,12 @@ public class TeamService {
                 .stream()
                 .map(TeamResponse::from)
                 .toList();
+    }
+
+    @Transactional
+    public void closeTeam(Long teamId, CloseTeamRequest request) {
+        Team team = teamRepository.findById(teamId)
+            .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_NOT_FOUND));
+        team.closeTeam(request.isClosed());
     }
 }
