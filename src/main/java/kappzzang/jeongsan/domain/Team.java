@@ -22,4 +22,10 @@ public class Team extends BaseEntity {
 
     @OneToMany(mappedBy = "team")
     private List<TeamMember> teamMemberList;
+
+    public void closeTeam(Boolean isClosed) {
+        if (isClosed) {
+            this.isClosed = true;
+        }
+    }
 }
