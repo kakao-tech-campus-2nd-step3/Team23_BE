@@ -59,12 +59,13 @@ public class OpenAiApiClientTest {
 
     @Test
     void openApi_5xxResponse_failsAfterRetries() {
-
+        // Given
         for (int i = 0; i < MAX_ATTEMPTS; i++) {
             mockRestServiceServer.expect(requestTo(TEST_URL))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
         }
 
+        // When & Then
         JeongsanException exception = assertThrows(JeongsanException.class,
             () -> openAiApiClient.extractDataUsingGPT(TEST_REQUEST));
 
@@ -74,7 +75,7 @@ public class OpenAiApiClientTest {
 
     @Test
     void openApi_timeout_failsAfterRetries() {
-
+        // Given
         for (int i = 0; i < MAX_ATTEMPTS; i++) {
             mockRestServiceServer.expect(requestTo(TEST_URL))
                 .andRespond(request -> {
@@ -83,6 +84,7 @@ public class OpenAiApiClientTest {
                 });
         }
 
+        // When & Then
         JeongsanException exception = assertThrows(JeongsanException.class,
             () -> openAiApiClient.extractDataUsingGPT(TEST_REQUEST));
 
@@ -92,7 +94,7 @@ public class OpenAiApiClientTest {
 
     @Test
     void openApi_successfulResponse_returnChatGptResponse() {
-
+        // Given
         String mockResponse = """
             {
               "choices": [
@@ -124,8 +126,10 @@ public class OpenAiApiClientTest {
         mockRestServiceServer.expect(requestTo(TEST_URL))
             .andRespond(withSuccess(mockResponse, MediaType.APPLICATION_JSON));
 
+        // When
         ChatGptResponse response = openAiApiClient.extractDataUsingGPT(TEST_REQUEST);
 
+        // Then
         List<Choice> choices = response.choices();
         assertThat(choices).isNotNull();
 

@@ -51,12 +51,13 @@ public class ClovaApiClientTest {
 
     @Test
     void ocrApi_5xxResponse_failsAfterRetries() {
-
+        // Given
         for (int i = 0; i < MAX_ATTEMPTS; i++) {
             mockRestServiceServer.expect(requestTo(TEST_URL))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
         }
 
+        // When & Then
         JeongsanException exception = assertThrows(JeongsanException.class,
             () -> clovaApiClient.requestClovaGeneralOcr(testImage));
 
@@ -67,7 +68,7 @@ public class ClovaApiClientTest {
 
     @Test
     void ocrApi_timeout_failsAfterRetries() {
-
+        // Given
         for (int i = 0; i < MAX_ATTEMPTS; i++) {
             mockRestServiceServer.expect(requestTo(TEST_URL))
                 .andRespond(request -> {
@@ -76,6 +77,7 @@ public class ClovaApiClientTest {
                 });
         }
 
+        // When & Then
         JeongsanException exception = assertThrows(JeongsanException.class,
             () -> clovaApiClient.requestClovaGeneralOcr(testImage));
 
@@ -86,7 +88,7 @@ public class ClovaApiClientTest {
 
     @Test
     void ocrApi_successfulResponse_returnsGeneralOcrResponse() {
-
+        // Given
         String mockResponse = """
             {
                 "version": "V2",
@@ -110,8 +112,10 @@ public class ClovaApiClientTest {
         mockRestServiceServer.expect(requestTo(TEST_URL))
             .andRespond(withSuccess(mockResponse, MediaType.APPLICATION_JSON));
 
+        // When
         GeneralOcrResponse response = clovaApiClient.requestClovaGeneralOcr(testImage);
 
+        // Then
         assertThat(response).isNotNull();
         assertThat(response.version()).isEqualTo("V2");
         assertThat(response.requestId()).isEqualTo("test-request-id");
