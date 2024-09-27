@@ -1,6 +1,8 @@
 package kappzzang.jeongsan.domain;
 
 import jakarta.persistence.*;
+import kappzzang.jeongsan.global.common.enumeration.ErrorType;
+import kappzzang.jeongsan.global.exception.JeongsanException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,8 +26,10 @@ public class Team extends BaseEntity {
     private List<TeamMember> teamMemberList;
 
     public void closeTeam(Boolean isClosed) {
-        if (isClosed) {
-            this.isClosed = true;
+        if (this.isClosed) {
+            throw new JeongsanException(ErrorType.TEAM_ALREADY_CLOSED);
         }
+
+        this.isClosed = isClosed;
     }
 }
