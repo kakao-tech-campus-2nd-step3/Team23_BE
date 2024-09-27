@@ -1,5 +1,6 @@
 package kappzzang.jeongsan.service;
 
+import java.util.List;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.request.CloseTeamRequest;
 import kappzzang.jeongsan.dto.response.TeamResponse;
@@ -10,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class TeamService {
@@ -21,9 +20,9 @@ public class TeamService {
     @Transactional(readOnly = true)
     public List<TeamResponse> getTeamsByIsClosed(Boolean isClosed) {
         return teamRepository.findByIsClosed(isClosed)
-                .stream()
-                .map(TeamResponse::from)
-                .toList();
+            .stream()
+            .map(TeamResponse::from)
+            .toList();
     }
 
     @Transactional
