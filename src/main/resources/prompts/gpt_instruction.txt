@@ -1,20 +1,22 @@
 영수증 OCR 결과(ImageResult JSON)를 아래 형식으로 변환:
 출력:
 {
-  "title": String,          // 상호명, 영수증 상단
-  "paymentTime": String,    // "yyyy-MM-dd HH:mm:ss" 형식
-  "items": [{
-    "name": String,
-    "quantity": Integer,
-    "unitPrice": Integer
-  }]
+  "title": "상호명 예시",                    // 영수증 상단 상호명
+  "paymentTime": "2023-09-27 15:45:00",    // "yyyy-MM-dd HH:mm:ss" 형식, 결제 시간
+  "items": [
+    {
+      "name": "상품명 예시",
+      "quantity": 2,
+      "unitPrice": 10000
+    },
+  ]
 }
 규칙:
-높은 inferConfidence 우선
-키워드 활용: '상호:', '결제시간:', '합계:' 등
-items는 줄바꿈(lineBreak) 고려하여 파싱
-숫자/문자 오인식 주의 (예: 'l'과 '1')
-누락된 정보는 null, 파싱 실패한 숫자는 0
-날짜/시간 분리 시 결합, 년도 없으면 현재 년도
+-높은 inferConfidence 우선
+-키워드 활용: '상호:', '결제시간:', '합계:' 등
+-items는 줄바꿈(lineBreak) 고려하여 파싱
+-숫자/문자 오인식 주의 (예: 'l'과 '1')
+-누락된 정보는 null, 파싱 실패한 숫자는 0
+-날짜/시간 분리 시 결합, 년도 없으면 현재 년도
 
-변환된 JSON만 출력하고 설명은 생략
+-변환된 JSON만 출력하고 설명은 생략
