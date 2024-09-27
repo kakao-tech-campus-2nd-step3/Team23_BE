@@ -1,6 +1,8 @@
 package kappzzang.jeongsan.controller;
 
 import kappzzang.jeongsan.dto.response.TeamResponse;
+import kappzzang.jeongsan.global.common.JeongsanApiResponse;
+import kappzzang.jeongsan.global.common.enumeration.SuccessType;
 import kappzzang.jeongsan.service.TeamService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,9 +21,9 @@ public class TeamController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TeamResponse>> getTeams(@RequestParam("isClosed") Boolean isClosed) {
+    public ResponseEntity<JeongsanApiResponse<List<TeamResponse>>> getTeams(@RequestParam("isClosed") Boolean isClosed) {
         List<TeamResponse> data = teamService.getTeamsByIsClosed(isClosed);
 
-        return ResponseEntity.ok(data);
+        return JeongsanApiResponse.success(SuccessType.TEAM_LIST_LOADED, data);
     }
 }
