@@ -16,7 +16,7 @@ public class GptPromptManager {
     private final String instructionPath;
     private final String instruction;
 
-    public GptPromptManager(@Value("${gpt.instruction.path}") String instructionPath) {
+    public GptPromptManager(@Value("${gpt.instruction.path:prompts/gpt_instruction.txt}") String instructionPath) {
         this.instructionPath = instructionPath;
         this.instruction = loadPrompt();
     }

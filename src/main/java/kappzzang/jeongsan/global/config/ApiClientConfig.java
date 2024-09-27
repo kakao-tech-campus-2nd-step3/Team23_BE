@@ -24,7 +24,7 @@ public class ApiClientConfig {
     private final ClovaOcrProperties clovaOcrProperties;
     private final OpenAiProperties openAiProperties;
 
-    public ApiClientConfig(@Value("${external.api.timeout}") Long apiTimeout,
+    public ApiClientConfig(@Value("${external.api.timeout:5000}") Long apiTimeout,
         ClovaOcrProperties clovaOcrProperties, OpenAiProperties openAiProperties) {
         this.apiTimeout = apiTimeout;
         this.clovaOcrProperties = clovaOcrProperties;
