@@ -6,10 +6,9 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.List;
 
 @Configuration
 public class SwaggerConfig {
@@ -25,7 +24,8 @@ public class SwaggerConfig {
 
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(accessToken);
 
-        Components components = new Components().addSecuritySchemes(accessToken, new SecurityScheme()
+        Components components = new Components().addSecuritySchemes(accessToken,
+            new SecurityScheme()
                 .name(accessToken)
                 .type(SecurityScheme.Type.HTTP)
                 .scheme("bearer")
@@ -33,16 +33,16 @@ public class SwaggerConfig {
         );
 
         return new OpenAPI()
-                .components(components)
-                .info(apiInfo())
-                .servers(List.of(local))
-                .addSecurityItem(securityRequirement);
+            .components(components)
+            .info(apiInfo())
+            .servers(List.of(local))
+            .addSecurityItem(securityRequirement);
     }
 
     private Info apiInfo() {
         return new Info()
-                .title("KakaoTechCampus 정산(JeongSan) 서비스의 API 명세입니다.")
-                .description("KakaoTechCampus Step3 Team23(KAppZzang) API Docs")
-                .version("1.0.0");
+            .title("KakaoTechCampus 정산(JeongSan) 서비스의 API 명세입니다.")
+            .description("KakaoTechCampus Step3 Team23(KAppZzang) API Docs")
+            .version("1.0.0");
     }
 }
