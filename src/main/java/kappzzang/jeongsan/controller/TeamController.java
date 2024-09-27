@@ -1,11 +1,13 @@
 package kappzzang.jeongsan.controller;
 
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import kappzzang.jeongsan.dto.request.CloseTeamRequest;
 import kappzzang.jeongsan.dto.response.TeamResponse;
+import kappzzang.jeongsan.global.common.JeongsanApiResponse;
+import kappzzang.jeongsan.global.common.enumeration.SuccessType;
 import kappzzang.jeongsan.service.TeamService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,9 +21,16 @@ public class TeamController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TeamResponse>> getTeams(@RequestParam("isClosed") Boolean isClosed) {
+    public ResponseEntity<JeongsanApiResponse<List<TeamResponse>>> getTeams(@RequestParam("isClosed") Boolean isClosed) {
         List<TeamResponse> data = teamService.getTeamsByIsClosed(isClosed);
 
-        return ResponseEntity.ok(data);
+        return JeongsanApiResponse.success(SuccessType.TEAM_LIST_LOADED, data);
+    }
+
+    @PatchMapping("/{teamId}")
+    public ResponseEntity<JeongsanApiResponse<Void>> closeTeam(
+        @PathVariable("teamId") Long teamId, @RequestBody CloseTeamRequest request) {
+        teamService.closeTeam(teamId, request);
+        return JeongsanApiResponse.success(SuccessType.TEAM_CLOSED);
     }
 }
