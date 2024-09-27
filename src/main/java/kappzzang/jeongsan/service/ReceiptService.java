@@ -32,6 +32,8 @@ public class ReceiptService {
                 ParsedReceiptResponse.class);
         } catch (JsonProcessingException e) {
             throw new JeongsanException(ErrorType.INTERNAL_SERVER_ERROR);
+        } catch (RuntimeException e) {
+            throw new JeongsanException(ErrorType.RECEIPT_EXTRACTION_FAILED);
         }
     }
 }
