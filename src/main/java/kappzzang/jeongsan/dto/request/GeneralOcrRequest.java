@@ -1,6 +1,5 @@
 package kappzzang.jeongsan.dto.request;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import kappzzang.jeongsan.dto.Image;
@@ -14,8 +13,7 @@ public record GeneralOcrRequest(String version, String requestId, Long timestamp
 
     public GeneralOcrRequest(Image image) {
         this(DEFAULT_VERSION, UUID.randomUUID().toString(), DEFAULT_TIMESTAMP, DEFAULT_LANG,
-            new ArrayList<>());
-        this.images.add(image);
+            List.of(image));
     }
 
 }
