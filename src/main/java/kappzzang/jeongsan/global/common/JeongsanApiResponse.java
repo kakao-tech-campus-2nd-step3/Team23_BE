@@ -19,36 +19,37 @@ public class JeongsanApiResponse<T> {
 
     public static ResponseEntity<JeongsanApiResponse<Void>> success(SuccessType successType) {
         JeongsanApiResponse<Void> response = JeongsanApiResponse.<Void>builder()
-                .status("success")
-                .message(successType.getMessage())
-                .build();
+            .status("success")
+            .message(successType.getMessage())
+            .build();
 
         return ResponseEntity
-                .status(successType.getHttpStatusCode())
-                .body(response);
+            .status(successType.getHttpStatusCode())
+            .body(response);
     }
 
-    public static <T> ResponseEntity<JeongsanApiResponse<T>> success(SuccessType successType, T data) {
+    public static <T> ResponseEntity<JeongsanApiResponse<T>> success(SuccessType successType,
+        T data) {
         JeongsanApiResponse<T> response = JeongsanApiResponse.<T>builder()
-                .status("success")
-                .message(successType.getMessage())
-                .data(data)
-                .build();
+            .status("success")
+            .message(successType.getMessage())
+            .data(data)
+            .build();
 
         return ResponseEntity
-                .status(successType.getHttpStatusCode())
-                .body(response);
+            .status(successType.getHttpStatusCode())
+            .body(response);
     }
 
     public static ResponseEntity<JeongsanApiResponse<Void>> failure(ErrorType errorType) {
         JeongsanApiResponse<Void> response = JeongsanApiResponse.<Void>builder()
-                .status("failure")
-                .errorCode(errorType.getErrorCode())
-                .message(errorType.getMessage())
-                .build();
+            .status("failure")
+            .errorCode(errorType.getErrorCode())
+            .message(errorType.getMessage())
+            .build();
 
         return ResponseEntity
-                .status(errorType.getHttpStatusCode())
-                .body(response);
+            .status(errorType.getHttpStatusCode())
+            .body(response);
     }
 }

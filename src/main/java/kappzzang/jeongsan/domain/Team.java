@@ -1,10 +1,15 @@
 package kappzzang.jeongsan.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.List;
+import kappzzang.jeongsan.global.common.enumeration.ErrorType;
+import kappzzang.jeongsan.global.exception.JeongsanException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 
 @Entity
@@ -22,4 +27,12 @@ public class Team extends BaseEntity {
 
     @OneToMany(mappedBy = "team")
     private List<TeamMember> teamMemberList;
+
+    public void closeTeam(Boolean isClosed) {
+        if (this.isClosed) {
+            throw new JeongsanException(ErrorType.TEAM_ALREADY_CLOSED);
+        }
+
+        this.isClosed = isClosed;
+    }
 }

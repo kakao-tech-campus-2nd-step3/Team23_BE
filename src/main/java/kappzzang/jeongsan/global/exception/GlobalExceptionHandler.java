@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(JeongsanException.class)
-    public ResponseEntity<JeongsanApiResponse<Void>> jeongsanExceptionHandler(JeongsanException exception) {
+    public ResponseEntity<JeongsanApiResponse<Void>> jeongsanExceptionHandler(
+        JeongsanException exception) {
         log.error("Jeongsan Exception occurred", exception);
         return JeongsanApiResponse.failure(exception.getErrorType());
     }
