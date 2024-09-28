@@ -5,15 +5,17 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import kappzzang.jeongsan.global.exception.JeongsanException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     public static final String AUTHORIZATION = "Authorization";
@@ -27,13 +29,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // Authorization에서 JWT 추출
         String token = resolveToken(request);
 
-        // JWT로 인증
+        // JWT로 인증된 Authentication을 SecurityContextHolder에 저장
         if (StringUtils.hasText(token)) {
             try {
-                Authentication authentication = new JwtAuthenticationToken(token);
-                authentication = authenticationManager.authenticate(authentication);
+                Authentication jwtAuthenticationToken = new JwtAuthenticationToken(token);
+                Authentication authentication = authenticationManager.authenticate(jwtAuthenticationToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-            } catch (AuthenticationException authenticationException) {
+            } catch (JeongsanException jeongsanException) {
+                log.error(jeongsanException.getMessage());
                 SecurityContextHolder.clearContext();
             }
         }

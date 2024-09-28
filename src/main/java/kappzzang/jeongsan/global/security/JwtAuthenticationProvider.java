@@ -13,7 +13,6 @@ import kappzzang.jeongsan.global.exception.JeongsanException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,7 +26,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     // JWT를 파싱하여 Authentication 생성
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    public Authentication authenticate(Authentication authentication) {
         try {
             Claims claims = Jwts.parser()
                 .verifyWith(secretKey)
@@ -42,8 +41,6 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             throw new JeongsanException(ErrorType.JWT_EXPIRED);
         } catch (MalformedJwtException malformedJwtException) {
             throw new JeongsanException(ErrorType.JWT_MALFORMED);
-        } catch (IllegalArgumentException illegalArgumentException) {
-            throw new JeongsanException(ErrorType.JWT_ILLEGAL_ARGUMENT);
         }
     }
 
