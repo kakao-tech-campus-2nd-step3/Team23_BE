@@ -47,7 +47,7 @@ jobs:
           ./gradlew clean build
 
       - name: Upload the JAR file
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: jeongsan-latest-jar
           path: build/libs/jeongsan-latest.jar
