@@ -27,6 +27,12 @@ jobs:
       - name: Login to Amazon ECR
         run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY }}
 
+      - name: Download the JAR file
+        uses: actions/download-artifact@v4
+        with:
+          name: jeongsan-latest-jar
+          path: build/libs
+
       - name: Build the Docker image
         run: docker build -t ${{ secrets.ECR_REPOSITORY }} .
 
