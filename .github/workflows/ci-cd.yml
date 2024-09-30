@@ -10,6 +10,7 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' }}
     permissions:
       contents: read
       pull-requests: write
@@ -75,7 +76,7 @@ jobs:
     name: Build Docker Image and Push to ECR
     needs: ci
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/Master'
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/Master' }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -94,7 +95,7 @@ jobs:
         run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY }}
 
       - name: Download JAR file
-        uses: actions/download-artifacts@v4
+        uses: actions/download-artifact@v4
         with:
           name: jeongsan-latest-jar
           path: build/libs
