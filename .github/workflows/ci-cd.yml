@@ -74,7 +74,6 @@ jobs:
 
   cd:
     name: Build Docker Image and Push to ECR
-    needs: ci
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/Master' }}
     steps:
