@@ -1,11 +1,14 @@
-name: CI on PR
+name: CI and CD
 
 on:
   pull_request:
     branches: [ 'Master', 'Develop', 'Weekly/*' ]
+  push:
+    branches:
+      - Master
 
 jobs:
-  test:
+  ci:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -46,12 +49,6 @@ jobs:
           chmod +x ./gradlew
           ./gradlew clean build
 
-      - name: Upload the JAR file
-        uses: actions/upload-artifact@v3
-        with:
-          name: jeongsan-latest-jar
-          path: build/libs/jeongsan-latest.jar
-
       # Show test result
       - name: Show test result
         uses: EnricoMi/publish-unit-test-result-action@v2
@@ -67,3 +64,34 @@ jobs:
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
           token: ${{ secrets.GITHUB_TOKEN }}
+
+  cd:
+    name: Build Docker Image and Push to ECR
+    needs: ci
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/Master'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY }}
+
+      - name: Build the Docker image
+        run: docker build -t ${{ secrets.ECR_REPOSITORY }} .
+
+      - name: Tag Docker image
+        run: docker tag ${{ secrets.ECR_REPOSITORY }}:latest ${{ secrets.ECR_REPOSITORY }}:latest
+
+      - name: Push Docker image to ECR
+        run: docker push ${{ secrets.ECR_REPOSITORY }}:latest
