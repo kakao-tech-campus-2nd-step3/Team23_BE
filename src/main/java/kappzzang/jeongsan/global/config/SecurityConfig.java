@@ -26,11 +26,16 @@ public class SecurityConfig {
             .csrf((config) -> config.disable())
             .sessionManagement((config) -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests((registry) -> registry
+                // 개발할 땐 모든 경로 접근 허용
+                .anyRequest()
+                .permitAll()
+                /*
                 // 해당 경로는 인증 없이 접근 허용
-                .requestMatchers("/api/members/token")
+                .requestMatchers("/api/members/token", "/api/test/*")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
+                 */
             )
             .addFilterBefore(new JwtAuthenticationFilter(authenticationManagerBuilder.getOrBuild()), LogoutFilter.class)
             .build();
