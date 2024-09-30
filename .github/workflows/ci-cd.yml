@@ -49,6 +49,12 @@ jobs:
           chmod +x ./gradlew
           ./gradlew clean build
 
+      - name: Upload JAR file
+        uses: actions/upload-artifact@v4
+        with:
+          name: jeongsan-latest-jar
+          path: build/libs/jeongsan-latest.jar
+
       # Show test result
       - name: Show test result
         uses: EnricoMi/publish-unit-test-result-action@v2
@@ -86,6 +92,12 @@ jobs:
 
       - name: Login to Amazon ECR
         run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY }}
+
+      - name: Download JAR file
+        uses: actions/download-artifacts@v4
+        with:
+          name: jeongsan-latest-jar
+          path: build/libs
 
       - name: Build the Docker image
         run: docker build -t ${{ secrets.ECR_REPOSITORY }} .
