@@ -1,5 +1,6 @@
 package kappzzang.jeongsan.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
@@ -24,9 +25,19 @@ public class ExpenseService {
     public ExpenseResponse getResponses(Long memberId, Long teamId, Status status,
         Boolean isChecked) {
         List<Expense> expenses = expenseRepository.findByTeamIdAndStatus(teamId, status);
-        List<Expense> filteredExpenses = expenses.stream()
-            .filter(expense -> isChecked.equals(isExpenseChecked(expense, memberId)))
-            .toList();
+        List<Expense> filteredExpenses;
+
+        // PENDING 구현 시 리팩토링 필요
+        if (status == Status.ONGOING) {
+            filteredExpenses = expenses.stream()
+                .filter(expense -> isChecked.equals(isExpenseChecked(expense, memberId)))
+                .toList();
+        } else if (status == Status.COMPLETED) {
+            filteredExpenses = expenses;
+        } else {
+            // PENDING에서 사용
+            filteredExpenses = new ArrayList<>();
+        }
 
         Integer totalPrice = expenses.stream()
             .mapToInt(Expense::getTotalPrice)
