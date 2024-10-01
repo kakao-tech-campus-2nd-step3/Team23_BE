@@ -27,9 +27,9 @@ public class KakaoApiClient {
     private static final String AUTHORIZATION = "Authorization";
 
     private final RestClient kakaoClient;
-    private final KakaoProperties properties;
+    private final KakaoProfileProperties properties;
 
-    public KakaoApiClient(KakaoProperties properties, RestClient.Builder kakaoClientBuilder) {
+    public KakaoApiClient(KakaoProfileProperties properties, RestClient.Builder kakaoClientBuilder) {
         this.properties = properties;
         this.kakaoClient = kakaoClientBuilder.build();
     }
