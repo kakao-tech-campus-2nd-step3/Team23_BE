@@ -16,8 +16,7 @@ public enum ErrorType {
     TEAM_ALREADY_CLOSED(HttpStatus.BAD_REQUEST, "000", "이미 종료된 모임입니다."),
     JWT_SIGNATURE_INVALID(HttpStatus.UNAUTHORIZED, "000", "토큰 서명이 유효하지 않습니다."),
     JWT_EXPIRED(HttpStatus.UNAUTHORIZED, "000", "토큰이 만료되었습니다."),
-    JWT_MALFORMED(HttpStatus.BAD_REQUEST, "000", "토큰 형식이 잘못되었습니다."),
-    JWT_ILLEGAL_ARGUMENT(HttpStatus.BAD_REQUEST, "000", "토큰이 비어있습니다.");
+    JWT_MALFORMED(HttpStatus.UNAUTHORIZED, "000", "토큰 형식이 잘못되었습니다.");
 
     private final HttpStatusCode httpStatusCode;
     private final String errorCode;
