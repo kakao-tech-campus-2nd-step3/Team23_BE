@@ -8,7 +8,7 @@ import kappzzang.jeongsan.dto.request.JoinTeamRequest;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "회원 관리", description = "JWT 반환, 멤버 그룹 참여, 초대 현황 등을 관리하는 API Controller")
+@Tag(name = "회원 관리", description = "JWT 반환, 멤버 그룹 참여, 초대 현황 등을 관리하는 API")
 public interface MemberControllerInterface {
 
     @Operation(summary = "모임 초대 수락 API", description = "모임 초대 링크를 받은 사용자가 모임 참여를 수락하여 모임에 참여하도록 하는 API")
