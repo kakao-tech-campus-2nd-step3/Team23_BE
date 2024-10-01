@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import kappzzang.jeongsan.global.exception.JeongsanException;
+import kappzzang.jeongsan.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,16 +19,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    public static final String AUTHORIZATION = "Authorization";
-    public static final String BEARER_PREFIX = "Bearer ";
-
-    public final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
         // Authorization에서 JWT 추출
-        String token = resolveToken(request);
+        String token = jwtUtil.resolveToken(request);
 
         // JWT로 인증된 Authentication을 SecurityContextHolder에 저장
         if (StringUtils.hasText(token)) {
@@ -42,13 +41,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    private String resolveToken(HttpServletRequest request) {
-        String authorization = request.getHeader(AUTHORIZATION);
-        if (StringUtils.hasText(authorization) && authorization.startsWith(BEARER_PREFIX)) {
-            return authorization.substring(BEARER_PREFIX.length());
-        }
-        return null;
     }
 }

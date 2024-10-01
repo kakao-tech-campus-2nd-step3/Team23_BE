@@ -1,6 +1,7 @@
 package kappzzang.jeongsan.global.config;
 
 import kappzzang.jeongsan.global.security.JwtAuthenticationFilter;
+import kappzzang.jeongsan.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,10 +14,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final JwtUtil jwtUtil;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @Bean
@@ -31,7 +33,7 @@ public class SecurityConfig {
                 .anyRequest()
                 .permitAll()
             )
-            .addFilterAfter(new JwtAuthenticationFilter(authenticationManagerBuilder.getOrBuild()), LogoutFilter.class)
+            .addFilterAfter(new JwtAuthenticationFilter(jwtUtil, authenticationManagerBuilder.getOrBuild()), LogoutFilter.class)
             .build();
     }
 }
