@@ -3,7 +3,7 @@ package kappzzang.jeongsan.global.client.kakao;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
-import kappzzang.jeongsan.dto.response.KakaoProfileResponse;
+import kappzzang.jeongsan.global.client.dto.response.KakaoProfileResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import lombok.extern.slf4j.Slf4j;
