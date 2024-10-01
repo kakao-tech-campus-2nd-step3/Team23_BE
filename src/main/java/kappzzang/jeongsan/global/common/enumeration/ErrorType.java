@@ -9,6 +9,8 @@ public enum ErrorType {
 
     // 400 BAD_REQUEST
     TEAM_ALREADY_CLOSED(HttpStatus.BAD_REQUEST, "E400001", "이미 종료된 모임입니다."),
+    EXPENSE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "E400002", "잘못된 요청입니다."),
+    EXPENSE_INVALID_STATE(HttpStatus.BAD_REQUEST, "E400003", "잘못된 state 값 요청입니다."),
 
     // 401 UNAUTHORIZED
     JWT_SIGNATURE_INVALID(HttpStatus.UNAUTHORIZED, "E401001", "토큰 서명이 유효하지 않습니다."),

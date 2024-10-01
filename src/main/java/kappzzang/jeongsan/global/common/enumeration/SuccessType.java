@@ -10,6 +10,7 @@ public enum SuccessType {
     // 200 OK
     TEAM_LIST_LOADED(HttpStatus.OK, "모임 목록을 불러오는 데 성공했습니다."),
     RECEIPT_ANALYSIS_SUCCESS(HttpStatus.OK, "영수증 분석을 성공하였습니다."),
+    EXPENSE_LIST_LOADED(HttpStatus.OK, "지출 목록을 불러오는 데 성공했습니다"),
 
     // 201 CREATED
     TEAM_CREATED(HttpStatus.CREATED, "모임이 생성되었습니다."),
