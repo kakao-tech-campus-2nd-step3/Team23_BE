@@ -7,12 +7,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -21,21 +22,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-            .formLogin((config) -> config.disable())
-            .httpBasic((config) -> config.disable())
-            .csrf((config) -> config.disable())
+            .formLogin(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement((config) -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests((registry) -> registry
                 // 개발할 땐 모든 경로 접근 허용
                 .anyRequest()
                 .permitAll()
-                /*
-                // 해당 경로는 인증 없이 접근 허용
-                .requestMatchers("/api/members/token", "/api/test/*")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
-                 */
             )
             .addFilterBefore(new JwtAuthenticationFilter(authenticationManagerBuilder.getOrBuild()), LogoutFilter.class)
             .build();
