@@ -35,7 +35,7 @@ public class ExpenseController {
         }
 
         if (status == Status.ONGOING && isChecked == null) {
-            throw new JeongsanException(ErrorType.EXPENSE_BAD_REQUEST);
+            throw new JeongsanException(ErrorType.EXPENSE_MISSING_PARAM);
         }
 
         return JeongsanApiResponse.success(SuccessType.EXPENSE_LIST_LOADED,

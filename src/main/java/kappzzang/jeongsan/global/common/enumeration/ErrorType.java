@@ -9,7 +9,7 @@ public enum ErrorType {
 
     // 400 BAD_REQUEST
     TEAM_ALREADY_CLOSED(HttpStatus.BAD_REQUEST, "E400001", "이미 종료된 모임입니다."),
-    EXPENSE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "E400002", "잘못된 요청입니다."),
+    EXPENSE_MISSING_PARAM(HttpStatus.BAD_REQUEST, "E400002", "누락된 쿼리 파라미터가 존재합니다."),
     EXPENSE_INVALID_STATE(HttpStatus.BAD_REQUEST, "E400003", "잘못된 state 값 요청입니다."),
 
     // 401 UNAUTHORIZED
