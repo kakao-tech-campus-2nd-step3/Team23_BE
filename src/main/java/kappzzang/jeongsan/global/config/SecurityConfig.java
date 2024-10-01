@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .anyRequest()
                 .permitAll()
             )
-            .addFilterBefore(new JwtAuthenticationFilter(authenticationManagerBuilder.getOrBuild()), LogoutFilter.class)
+            .addFilterAfter(new JwtAuthenticationFilter(authenticationManagerBuilder.getOrBuild()), LogoutFilter.class)
             .build();
     }
 }
