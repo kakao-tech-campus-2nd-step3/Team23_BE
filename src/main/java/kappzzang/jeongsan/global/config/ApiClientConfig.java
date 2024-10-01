@@ -48,7 +48,7 @@ public class ApiClientConfig {
 
     @Bean
     @Qualifier(value = "kakaoClientBuilder")
-    public RestClient.Builder kakaoClientBuilder(String kakaoToken) {
+    public RestClient.Builder kakaoClientBuilder() {
         return getDefaultRestClientBuilder();
     }
 
