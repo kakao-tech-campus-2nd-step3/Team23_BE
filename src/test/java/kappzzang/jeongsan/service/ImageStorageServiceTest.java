@@ -63,7 +63,7 @@ public class ImageStorageServiceTest {
         //when //then
         JeongsanException exception = assertThrows(JeongsanException.class,
             () -> imageStorageService.saveReceiptImage(imageWithInvalidData, TEST_TEAM_ID));
-        assertThat(exception.getErrorType()).isEqualTo(ErrorType.INTERNAL_SERVER_ERROR);
+        assertThat(exception.getErrorType()).isEqualTo(ErrorType.INVALID_INPUT);
     }
 
 }

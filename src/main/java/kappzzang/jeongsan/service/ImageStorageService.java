@@ -42,7 +42,7 @@ public class ImageStorageService {
         try {
             return Base64.getDecoder().decode(data);
         } catch (IllegalArgumentException e) {
-            throw new JeongsanException(ErrorType.INTERNAL_SERVER_ERROR);
+            throw new JeongsanException(ErrorType.INVALID_INPUT);
         }
     }
 
