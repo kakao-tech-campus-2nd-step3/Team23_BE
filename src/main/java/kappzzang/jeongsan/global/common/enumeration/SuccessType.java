@@ -13,6 +13,7 @@ public enum SuccessType {
 
     // 201 CREATED
     TEAM_CREATED(HttpStatus.CREATED, "모임이 생성되었습니다."),
+    LOGGED_IN(HttpStatus.CREATED, "로그인을 성공하였습니다."),
 
     //204 NO_CONTENT
     TEAM_CLOSED(HttpStatus.NO_CONTENT, "모임이 종료되었습니다.");

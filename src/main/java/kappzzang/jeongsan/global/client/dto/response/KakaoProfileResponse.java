@@ -1,5 +1,7 @@
 package kappzzang.jeongsan.global.client.dto.response;
 
+import kappzzang.jeongsan.domain.Member;
+
 public record KakaoProfileResponse(
     Long id,
     KakaoAccount kakao_account
@@ -16,5 +18,13 @@ public record KakaoProfileResponse(
         ) {
 
         }
+    }
+
+    public Member toMember() {
+        return Member.builder()
+            .id(id())
+            .nickname(kakao_account().profile().nickname())
+            .profileImage(kakao_account().profile().thumbnail_image_url())
+            .build();
     }
 }
