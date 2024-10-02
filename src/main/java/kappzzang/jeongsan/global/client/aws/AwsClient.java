@@ -32,7 +32,6 @@ public class AwsClient {
         String key = request.filePath();
         String contentType = StringUtils.getFilenameExtension(key);
         PutObjectRequest putObjectRequest = createPutObjectRequest(key, contentType);
-
         try {
             s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(request.inputStream(),
                 request.length()));
@@ -54,10 +53,8 @@ public class AwsClient {
     public String getPresignedUrl(String key) {
         try {
             GetObjectPresignRequest getObjectPresignRequest = createGetObjectPresignRequest(key);
-
             PresignedGetObjectRequest presignGetObject = s3Presigner.presignGetObject(
                 getObjectPresignRequest);
-
             return presignGetObject.url().toString();
         } catch (SdkClientException | SdkServiceException e) {
             log.error("S3 Presigner error: {}", e.getMessage());
