@@ -10,9 +10,9 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.SocketTimeoutException;
-import kappzzang.jeongsan.dto.response.KakaoProfileResponse;
-import kappzzang.jeongsan.dto.response.KakaoProfileResponse.KakaoAccount;
-import kappzzang.jeongsan.dto.response.KakaoProfileResponse.KakaoAccount.Profile;
+import kappzzang.jeongsan.global.client.dto.response.KakaoProfileResponse;
+import kappzzang.jeongsan.global.client.dto.response.KakaoProfileResponse.KakaoAccount;
+import kappzzang.jeongsan.global.client.dto.response.KakaoProfileResponse.KakaoAccount.Profile;
 import kappzzang.jeongsan.global.client.kakao.KakaoApiClient;
 import kappzzang.jeongsan.global.client.kakao.KakaoProfileProperties;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
@@ -90,13 +90,24 @@ public class KakaoApiClientTest {
     }
 
     @Test
-    void kakaoApi_successfulResponse_returnChatGptResponse() throws JsonProcessingException {
+    void kakaoApi_successfulResponse_returnKakaoProfileResponse() throws JsonProcessingException {
         // Given
         Long id = 1L;
         Profile profile = new Profile("홍길동", "http://yyy.kakao.com/.../img_110x110.jpg");
         KakaoAccount kakaoAccount = new KakaoAccount("sample@sample.com", profile);
         KakaoProfileResponse expected = new KakaoProfileResponse(id, kakaoAccount);
-        String mockResponse = objectMapper.writeValueAsString(expected);
+        String mockResponse = """
+            {
+                "id":1,
+                "kakao_account": {
+                    "email": "sample@sample.com",
+                    "profile": {
+                        "nickname": "홍길동",
+                        "thumbnail_image_url": "http://yyy.kakao.com/.../img_110x110.jpg"
+                    }
+                }
+            }
+            """;
         mockRestServiceServer.expect(requestTo(TEST_URL))
             .andRespond(withSuccess(mockResponse, MediaType.APPLICATION_JSON));
 
