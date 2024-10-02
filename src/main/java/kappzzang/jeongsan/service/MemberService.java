@@ -26,9 +26,9 @@ public class MemberService {
     @Transactional
     public void acceptInvite(Long teamId, Long memberId) {
 
-        Team team = teamRepository.findTeamById(teamId)
+        Team team = teamRepository.findById(teamId)
             .orElseThrow(() -> new JeongsanException(TEAM_NOT_FOUND));
-        Member member = memberRepository.findMemberById(memberId)
+        Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new JeongsanException(USER_NOT_FOUND));
         TeamMember teamMember = teamMemberRepository.findTeamMemberByTeamAndMember(team, member)
             .orElseThrow(() -> new JeongsanException(NOT_INVITED_MEMBER));
