@@ -58,6 +58,7 @@ public class ClovaApiClient {
         throws IOException {
         HttpStatusCode statusCode = response.getStatusCode();
         String responseBody = StreamUtils.copyToString(response.getBody(), StandardCharsets.UTF_8);
+        response.getBody().close();
         log.error("Clova Api error: status={}, body={}", statusCode, responseBody);
         if (statusCode.is5xxServerError()) {
             throw new RestClientException("Server error: " + statusCode);
