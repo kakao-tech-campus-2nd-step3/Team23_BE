@@ -1,4 +1,4 @@
-package kappzzang.jeongsan.dto.response;
+package kappzzang.jeongsan.global.client.dto.response;
 
 import java.util.List;
 

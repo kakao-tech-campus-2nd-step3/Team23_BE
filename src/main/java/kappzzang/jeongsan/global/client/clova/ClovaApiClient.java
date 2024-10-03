@@ -5,8 +5,8 @@ import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import kappzzang.jeongsan.dto.Image;
-import kappzzang.jeongsan.dto.request.GeneralOcrRequest;
-import kappzzang.jeongsan.dto.response.GeneralOcrResponse;
+import kappzzang.jeongsan.global.client.dto.request.GeneralOcrRequest;
+import kappzzang.jeongsan.global.client.dto.response.GeneralOcrResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +58,7 @@ public class ClovaApiClient {
         throws IOException {
         HttpStatusCode statusCode = response.getStatusCode();
         String responseBody = StreamUtils.copyToString(response.getBody(), StandardCharsets.UTF_8);
+        response.getBody().close();
         log.error("Clova Api error: status={}, body={}", statusCode, responseBody);
         if (statusCode.is5xxServerError()) {
             throw new RestClientException("Server error: " + statusCode);
