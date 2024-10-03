@@ -12,7 +12,7 @@ import kappzzang.jeongsan.dto.response.ExpenseResponse;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "지출 목록 관리 API", description = "지출 내역에 대한 조회, 저장 등 관리하는 API")
+@Tag(name = "지출 목록 관리", description = "지출 내역에 대한 조회, 저장 등 관리하는 API")
 public interface ExpenseControllerInterface {
 
     @Operation(summary = "지출 내역 목록 조회 API", description = "지출 내역 목록을 쿼리 파라미터의 조건에 따라 조회하는 API")
