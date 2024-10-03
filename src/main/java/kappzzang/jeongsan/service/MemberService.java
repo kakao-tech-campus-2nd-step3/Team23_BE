@@ -34,20 +34,14 @@ public class MemberService {
 
     @Transactional
     public LoginResponse login(LoginRequest loginRequest) {
-        // 카카오로부터 프로필 정보 받아옴
         KakaoProfileResponse kakaoProfileResponse = kakaoApiClient.getKakaoProfile(loginRequest.accessToken());
 
-        // member 조회
         Member member = memberRepository.findById(kakaoProfileResponse.id())
             .orElseGet(kakaoProfileResponse::toMember);
-
-        // JWT 생성
         String token = jwtUtil.createToken(kakaoProfileResponse.id());
         member = member.toBuilder()
             .token(token)
             .build();
-
-        // member 저장 or 업데이트
         memberRepository.save(member);
 
         return new LoginResponse(BEARER, token);
