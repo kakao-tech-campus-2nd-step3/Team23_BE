@@ -14,7 +14,6 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
@@ -40,16 +39,12 @@ public class KakaoApiClient {
         backoff = @Backoff(delay = BACK_OFF_DELAY)
     )
     public KakaoProfileResponse getKakaoProfile(String kakaoToken) {
-        try {
-            return kakaoClient.get()
-                .uri(properties.url())
-                .header(AUTHORIZATION, properties.authType() + kakaoToken)
-                .retrieve()
-                .onStatus(HttpStatusCode::isError, this::handleErrorResponse)
+        return kakaoClient.get()
+            .uri(properties.url())
+            .header(AUTHORIZATION, properties.authType() + kakaoToken)
+            .retrieve()
+            .onStatus(HttpStatusCode::isError, this::handleErrorResponse)
                 .body(KakaoProfileResponse.class);
-        } catch (HttpClientErrorException e) {
-            throw new RuntimeException();
-        }
     }
 
     private void handleErrorResponse(HttpRequest request, ClientHttpResponse response)
