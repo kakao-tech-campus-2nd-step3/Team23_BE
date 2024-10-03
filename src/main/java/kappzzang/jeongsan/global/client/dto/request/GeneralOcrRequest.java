@@ -1,4 +1,4 @@
-package kappzzang.jeongsan.dto.request;
+package kappzzang.jeongsan.global.client.dto.request;
 
 import java.util.List;
 import java.util.UUID;

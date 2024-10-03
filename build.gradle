@@ -45,6 +45,10 @@ dependencies {
 	// Retry
 	implementation 'org.springframework.retry:spring-retry'
 
+	// Aws
+	implementation platform('software.amazon.awssdk:bom:2.17.219')
+	implementation 'software.amazon.awssdk:s3'
+
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

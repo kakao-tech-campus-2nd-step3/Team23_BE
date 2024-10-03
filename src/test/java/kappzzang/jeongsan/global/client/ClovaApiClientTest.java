@@ -9,7 +9,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 import java.net.SocketTimeoutException;
 import kappzzang.jeongsan.dto.Image;
-import kappzzang.jeongsan.dto.response.GeneralOcrResponse;
+import kappzzang.jeongsan.global.client.dto.response.GeneralOcrResponse;
 import kappzzang.jeongsan.global.client.clova.ClovaApiClient;
 import kappzzang.jeongsan.global.client.clova.ClovaOcrProperties;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
