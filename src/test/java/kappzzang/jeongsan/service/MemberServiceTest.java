@@ -55,7 +55,7 @@ public class MemberServiceTest {
 
         // Then
         then(memberRepository).should().save(any(Member.class));
-        assertThat(loginResponse.token_type()).isEqualTo(BEARER);
+        assertThat(loginResponse.tokenType()).isEqualTo(BEARER);
         assertThat(loginResponse.token()).isEqualTo(TEST_TOKEN);
     }
 

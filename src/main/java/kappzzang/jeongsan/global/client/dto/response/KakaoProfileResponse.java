@@ -1,10 +1,13 @@
 package kappzzang.jeongsan.global.client.dto.response;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import kappzzang.jeongsan.domain.Member;
 
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record KakaoProfileResponse(
     Long id,
-    KakaoAccount kakao_account
+    KakaoAccount kakaoAccount
 ) {
 
     public record KakaoAccount(
@@ -12,9 +15,10 @@ public record KakaoProfileResponse(
         Profile profile
     ) {
 
+        @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
         public record Profile(
             String nickname,
-            String thumbnail_image_url
+            String thumbnailImageUrl
         ) {
 
         }
@@ -22,9 +26,9 @@ public record KakaoProfileResponse(
 
     public Member toMember() {
         return Member.builder()
-            .id(id())
-            .nickname(kakao_account().profile().nickname())
-            .profileImage(kakao_account().profile().thumbnail_image_url())
+            .id(id)
+            .nickname(kakaoAccount.profile.nickname)
+            .profileImage(kakaoAccount.profile.thumbnailImageUrl)
             .build();
     }
 }
