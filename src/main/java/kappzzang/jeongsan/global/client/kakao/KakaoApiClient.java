@@ -44,7 +44,7 @@ public class KakaoApiClient {
             .header(AUTHORIZATION, properties.authType() + kakaoToken)
             .retrieve()
             .onStatus(HttpStatusCode::isError, this::handleErrorResponse)
-                .body(KakaoProfileResponse.class);
+            .body(KakaoProfileResponse.class);
     }
 
     private void handleErrorResponse(HttpRequest request, ClientHttpResponse response)
