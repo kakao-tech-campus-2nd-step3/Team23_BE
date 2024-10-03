@@ -44,11 +44,11 @@ jobs:
         id: gradle-test
         run: |
           chmod +x ./gradlew
-          ./gradlew clean build
+          ./gradlew clean build --info --stacktrace
 
       # Show test result
       - name: Show test result
-        uses: EnricoMi/publish-unit-test-result-action@v2
+        uses: EnricoMi/publish-unit-test-result-action@v2.12.0
         if: always()
         with:
           files: '**/build/test-results/test/TEST-*.xml'
@@ -56,7 +56,7 @@ jobs:
 
       # Add check comments for failed code lines on test failure
       - name: Add comments for failed code lines
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v4
         if: failure()
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
