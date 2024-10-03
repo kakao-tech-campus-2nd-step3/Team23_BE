@@ -44,7 +44,7 @@ jobs:
         id: gradle-test
         run: |
           chmod +x ./gradlew
-          ./gradlew clean build --info --stacktrace
+          ./gradlew clean build
 
       # Show test result
       - name: Show test result
