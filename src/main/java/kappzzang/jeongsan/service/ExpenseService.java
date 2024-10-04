@@ -2,13 +2,23 @@ package kappzzang.jeongsan.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import kappzzang.jeongsan.domain.Category;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
+import kappzzang.jeongsan.domain.Member;
+import kappzzang.jeongsan.domain.Team;
+import kappzzang.jeongsan.dto.ItemSummary;
+import kappzzang.jeongsan.dto.request.SaveExpenseRequest;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
+import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.common.enumeration.Status;
+import kappzzang.jeongsan.global.exception.JeongsanException;
+import kappzzang.jeongsan.repository.CategoryRepository;
 import kappzzang.jeongsan.repository.ExpenseRepository;
 import kappzzang.jeongsan.repository.ItemRepository;
+import kappzzang.jeongsan.repository.MemberRepository;
 import kappzzang.jeongsan.repository.PersonalExpenseRepository;
+import kappzzang.jeongsan.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,9 +28,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ExpenseService {
 
+    private final ImageStorageService imageStorageService;
     private final ExpenseRepository expenseRepository;
     private final PersonalExpenseRepository personalExpenseRepository;
     private final ItemRepository itemRepository;
+    private final CategoryRepository categoryRepository;
+    private final MemberRepository memberRepository;
+    private final TeamRepository teamRepository;
 
     @Transactional(readOnly = true)
     public ExpenseResponse getResponses(Long memberId, Long teamId, Status status,
@@ -57,4 +71,45 @@ public class ExpenseService {
 
         return countOfPersonalExpenses.equals((long) itemIds.size());
     }
+
+    @Transactional
+    public Long saveExpense(SaveExpenseRequest request, Long teamId, Long memberId) {
+        Member member = findMemberById(memberId);
+        Team team = findTeamById(teamId);
+        Category category = findCategoryById(request.categoryId());
+        List<Item> items = convertToItems(request);
+        String imageUrl = imageStorageService.saveReceiptImage(request.image(), teamId);
+
+        Expense expense = Expense.builder()
+            .team(team)
+            .member(member)
+            .category(category)
+            .title(request.title())
+            .imageUrl(imageUrl)
+            .paymentTime(request.paymentTime())
+            .items(items)
+            .build();
+
+        return expenseRepository.save(expense).getId();
+    }
+
+    private List<Item> convertToItems(SaveExpenseRequest request) {
+        return request.items().stream().map(ItemSummary::toEntity).toList();
+    }
+
+    private Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+            .orElseThrow(() -> new JeongsanException(ErrorType.USER_NOT_FOUND));
+    }
+
+    private Team findTeamById(Long teamId) {
+        return teamRepository.findById(teamId)
+            .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_NOT_FOUND));
+    }
+
+    private Category findCategoryById(Long categoryId) {
+        return categoryRepository.findById(categoryId)
+            .orElseThrow(() -> new JeongsanException(ErrorType.CATEGORY_NOT_FOUND));
+    }
+
 }
