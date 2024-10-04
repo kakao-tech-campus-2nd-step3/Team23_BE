@@ -9,9 +9,9 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 import java.net.SocketTimeoutException;
 import java.util.List;
-import kappzzang.jeongsan.dto.response.ChatGptResponse;
-import kappzzang.jeongsan.dto.response.ChatGptResponse.Choice;
-import kappzzang.jeongsan.dto.response.ChatGptResponse.ResponseMessage;
+import kappzzang.jeongsan.global.client.dto.response.ChatGptResponse;
+import kappzzang.jeongsan.global.client.dto.response.ChatGptResponse.Choice;
+import kappzzang.jeongsan.global.client.dto.response.ChatGptResponse.ResponseMessage;
 import kappzzang.jeongsan.global.client.openai.GptPromptManager;
 import kappzzang.jeongsan.global.client.openai.OpenAiApiClient;
 import kappzzang.jeongsan.global.client.openai.OpenAiProperties;
