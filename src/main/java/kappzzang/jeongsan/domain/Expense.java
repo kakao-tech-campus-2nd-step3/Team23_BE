@@ -51,7 +51,6 @@ public class Expense extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    //@OneToMany(mappedBy = "expense", cascade = CascadeType.PERSIST, orphanRemoval = true) //의논 후 삭제 혹은 반영 예정
     @OneToMany(mappedBy = "expense", cascade = CascadeType.PERSIST)
     private List<Item> items = new ArrayList<>();
 
