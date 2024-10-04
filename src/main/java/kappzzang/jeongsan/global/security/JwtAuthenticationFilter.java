@@ -32,7 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(token)) {
             try {
                 Authentication jwtAuthenticationToken = new JwtAuthenticationToken(token);
-                Authentication authentication = authenticationManager.authenticate(jwtAuthenticationToken);
+                Authentication authentication = authenticationManager.authenticate(
+                    jwtAuthenticationToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (JeongsanException jeongsanException) {
                 log.error(jeongsanException.getMessage());

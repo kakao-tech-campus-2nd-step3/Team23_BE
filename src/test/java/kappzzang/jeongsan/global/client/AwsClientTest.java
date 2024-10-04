@@ -64,6 +64,17 @@ public class AwsClientTest {
 
     private UploadImageRequest uploadImageRequest;
 
+    private static Stream<Arguments> exceptionProvider() {
+        return Stream.of(
+            Arguments.of(NoSuchBucketException.class, ErrorType.EXTERNAL_API_GENERAL_ERROR),
+            Arguments.of(NoSuchKeyException.class, ErrorType.EXTERNAL_API_GENERAL_ERROR),
+            Arguments.of(SdkClientException.class, ErrorType.EXTERNAL_API_GENERAL_ERROR),
+            Arguments.of(SdkServiceException.class, ErrorType.EXTERNAL_API_GENERAL_ERROR),
+            Arguments.of(IllegalArgumentException.class, ErrorType.INVALID_INPUT),
+            Arguments.of(NullPointerException.class, ErrorType.INTERNAL_SERVER_ERROR)
+        );
+    }
+
     @BeforeEach
     void setUp() {
         when(mockProperties.bucket()).thenReturn(MOCK_BUCKET);
@@ -140,17 +151,6 @@ public class AwsClientTest {
         assertThat(actualException.getErrorType()).isEqualTo(expectedErrorType);
         verify(mockProperties).bucket();
         verify(mockS3Presigner).presignGetObject(any(GetObjectPresignRequest.class));
-    }
-
-    private static Stream<Arguments> exceptionProvider() {
-        return Stream.of(
-            Arguments.of(NoSuchBucketException.class, ErrorType.EXTERNAL_API_GENERAL_ERROR),
-            Arguments.of(NoSuchKeyException.class, ErrorType.EXTERNAL_API_GENERAL_ERROR),
-            Arguments.of(SdkClientException.class, ErrorType.EXTERNAL_API_GENERAL_ERROR),
-            Arguments.of(SdkServiceException.class, ErrorType.EXTERNAL_API_GENERAL_ERROR),
-            Arguments.of(IllegalArgumentException.class, ErrorType.INVALID_INPUT),
-            Arguments.of(NullPointerException.class, ErrorType.INTERNAL_SERVER_ERROR)
-        );
     }
 
 }

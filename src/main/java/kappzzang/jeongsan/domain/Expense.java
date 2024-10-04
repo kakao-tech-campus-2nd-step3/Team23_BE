@@ -52,7 +52,7 @@ public class Expense extends BaseEntity {
     private Status status;
 
     @OneToMany(mappedBy = "expense", cascade = CascadeType.PERSIST)
-    private List<Item> items = new ArrayList<>();
+    private final List<Item> items = new ArrayList<>();
 
     @Builder
     public Expense(Team team, Member member, Category category, String title, String imageUrl,
