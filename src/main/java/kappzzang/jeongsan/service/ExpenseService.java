@@ -77,7 +77,7 @@ public class ExpenseService {
         Member member = findMemberById(memberId);
         Team team = findTeamById(teamId);
         Category category = findCategoryById(request.categoryId());
-        List<Item> items = convertToItems(request);
+        List<Item> items = convertToItems(request.items());
         String imageUrl = imageStorageService.saveReceiptImage(request.image(), teamId);
 
         Expense expense = Expense.builder()
@@ -93,8 +93,8 @@ public class ExpenseService {
         return expenseRepository.save(expense).getId();
     }
 
-    private List<Item> convertToItems(SaveExpenseRequest request) {
-        return request.items().stream().map(ItemSummary::toEntity).toList();
+    private List<Item> convertToItems(List<ItemSummary> items) {
+        return items.stream().map(ItemSummary::toEntity).toList();
     }
 
     private Member findMemberById(Long memberId) {
