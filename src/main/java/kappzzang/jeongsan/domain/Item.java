@@ -49,5 +49,4 @@ public class Item {
     public void calculateTotalPrice() {
         this.totalPrice = quantity * unitPrice;
     }
-
 }

@@ -21,7 +21,6 @@ public enum SuccessType {
     TEAM_CLOSED(HttpStatus.NO_CONTENT, "모임이 종료되었습니다."),
     JOIN_SUCCESS(HttpStatus.NO_CONTENT, "모임 멤버로 참여되었습니다.");
 
-
     private final HttpStatusCode httpStatusCode;
     private final String message;
 

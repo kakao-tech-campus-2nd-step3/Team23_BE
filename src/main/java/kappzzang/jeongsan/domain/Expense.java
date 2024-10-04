@@ -80,5 +80,4 @@ public class Expense extends BaseEntity {
     public void calculateTotalPrice() {
         this.totalPrice = items.stream().mapToInt(Item::getTotalPrice).sum();
     }
-
 }

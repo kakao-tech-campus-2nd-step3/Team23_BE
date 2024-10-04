@@ -34,7 +34,6 @@ public enum ErrorType {
     EXTERNAL_API_GENERAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E500003",
         "외부 API 호출 중 오류가 발생하였습니다.");
 
-
     private final HttpStatusCode httpStatusCode;
     private final String errorCode;
     private final String message;

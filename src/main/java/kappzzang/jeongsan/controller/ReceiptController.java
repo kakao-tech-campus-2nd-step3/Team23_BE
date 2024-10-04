@@ -53,5 +53,4 @@ public class ReceiptController implements ReceiptControllerInterface {
         return JeongsanApiResponse.success(SuccessType.EXPENSE_CREATED,
             new SaveExpenseResponse(savedExpenseId));
     }
-
 }
