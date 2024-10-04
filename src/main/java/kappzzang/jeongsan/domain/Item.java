@@ -32,7 +32,7 @@ public class Item {
     private Integer totalPrice;
 
     @OneToMany(mappedBy = "item")
-    private List<PersonalExpense> personalExpenses = new ArrayList<>();
+    private final List<PersonalExpense> personalExpenses = new ArrayList<>();
 
     @Builder
     public Item(String name, Integer quantity, Integer unitPrice) {

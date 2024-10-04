@@ -27,13 +27,16 @@ public class SecurityConfig {
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
             .csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement((config) -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .sessionManagement(
+                (config) -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests((registry) -> registry
                 // 개발할 땐 모든 경로 접근 허용
                 .anyRequest()
                 .permitAll()
             )
-            .addFilterAfter(new JwtAuthenticationFilter(jwtUtil, authenticationManagerBuilder.getOrBuild()), LogoutFilter.class)
+            .addFilterAfter(
+                new JwtAuthenticationFilter(jwtUtil, authenticationManagerBuilder.getOrBuild()),
+                LogoutFilter.class)
             .build();
     }
 }

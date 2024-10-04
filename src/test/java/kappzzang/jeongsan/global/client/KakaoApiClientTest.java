@@ -78,7 +78,8 @@ public class KakaoApiClientTest {
         for (int i = 0; i < MAX_ATTEMPTS; i++) {
             mockRestServiceServer.expect(requestTo(TEST_URL))
                 .andRespond(request -> {
-                    throw new ResourceAccessException("Read timed out", new SocketTimeoutException());
+                    throw new ResourceAccessException("Read timed out",
+                        new SocketTimeoutException());
                 });
         }
 
