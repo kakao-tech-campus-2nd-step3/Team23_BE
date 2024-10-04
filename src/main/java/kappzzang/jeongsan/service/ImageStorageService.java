@@ -35,7 +35,7 @@ public class ImageStorageService {
 
     private String generateFilePath(Image image, Long teamId) {
         return String.format(DEFAULT_RECEIPT_PATH_FORMAT, teamId, UUID.randomUUID(), image.name(),
-            image.format());
+            image.format().toLowerCase());
     }
 
     private byte[] decodeImageData(String data) {

@@ -3,6 +3,7 @@ package kappzzang.jeongsan.dto.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -16,7 +17,7 @@ public record SaveExpenseRequest(
     @NotBlank @Size(max = 30) String title,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime paymentTime,
     @NotNull Long categoryId,
-    @NotNull Image image,
-    @NotNull List<ItemSummary> items) {
+    @NotNull @Valid Image image,
+    @NotNull @Valid List<ItemSummary> items) {
 
 }
