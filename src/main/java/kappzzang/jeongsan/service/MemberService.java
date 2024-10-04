@@ -34,7 +34,8 @@ public class MemberService {
 
     @Transactional
     public LoginResponse login(LoginRequest loginRequest) {
-        KakaoProfileResponse kakaoProfileResponse = kakaoApiClient.getKakaoProfile(loginRequest.accessToken());
+        KakaoProfileResponse kakaoProfileResponse = kakaoApiClient.getKakaoProfile(
+            loginRequest.accessToken());
 
         Member member = memberRepository.findById(kakaoProfileResponse.id())
             .orElseGet(kakaoProfileResponse::toMember);

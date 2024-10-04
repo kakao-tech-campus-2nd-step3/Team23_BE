@@ -12,6 +12,14 @@ public record ExpenseResponse(
     Integer totalPrice
 ) {
 
+    public static ExpenseResponse of(List<Expense> expenseList, Boolean isChecked,
+        Integer totalPrice) {
+        List<ExpenseItem> expenseItems = expenseList.stream()
+            .map(ExpenseItem::from)
+            .toList();
+        return new ExpenseResponse(expenseItems, isChecked, totalPrice);
+    }
+
     public record ExpenseItem(
         Long expenseId,
         String title,
@@ -31,13 +39,5 @@ public record ExpenseResponse(
                 CategoryDto.from(expense.getCategory())
             );
         }
-    }
-
-    public static ExpenseResponse of(List<Expense> expenseList, Boolean isChecked,
-        Integer totalPrice) {
-        List<ExpenseItem> expenseItems = expenseList.stream()
-            .map(ExpenseItem::from)
-            .toList();
-        return new ExpenseResponse(expenseItems, isChecked, totalPrice);
     }
 }

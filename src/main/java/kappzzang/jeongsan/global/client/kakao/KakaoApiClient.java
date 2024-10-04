@@ -28,7 +28,8 @@ public class KakaoApiClient {
     private final RestClient kakaoClient;
     private final KakaoProfileProperties properties;
 
-    public KakaoApiClient(KakaoProfileProperties properties, RestClient.Builder kakaoClientBuilder) {
+    public KakaoApiClient(KakaoProfileProperties properties,
+        RestClient.Builder kakaoClientBuilder) {
         this.properties = properties;
         this.kakaoClient = kakaoClientBuilder.build();
     }
@@ -58,7 +59,8 @@ public class KakaoApiClient {
     }
 
     @Recover
-    public KakaoProfileResponse recoverFromRestClientException(RestClientException e, String kakaoToken) {
+    public KakaoProfileResponse recoverFromRestClientException(RestClientException e,
+        String kakaoToken) {
         log.error("Failed to connect Kakao Api after retries");
         if (e.getCause() instanceof SocketTimeoutException
             || e.getCause() instanceof ConnectException) {

@@ -26,8 +26,10 @@ public class MemberController implements MemberControllerInterface {
 
     @Override
     @PostMapping("/token")
-    public ResponseEntity<JeongsanApiResponse<LoginResponse>> login(@RequestBody LoginRequest loginRequest) {
-        return JeongsanApiResponse.success(SuccessType.LOGGED_IN, memberService.login(loginRequest));
+    public ResponseEntity<JeongsanApiResponse<LoginResponse>> login(
+        @RequestBody LoginRequest loginRequest) {
+        return JeongsanApiResponse.success(SuccessType.LOGGED_IN,
+            memberService.login(loginRequest));
     }
 
     @Override

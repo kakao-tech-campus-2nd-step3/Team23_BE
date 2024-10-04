@@ -10,6 +10,14 @@ public record KakaoProfileResponse(
     KakaoAccount kakaoAccount
 ) {
 
+    public Member toMember() {
+        return Member.builder()
+            .id(id)
+            .nickname(kakaoAccount.profile.nickname)
+            .profileImage(kakaoAccount.profile.thumbnailImageUrl)
+            .build();
+    }
+
     public record KakaoAccount(
         String email,
         Profile profile
@@ -22,13 +30,5 @@ public record KakaoProfileResponse(
         ) {
 
         }
-    }
-
-    public Member toMember() {
-        return Member.builder()
-            .id(id)
-            .nickname(kakaoAccount.profile.nickname)
-            .profileImage(kakaoAccount.profile.thumbnailImageUrl)
-            .build();
     }
 }
