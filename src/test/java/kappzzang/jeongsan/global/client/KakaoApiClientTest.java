@@ -7,11 +7,14 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.SocketTimeoutException;
-import kappzzang.jeongsan.dto.Image;
-import kappzzang.jeongsan.global.client.clova.ClovaApiClient;
-import kappzzang.jeongsan.global.client.clova.ClovaOcrProperties;
-import kappzzang.jeongsan.global.client.dto.response.GeneralOcrResponse;
+import kappzzang.jeongsan.global.client.dto.response.KakaoProfileResponse;
+import kappzzang.jeongsan.global.client.dto.response.KakaoProfileResponse.KakaoAccount;
+import kappzzang.jeongsan.global.client.dto.response.KakaoProfileResponse.KakaoAccount.Profile;
+import kappzzang.jeongsan.global.client.kakao.KakaoApiClient;
+import kappzzang.jeongsan.global.client.kakao.KakaoProfileProperties;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,31 +29,36 @@ import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.ResourceAccessException;
 
-@RestClientTest(ClovaApiClient.class)
+@RestClientTest(KakaoApiClient.class)
 @MockBean(JpaMetamodelMappingContext.class)
 @EnableRetry
-public class ClovaApiClientTest {
+public class KakaoApiClientTest {
 
     private static final String TEST_URL = "TEST_URL";
+    private static final String TEST_AUTH_TYPE = "TEST_AUTH_TYPE";
+    private static final String TEST_KAKAO_TOKEN = "TEST_KAKAO_TOKEN";
     private static final int MAX_ATTEMPTS = 2;
-    private final Image testImage = new Image("", "", "", "");
+
+    @MockBean
+    private KakaoProfileProperties kakaoProfileProperties;
 
     @Autowired
     private MockRestServiceServer mockRestServiceServer;
 
     @Autowired
-    private ClovaApiClient clovaApiClient;
+    private KakaoApiClient kakaoApiClient;
 
-    @MockBean
-    private ClovaOcrProperties clovaOcrProperties;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @BeforeEach
-    void setUp() {
-        when(clovaOcrProperties.general()).thenReturn(new ClovaOcrProperties.GeneralOcr(TEST_URL));
+    void setup() {
+        when(kakaoProfileProperties.url()).thenReturn(TEST_URL);
+        when(kakaoProfileProperties.authType()).thenReturn(TEST_AUTH_TYPE);
     }
 
     @Test
-    void ocrApi_5xxResponse_failsAfterRetries() {
+    void kakaoApi_5xxResponse_failsAfterRetries() {
         // Given
         for (int i = 0; i < MAX_ATTEMPTS; i++) {
             mockRestServiceServer.expect(requestTo(TEST_URL))
@@ -58,16 +66,14 @@ public class ClovaApiClientTest {
         }
 
         // When & Then
-        JeongsanException exception = assertThrows(JeongsanException.class,
-            () -> clovaApiClient.requestClovaGeneralOcr(testImage));
-
-        assertThat(exception.getErrorType()).isEqualTo(ErrorType.EXTERNAL_API_GENERAL_ERROR);
-
+        JeongsanException actual = assertThrows(JeongsanException.class,
+            () -> kakaoApiClient.getKakaoProfile(TEST_KAKAO_TOKEN));
+        assertThat(actual.getErrorType()).isEqualTo(ErrorType.EXTERNAL_API_GENERAL_ERROR);
         mockRestServiceServer.verify();
     }
 
     @Test
-    void ocrApi_timeout_failsAfterRetries() {
+    void kakaoApi_timeout_failsAfterRetries() {
         // Given
         for (int i = 0; i < MAX_ATTEMPTS; i++) {
             mockRestServiceServer.expect(requestTo(TEST_URL))
@@ -78,59 +84,39 @@ public class ClovaApiClientTest {
         }
 
         // When & Then
-        JeongsanException exception = assertThrows(JeongsanException.class,
-            () -> clovaApiClient.requestClovaGeneralOcr(testImage));
-
-        assertThat(exception.getErrorType()).isEqualTo(ErrorType.EXTERNAL_API_REQUEST_TIMEOUT);
-
+        JeongsanException actual = assertThrows(JeongsanException.class,
+            () -> kakaoApiClient.getKakaoProfile(TEST_KAKAO_TOKEN));
+        assertThat(actual.getErrorType()).isEqualTo(ErrorType.EXTERNAL_API_REQUEST_TIMEOUT);
         mockRestServiceServer.verify();
     }
 
     @Test
-    void ocrApi_successfulResponse_returnsGeneralOcrResponse() {
+    void kakaoApi_successfulResponse_returnKakaoProfileResponse() throws JsonProcessingException {
         // Given
+        Long id = 1L;
+        Profile profile = new Profile("홍길동", "http://yyy.kakao.com/.../img_110x110.jpg");
+        KakaoAccount kakaoAccount = new KakaoAccount("sample@sample.com", profile);
+        KakaoProfileResponse expected = new KakaoProfileResponse(id, kakaoAccount);
         String mockResponse = """
             {
-                "version": "V2",
-                "requestId": "test-request-id",
-                "images": [
-                    {
-                        "inferResult": "SUCCESS",
-                        "message": "SUCCESS",
-                        "fields": [
-                            {
-                                "inferText": "제주도 한라봉 김치",
-                                "inferConfidence": 0.9999,
-                                "lineBreak": false
-                            }
-                        ]
+                "id":1,
+                "kakao_account": {
+                    "email": "sample@sample.com",
+                    "profile": {
+                        "nickname": "홍길동",
+                        "thumbnail_image_url": "http://yyy.kakao.com/.../img_110x110.jpg"
                     }
-                ]
+                }
             }
             """;
-
         mockRestServiceServer.expect(requestTo(TEST_URL))
             .andRespond(withSuccess(mockResponse, MediaType.APPLICATION_JSON));
 
         // When
-        GeneralOcrResponse response = clovaApiClient.requestClovaGeneralOcr(testImage);
+        KakaoProfileResponse actual = kakaoApiClient.getKakaoProfile(TEST_KAKAO_TOKEN);
 
         // Then
-        assertThat(response).isNotNull();
-        assertThat(response.version()).isEqualTo("V2");
-        assertThat(response.requestId()).isEqualTo("test-request-id");
-        assertThat(response.images()).hasSize(1);
-
-        GeneralOcrResponse.ImageResult imageResult = response.images().get(0);
-        assertThat(imageResult.inferResult()).isEqualTo("SUCCESS");
-        assertThat(imageResult.message()).isEqualTo("SUCCESS");
-
-        GeneralOcrResponse.ImageResult.Field field = imageResult.fields().get(0);
-        assertThat(field.inferText()).isEqualTo("제주도 한라봉 김치");
-        assertThat(field.inferConfidence()).isEqualTo(0.9999f);
-        assertThat(field.lineBreak()).isFalse();
-
+        assertThat(actual).isEqualTo(expected);
         mockRestServiceServer.verify();
     }
-
 }

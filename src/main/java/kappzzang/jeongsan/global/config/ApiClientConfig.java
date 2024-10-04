@@ -46,6 +46,12 @@ public class ApiClientConfig {
                 openAiProperties.authType() + openAiProperties.key());
     }
 
+    @Bean
+    @Qualifier(value = "kakaoClientBuilder")
+    public RestClient.Builder kakaoClientBuilder() {
+        return getDefaultRestClientBuilder();
+    }
+
     private RestClient.Builder getDefaultRestClientBuilder() {
         ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
             .withConnectTimeout(Duration.ofMillis(apiTimeout))
