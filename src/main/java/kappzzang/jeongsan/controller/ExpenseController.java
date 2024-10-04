@@ -1,5 +1,6 @@
 package kappzzang.jeongsan.controller;
 
+import kappzzang.jeongsan.controller.docs.ExpenseControllerInterface;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
@@ -18,10 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/expenses")
 @RequiredArgsConstructor
-public class ExpenseController {
+public class ExpenseController implements ExpenseControllerInterface {
 
     private final ExpenseService expenseService;
 
+    @Override
     @GetMapping("{teamId}")
     public ResponseEntity<JeongsanApiResponse<ExpenseResponse>> getAllExpenses(
         @PathVariable Long teamId,
