@@ -11,9 +11,9 @@ public enum ErrorType {
     TEAM_ALREADY_CLOSED(HttpStatus.BAD_REQUEST, "E400001", "이미 종료된 모임입니다."),
     EXPENSE_MISSING_PARAM(HttpStatus.BAD_REQUEST, "E400002", "누락된 쿼리 파라미터가 존재합니다."),
     EXPENSE_INVALID_STATE(HttpStatus.BAD_REQUEST, "E400003", "잘못된 state 값 요청입니다."),
-    NOT_INVITED_MEMBER(HttpStatus.BAD_REQUEST, "E400002", "해당 모임에 초대되지 않은 멤버입니다."),
-    ALREADY_JOINED_MEMBER(HttpStatus.BAD_REQUEST, "E400003", "이미 모임에 참여한 멤버입니다."),
-    INVALID_INPUT(HttpStatus.BAD_REQUEST, "E400", "요청 입력값이 유효하지 않습니다."),
+    NOT_INVITED_MEMBER(HttpStatus.BAD_REQUEST, "E400004", "해당 모임에 초대되지 않은 멤버입니다."),
+    ALREADY_JOINED_MEMBER(HttpStatus.BAD_REQUEST, "E400005", "이미 모임에 참여한 멤버입니다."),
+    INVALID_INPUT(HttpStatus.BAD_REQUEST, "E400006", "요청 입력값이 유효하지 않습니다."),
 
     // 401 UNAUTHORIZED
     JWT_SIGNATURE_INVALID(HttpStatus.UNAUTHORIZED, "E401001", "토큰 서명이 유효하지 않습니다."),
@@ -23,7 +23,7 @@ public enum ErrorType {
     // 404 NOT_FOUND
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "E404001", "사용자를 찾을 수 없습니다."),
     TEAM_NOT_FOUND(HttpStatus.NOT_FOUND, "E404002", "모임을 찾을 수 없습니다."),
-    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "E404", "카테고리을 찾을 수 없습니다."),
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "E404003", "카테고리을 찾을 수 없습니다."),
 
     //408 REQUEST_TIMEOUT
     EXTERNAL_API_REQUEST_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "E408001", "외부 API 요청 시간이 초과되었습니다."),
