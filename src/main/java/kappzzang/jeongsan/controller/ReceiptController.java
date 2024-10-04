@@ -1,6 +1,7 @@
 package kappzzang.jeongsan.controller;
 
 import jakarta.validation.Valid;
+import kappzzang.jeongsan.controller.docs.ReceiptControllerInterface;
 import kappzzang.jeongsan.dto.Image;
 import kappzzang.jeongsan.dto.request.SaveExpenseRequest;
 import kappzzang.jeongsan.dto.response.ParsedReceiptResponse;
@@ -21,11 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/receipts")
 @RequiredArgsConstructor
-public class ReceiptController {
+public class ReceiptController implements ReceiptControllerInterface {
 
     private final ReceiptService receiptService;
     private final ExpenseService expenseService;
 
+    @Override
     @PostMapping("/analyze")
     public ResponseEntity<JeongsanApiResponse<ParsedReceiptResponse>> analyzeReceipt(
         @RequestBody @Valid
@@ -35,12 +37,14 @@ public class ReceiptController {
             parsedReceiptResponse);
     }
 
+    @Override
     @PostMapping("/analyze/test")
     public ResponseEntity<JeongsanApiResponse<Void>> mockAnalyzeReceipt(@RequestBody @Valid
     Image image) {
         return JeongsanApiResponse.success(SuccessType.RECEIPT_ANALYSIS_SUCCESS);
     }
 
+    @Override
     @PostMapping("/{teamId}")
     public ResponseEntity<JeongsanApiResponse<SaveExpenseResponse>> addExpense(@RequestBody @Valid
     SaveExpenseRequest request, @PathVariable("teamId") Long teamId,
