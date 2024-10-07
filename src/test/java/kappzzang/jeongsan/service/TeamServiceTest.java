@@ -64,7 +64,7 @@ class TeamServiceTest {
         Long teamId = 1L;
         given(teamRepository.findById(teamId)).willReturn(Optional.of(new Team()));
         given(teamMemberRepository.findInvitationStatusByTeamId(teamId)).willReturn(
-            List.of(new InvitationStatusResponse(1L, "nickname", "profileImage", false)) // 초대 현황 데이터
+            List.of(new InvitationStatusResponse(1L, "nickname", "profileImage", false))
         );
 
         // when
