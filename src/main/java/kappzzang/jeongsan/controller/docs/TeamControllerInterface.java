@@ -10,11 +10,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import kappzzang.jeongsan.dto.request.CloseTeamRequest;
+import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
 import kappzzang.jeongsan.dto.response.TeamResponse;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "모임 관리", description = "모임 목록 생성, 조회, 종료 등을 실행하는 API")
+@Tag(name = "모임 관리", description = "모임 생성, 종료, 목록 조회, 멤버 초대 현황 등을 관리하는 API")
 public interface TeamControllerInterface {
 
     @Operation(summary = "모임 목록 조회 API", description = "모임 목록을 조회하는 API")
@@ -37,4 +38,14 @@ public interface TeamControllerInterface {
         @ApiResponse(responseCode = "404", description = "`teamId`에 해당하는 모임을 찾을 수 없음 (ErrorCode-E404002)")
     })
     ResponseEntity<JeongsanApiResponse<Void>> closeTeam(Long teamId, CloseTeamRequest request);
+
+    @Operation(summary = "모임 멤버 초대 현황 조회 API", description = "모임에 초대한 멤버들의 초대 수락/대기 상태를 조회하는 API")
+    @Parameter(name = "teamId", description = "멤버 초대 현황을 조회하려는 모임의 id")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "모임 목록 조회 성공",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvitationStatusResponse.class))),
+        @ApiResponse(responseCode = "404", description = "`teamId`에 해당하는 모임을 찾을 수 없음 (ErrorCode-E404002)"),
+        @ApiResponse(responseCode = "404", description = "모임의 멤버 초대 현황 목록을 찾을 수 없음 (ErrorCode-E404)")
+    })
+    ResponseEntity<JeongsanApiResponse<List<InvitationStatusResponse>>> getInvitationStatus(Long teamId);
 }

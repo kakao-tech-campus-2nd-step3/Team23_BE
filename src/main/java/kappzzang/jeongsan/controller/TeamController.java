@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import java.util.List;
 import kappzzang.jeongsan.controller.docs.TeamControllerInterface;
 import kappzzang.jeongsan.dto.request.CloseTeamRequest;
+import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
 import kappzzang.jeongsan.dto.response.TeamResponse;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
 import kappzzang.jeongsan.global.common.enumeration.SuccessType;
@@ -39,5 +40,13 @@ public class TeamController implements TeamControllerInterface {
         @PathVariable("teamId") Long teamId, @RequestBody CloseTeamRequest request) {
         teamService.closeTeam(teamId, request);
         return JeongsanApiResponse.success(SuccessType.TEAM_CLOSED);
+    }
+
+    @Override
+    @GetMapping("/{teamId}/members")
+    public ResponseEntity<JeongsanApiResponse<List<InvitationStatusResponse>>> getInvitationStatus(
+        @PathVariable("teamId") Long teamId) {
+        List<InvitationStatusResponse> data = teamService.getInvitationStatus(teamId);
+        return JeongsanApiResponse.success(SuccessType.INVITATION_STATUS_LOADED, data);
     }
 }

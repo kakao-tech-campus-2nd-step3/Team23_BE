@@ -24,6 +24,7 @@ public enum ErrorType {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "E404001", "사용자를 찾을 수 없습니다."),
     TEAM_NOT_FOUND(HttpStatus.NOT_FOUND, "E404002", "모임을 찾을 수 없습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "E404003", "카테고리을 찾을 수 없습니다."),
+    INVITATION_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "E404", "초대 현황을 찾을 수 없습니다."),
 
     //408 REQUEST_TIMEOUT
     EXTERNAL_API_REQUEST_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "E408001", "외부 API 요청 시간이 초과되었습니다."),
