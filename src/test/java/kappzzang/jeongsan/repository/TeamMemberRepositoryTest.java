@@ -7,6 +7,7 @@ import kappzzang.jeongsan.domain.TeamMember;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -51,7 +52,8 @@ class TeamMemberRepositoryTest {
     }
 
     @Test
-    void findInvitationStatusByTeamId_ShouldReturnCorrectList() {
+    @DisplayName("모임의 멤버 초대 현황 조회 - 레포지토리 테스트")
+    void findInvitationStatusByTeamId() {
         // when
         List<InvitationStatusResponse> result = teamMemberRepository.findInvitationStatusByTeamId(team.getId());
 
