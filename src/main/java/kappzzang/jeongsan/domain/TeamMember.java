@@ -9,14 +9,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import kappzzang.jeongsan.global.exception.JeongsanException;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class TeamMember extends BaseEntity {
 
     @Id
@@ -39,5 +37,12 @@ public class TeamMember extends BaseEntity {
             throw new JeongsanException(ALREADY_JOINED_MEMBER);
         }
         this.isInviteAccepted = true;
+    }
+
+    public TeamMember(Member member, Team team, Boolean isOwner, Boolean isInviteAccepted) {
+        this.member = member;
+        this.team = team;
+        this.isOwner = isOwner;
+        this.isInviteAccepted = isInviteAccepted;
     }
 }

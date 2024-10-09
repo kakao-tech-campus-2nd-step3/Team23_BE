@@ -43,8 +43,8 @@ class TeamMemberRepositoryTest {
         entityManager.persist(member1);
         entityManager.persist(member2);
 
-        TeamMember teamMember1 = new TeamMember(1L, member1, team,  true, true);
-        TeamMember teamMember2 = new TeamMember(2L, member2, team,  false, false);
+        TeamMember teamMember1 = new TeamMember(member1, team,  true, true);
+        TeamMember teamMember2 = new TeamMember(member2, team,  false, false);
         entityManager.merge(teamMember1);
         entityManager.merge(teamMember2);
 
