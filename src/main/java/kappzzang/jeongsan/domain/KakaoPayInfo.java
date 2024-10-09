@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class KakaoToken {
+public class KakaoPayInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,9 +22,7 @@ public class KakaoToken {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private String tokenType;
+    private String payUrl;
     private String accessToken;
-    private Integer expiresIn;
     private String refreshToken;
-    private Integer refreshTokenExpiresIn;
 }
