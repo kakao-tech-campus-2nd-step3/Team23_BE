@@ -7,8 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import java.util.ArrayList;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,8 +16,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
 public class Member extends BaseEntity {
 
     @Id
@@ -28,11 +26,22 @@ public class Member extends BaseEntity {
     private String email;
     private String nickname;
     private String profileImage;
-    private String token;
+    private String refreshToken;
 
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
     private KakaoPayInfo kakaoPayInfo;
 
     @OneToMany(mappedBy = "member")
-    private List<TeamMember> teamMemberList;
+    private final List<TeamMember> teamMemberList = new ArrayList<>();
+
+    @Builder(toBuilder = true)
+    public Member(String kakaoId, String email, String nickname, String profileImage,
+        String refreshToken, KakaoPayInfo kakaoPayInfo) {
+        this.kakaoId = kakaoId;
+        this.email = email;
+        this.nickname = nickname;
+        this.profileImage = profileImage;
+        this.refreshToken = refreshToken;
+        this.kakaoPayInfo = kakaoPayInfo;
+    }
 }
