@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import kappzzang.jeongsan.domain.Category;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
-import kappzzang.jeongsan.domain.KakaoToken;
+import kappzzang.jeongsan.domain.KakaoPayInfo;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.PersonalExpense;
 import kappzzang.jeongsan.domain.Team;
@@ -38,12 +38,11 @@ public class ExpenseRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        KakaoToken kakaoToken = testDataUtil.createAndPersistKakakoToken();
+        KakaoPayInfo kakaoPayInfo = testDataUtil.createAndPersistKakaoPayInfo();
 
-        //이후 더미 데이터가 추가 될 것을 고려 + Member 엔티티의 Id 생성 방식 수정 반영 후 리펙토링 예정
-        Member memberA = testDataUtil.createAndPersistMember(100L, "TEST_USER_A", kakaoToken);
-        Member memberB = testDataUtil.createAndPersistMember(200L, "TEST_USER_B", kakaoToken);
-        Member memberC = testDataUtil.createAndPersistMember(300L, "TEST_USER_C", kakaoToken);
+        Member memberA = testDataUtil.createAndPersistMember("TEST_USER_A", kakaoPayInfo);
+        Member memberB = testDataUtil.createAndPersistMember("TEST_USER_B", kakaoPayInfo);
+        Member memberC = testDataUtil.createAndPersistMember("TEST_USER_C", kakaoPayInfo);
         members = List.of(memberA, memberB, memberC);
 
         Team team = testDataUtil.createAndPersistTeam();
@@ -68,7 +67,6 @@ public class ExpenseRepositoryTest {
         Category category = testDataUtil.createAndPersistCategory();
 
         expense = testDataUtil.createAndPersistExpense(team, memberA, category, items);
-        testDataUtil.commit();
     }
 
     @MethodSource("PersonalExpenseCaseProvider")

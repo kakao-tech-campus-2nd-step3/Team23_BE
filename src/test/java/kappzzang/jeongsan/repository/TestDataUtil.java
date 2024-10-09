@@ -6,7 +6,7 @@ import java.util.List;
 import kappzzang.jeongsan.domain.Category;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
-import kappzzang.jeongsan.domain.KakaoToken;
+import kappzzang.jeongsan.domain.KakaoPayInfo;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.PersonalExpense;
 import kappzzang.jeongsan.domain.Team;
@@ -17,23 +17,29 @@ import org.springframework.boot.test.context.TestComponent;
 @TestComponent
 public class TestDataUtil {
 
-    TestEntityManager entityManager;
+    private static final String DEFAULT_NAME = "DEFAULT_NAME";
+    private static final String DEFAULT_EMAIL = "DEFAULT_EMAIL";
+    private static final String DEFAULT_URL = "DEFAULT_URL";
+
+    private final TestEntityManager entityManager;
 
     @Autowired
     public TestDataUtil(TestEntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
+    //생성 방식 확정 이후 리펙토링 필요
     public Team createAndPersistTeam() {
         Team team = new Team();
         entityManager.persist(team);
         return team;
     }
 
-    public KakaoToken createAndPersistKakakoToken() {
-        KakaoToken kakaoToken = new KakaoToken();
-        entityManager.persist(kakaoToken);
-        return kakaoToken;
+    //생성 방식 확정 이후 리펙토링 필요
+    public KakaoPayInfo createAndPersistKakaoPayInfo() {
+        KakaoPayInfo kakaoPayInfo = new KakaoPayInfo();
+        entityManager.persist(kakaoPayInfo);
+        return kakaoPayInfo;
     }
 
     public Category createAndPersistCategory() {
@@ -42,13 +48,13 @@ public class TestDataUtil {
         return category;
     }
 
-    public Member createAndPersistMember(Long id, String nickname, KakaoToken kakaoToken) {
+    //Member 엔티티 생성자 변경시 에러 발생 가능
+    public Member createAndPersistMember(String nickname, KakaoPayInfo kakaoToken) {
         Member member = Member.builder()
-            .id(id)
-            .email("TEST_EMAIL")
-            .kakaoToken(kakaoToken)
+            .email(DEFAULT_EMAIL)
+            .kakaoPayInfo(kakaoToken)
             .nickname(nickname)
-            .profileImage("TEST_PROFILE_URL")
+            .profileImage(DEFAULT_URL)
             .teamMemberList(new ArrayList<>())
             .build();
         entityManager.persist(member);
@@ -60,10 +66,10 @@ public class TestDataUtil {
         Expense expense = Expense.builder()
             .team(team)
             .member(payer)
-            .title("TEST_TITLE")
+            .title(DEFAULT_NAME)
             .category(category)
             .paymentTime(LocalDateTime.now())
-            .imageUrl("TEST_IMAGE_URL")
+            .imageUrl(DEFAULT_URL)
             .items(items)
             .build();
         entityManager.persist(expense);
