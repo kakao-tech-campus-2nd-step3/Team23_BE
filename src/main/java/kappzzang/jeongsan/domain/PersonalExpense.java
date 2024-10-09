@@ -6,6 +6,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import kappzzang.jeongsan.global.common.enumeration.ErrorType;
+import kappzzang.jeongsan.global.exception.JeongsanException;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,4 +31,23 @@ public class PersonalExpense extends BaseEntity {
 
     private Integer quantity;
     private Integer totalPrice;
+
+    @Builder
+    public PersonalExpense(Member member, Integer quantity) {
+        this.member = member;
+        this.quantity = quantity;
+    }
+
+    public void assignItem(Item item) {
+        this.item = item;
+        calculateConsumedItemTotalPrice();
+    }
+
+    public void calculateConsumedItemTotalPrice() {
+        if (this.item == null) {
+            throw new JeongsanException(ErrorType.INTERNAL_SERVER_ERROR);
+        }
+        this.totalPrice = this.quantity * this.item.getUnitPrice();
+    }
+
 }

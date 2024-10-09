@@ -7,9 +7,11 @@ import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.Team;
+import kappzzang.jeongsan.dto.ItemDetail;
 import kappzzang.jeongsan.dto.ItemSummary;
 import kappzzang.jeongsan.dto.request.SaveExpenseRequest;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
+import kappzzang.jeongsan.dto.response.PersonalExpenseDetailResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.common.enumeration.Status;
 import kappzzang.jeongsan.global.exception.JeongsanException;
@@ -92,6 +94,22 @@ public class ExpenseService {
 
         return expenseRepository.save(expense).getId();
     }
+
+    @Transactional(readOnly = true)
+    public PersonalExpenseDetailResponse getPersonalExpenseDetailResponse(Long expenseId,
+        Long memberId) {
+        Expense expense = expenseRepository.findById(expenseId)
+            .orElseThrow(() -> new JeongsanException(ErrorType.EXPENSE_NOT_FOUND));
+        List<ItemDetail> personalExpenses = expenseRepository.findItemDetailsByExpenseIdAndMemberId(
+            expenseId, memberId);
+        if (personalExpenses.isEmpty()) {
+            throw new JeongsanException(ErrorType.PERSONAL_EXPENSE_NOT_FOUND);
+        }
+        String imageUrl = imageStorageService.getImageUrl(expense.getImageUrl());
+        return new PersonalExpenseDetailResponse(
+            expense.getTitle(), imageUrl, personalExpenses);
+    }
+
 
     private List<Item> convertToItems(List<ItemSummary> items) {
         return items.stream().map(ItemSummary::toEntity).toList();
