@@ -28,7 +28,7 @@ public class Member extends BaseEntity {
     private String email;
     private String nickname;
     private String profileImage;
-    private String refreshToken;
+    private String token;
 
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
     private KakaoPayInfo kakaoPayInfo;
