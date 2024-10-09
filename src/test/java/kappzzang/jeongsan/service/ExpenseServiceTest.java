@@ -91,9 +91,10 @@ public class ExpenseServiceTest {
 
         //when //then
         assertThatThrownBy(
-            () -> expenseService.getPersonalExpenseDetailResponse(TEST_EXPENSE_ID,
-                TEST_MEMBER_ID)).isInstanceOf(
-            JeongsanException.class).hasMessage(ErrorType.EXPENSE_NOT_FOUND.getMessage());
+            () -> expenseService.getPersonalExpenseDetailResponse(TEST_EXPENSE_ID, TEST_MEMBER_ID)
+        )
+            .isInstanceOf(JeongsanException.class)
+            .hasMessage(ErrorType.EXPENSE_NOT_FOUND.getMessage());
         verify(mockExpenseRepository).findById(TEST_EXPENSE_ID);
     }
 
