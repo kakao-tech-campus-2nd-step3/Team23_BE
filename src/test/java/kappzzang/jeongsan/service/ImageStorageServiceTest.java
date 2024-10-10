@@ -3,14 +3,15 @@ package kappzzang.jeongsan.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 import kappzzang.jeongsan.dto.Image;
 import kappzzang.jeongsan.global.client.aws.AwsClient;
 import kappzzang.jeongsan.global.client.dto.request.UploadImageRequest;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,21 +39,23 @@ public class ImageStorageServiceTest {
     private ImageStorageService imageStorageService;
 
     @Test
+    @DisplayName("이미지 저장 성공 테스트")
     void saveImage_validData_returnSavedFileUrl() {
         //given
         Image imageForSuccess = new Image(TEST_IMAGE_FORMAT, null, TEST_IMAGE_DATA,
             TEST_IMAGE_NAME);
-        when(awsClient.uploadImage(any(UploadImageRequest.class))).thenReturn(TEST_FILE_PATH);
+        given(awsClient.uploadImage(any(UploadImageRequest.class))).willReturn(TEST_FILE_PATH);
 
         //when
         String result = imageStorageService.saveReceiptImage(imageForSuccess, TEST_TEAM_ID);
 
         //then
         assertThat(result).isEqualTo(TEST_FILE_PATH);
-        verify(awsClient).uploadImage(any(UploadImageRequest.class));
+        then(awsClient).should().uploadImage(any(UploadImageRequest.class));
     }
 
     @ParameterizedTest
+    @DisplayName("이미지 저장 성공 실패 테스트(잘못된 입력)")
     @ValueSource(strings = {TEST_IMAGE_DATA_INVALID, TEST_IMAGE_DATA_BLANK})
     void saveImage_invalidDataList_throwException(String data) {
         //given
