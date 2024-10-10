@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.request.CloseTeamRequest;
+import kappzzang.jeongsan.dto.request.CreateTeamRequest;
+import kappzzang.jeongsan.dto.response.CreateTeamResponse;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
 import kappzzang.jeongsan.dto.response.TeamResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
@@ -27,6 +29,17 @@ public class TeamService {
             .stream()
             .map(TeamResponse::from)
             .toList();
+    }
+
+    @Transactional
+    public CreateTeamResponse createTeam(Long memberId, CreateTeamRequest request) {
+        if(teamRepository.existsByNameAndMemberId(request.name(), memberId)) {
+            throw new JeongsanException(ErrorType.TEAM_NAME_DUPLICATED);
+        }
+
+        Team team = Team.createTeam(request.name(), request.subject());
+
+        return new CreateTeamResponse(teamRepository.save(team).getId());
     }
 
     @Transactional

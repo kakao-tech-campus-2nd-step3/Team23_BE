@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import kappzzang.jeongsan.dto.request.CloseTeamRequest;
+import kappzzang.jeongsan.dto.request.CreateTeamRequest;
+import kappzzang.jeongsan.dto.response.CreateTeamResponse;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
 import kappzzang.jeongsan.dto.response.TeamResponse;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
@@ -25,6 +27,8 @@ public interface TeamControllerInterface {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeamResponse.class))),
     })
     ResponseEntity<JeongsanApiResponse<List<TeamResponse>>> getTeams(Boolean isClosed);
+
+    ResponseEntity<JeongsanApiResponse<CreateTeamResponse>> createTeam(Long memberId, CreateTeamRequest request);
 
     @Operation(summary = "모임 종료 API", description = "선택한 모임의 상태를 \"종료\"로 변경하는 API")
     @Parameters({
