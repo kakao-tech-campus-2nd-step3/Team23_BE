@@ -49,4 +49,11 @@ public class TeamMember extends BaseEntity {
         }
         this.isInviteAccepted = true;
     }
+
+    public TeamMember(Member member, Team team, Boolean isOwner, Boolean isInviteAccepted) {
+        this.member = member;
+        this.team = team;
+        this.isOwner = isOwner;
+        this.isInviteAccepted = isInviteAccepted;
+    }
 }
