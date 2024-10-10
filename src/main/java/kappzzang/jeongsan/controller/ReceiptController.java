@@ -5,6 +5,7 @@ import kappzzang.jeongsan.controller.docs.ReceiptControllerInterface;
 import kappzzang.jeongsan.dto.Image;
 import kappzzang.jeongsan.dto.request.SaveExpenseRequest;
 import kappzzang.jeongsan.dto.response.ParsedReceiptResponse;
+import kappzzang.jeongsan.dto.response.PersonalExpenseDetailResponse;
 import kappzzang.jeongsan.dto.response.SaveExpenseResponse;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
 import kappzzang.jeongsan.global.common.enumeration.SuccessType;
@@ -13,6 +14,7 @@ import kappzzang.jeongsan.service.ReceiptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,5 +54,15 @@ public class ReceiptController implements ReceiptControllerInterface {
         Long savedExpenseId = expenseService.saveExpense(request, teamId, memberId);
         return JeongsanApiResponse.success(SuccessType.EXPENSE_CREATED,
             new SaveExpenseResponse(savedExpenseId));
+    }
+
+    @Override
+    @GetMapping("/items/{expenseId}")
+    public ResponseEntity<JeongsanApiResponse<PersonalExpenseDetailResponse>> getPersonalExpenseDetails(
+        @AuthenticationPrincipal Long memberId,
+        @PathVariable("expenseId") Long expenseId) {
+        PersonalExpenseDetailResponse response = expenseService.getPersonalExpenseDetailResponse(
+            expenseId, memberId);
+        return JeongsanApiResponse.success(SuccessType.PERSONAL_EXPENSE_LOADED, response);
     }
 }

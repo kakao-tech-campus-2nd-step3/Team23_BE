@@ -15,7 +15,9 @@ import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.common.enumeration.Status;
+import kappzzang.jeongsan.global.exception.JeongsanException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -78,6 +80,9 @@ public class Expense extends BaseEntity {
     }
 
     public void calculateTotalPrice() {
+        if (this.items.isEmpty()) {
+            throw new JeongsanException(ErrorType.INTERNAL_SERVER_ERROR);
+        }
         this.totalPrice = items.stream().mapToInt(Item::getTotalPrice).sum();
     }
 }

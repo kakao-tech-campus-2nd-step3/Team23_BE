@@ -46,4 +46,8 @@ public class ImageStorageService {
         }
     }
 
+    public String getImageUrl(String path) {
+        return awsClient.getPresignedUrl(path);
+    }
+
 }
