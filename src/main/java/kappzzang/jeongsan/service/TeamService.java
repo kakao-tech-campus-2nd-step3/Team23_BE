@@ -37,6 +37,7 @@ public class TeamService {
             throw new JeongsanException(ErrorType.TEAM_NAME_DUPLICATED);
         }
 
+        // TODO: 모임 멤버 추가 도메인 메서드 구현에 따른 리팩토링 필요
         Team team = Team.createTeam(request.name(), request.subject());
 
         return new CreateTeamResponse(teamRepository.save(team).getId());

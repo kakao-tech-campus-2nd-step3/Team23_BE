@@ -38,8 +38,22 @@ public class Team extends BaseEntity {
         teamMemberList = new ArrayList<>();
     }
 
-    public static Team createTeam(String name, String subject) {
-        return new Team(name, subject);
+    public static Team createTeam(Member owner, String name, String subject, List<Member> members) {
+        Team team = new Team(name, subject);
+        team.addMember(owner, true, true);
+        team.addMember(members);
+        return team;
+    }
+
+    public void addMember(Member member, Boolean isOwner, Boolean isInviteAccepted) {
+        TeamMember teamMember = new TeamMember(member, this, isOwner, isInviteAccepted);
+        teamMemberList.add(teamMember);
+    }
+
+    public void addMember(List<Member> members) {
+        for (Member member : members) {
+            addMember(member, false, false);
+        }
     }
 
     public void closeTeam(Boolean isClosed) {
