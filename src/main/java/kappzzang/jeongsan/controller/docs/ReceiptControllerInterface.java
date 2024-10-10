@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kappzzang.jeongsan.dto.Image;
 import kappzzang.jeongsan.dto.request.SaveExpenseRequest;
 import kappzzang.jeongsan.dto.response.ParsedReceiptResponse;
+import kappzzang.jeongsan.dto.response.PersonalExpenseDetailResponse;
 import kappzzang.jeongsan.dto.response.SaveExpenseResponse;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
 import org.springframework.http.ResponseEntity;
@@ -45,4 +46,14 @@ public interface ReceiptControllerInterface {
     })
     ResponseEntity<JeongsanApiResponse<SaveExpenseResponse>> addExpense(
         SaveExpenseRequest request, Long teamId, Long memberId);
+
+    @Operation(summary = "지출 상세 내역 조회", description = "지출 내역 상세를 조회하는 API")
+    @Parameter(name = "expenseId", description = "조회할 지출 ID")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "지출 상세 내역 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonalExpenseDetailResponse.class))),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 지출 (ErrorCode-E404), 존재하지 않는 지출 상세 (ErrorCode-E404)", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 내부 오류 (ErrorCode-E500001), 외부 서버 호출 오류(ErrorCode-E500003)(영수증 이미지 로딩 실패)", content = @Content)
+    })
+    ResponseEntity<JeongsanApiResponse<PersonalExpenseDetailResponse>> getPersonalExpenseDetails(
+        Long memberId, Long expenseId);
 }
