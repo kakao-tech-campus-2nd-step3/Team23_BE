@@ -3,7 +3,7 @@ package kappzzang.jeongsan.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 import java.util.List;
 import java.util.Optional;
@@ -76,10 +76,10 @@ public class ExpenseServiceTest {
 
         //then
         assertThat(actual).isEqualTo(expected);
-        verify(mockExpenseRepository).findById(TEST_EXPENSE_ID);
-        verify(mockExpenseRepository).findItemDetailsByExpenseIdAndMemberId(TEST_EXPENSE_ID,
+        then(mockExpenseRepository).should().findById(TEST_EXPENSE_ID);
+        then(mockExpenseRepository).should().findItemDetailsByExpenseIdAndMemberId(TEST_EXPENSE_ID,
             TEST_MEMBER_ID);
-        verify(mockImageStorageService).getImageUrl(TEST_IMAGE_URL);
+        then(mockImageStorageService).should().getImageUrl(TEST_IMAGE_URL);
     }
 
     @Test
@@ -95,26 +95,7 @@ public class ExpenseServiceTest {
         )
             .isInstanceOf(JeongsanException.class)
             .hasMessage(ErrorType.EXPENSE_NOT_FOUND.getMessage());
-        verify(mockExpenseRepository).findById(TEST_EXPENSE_ID);
-    }
-
-    @Test
-    @DisplayName("개인 지출 목록 조회 실패(존재하지 않는 맴버 or 지출 품목이 존재하지 않는 경우)")
-    void testGetPersonalExpenseDetailResponseFailWithReturnEmptyList() {
-        //given
-        given(mockExpenseRepository.findById(TEST_EXPENSE_ID)).willReturn(
-            Optional.ofNullable(expense));
-        given(mockExpenseRepository.findItemDetailsByExpenseIdAndMemberId(TEST_EXPENSE_ID,
-            TEST_MEMBER_ID)).willReturn(List.of());
-
-        //when //then
-        assertThatThrownBy(
-            () -> expenseService.getPersonalExpenseDetailResponse(TEST_EXPENSE_ID,
-                TEST_MEMBER_ID)).isInstanceOf(
-            JeongsanException.class).hasMessage(ErrorType.PERSONAL_EXPENSE_NOT_FOUND.getMessage());
-        verify(mockExpenseRepository).findById(TEST_EXPENSE_ID);
-        verify(mockExpenseRepository).findItemDetailsByExpenseIdAndMemberId(TEST_EXPENSE_ID,
-            TEST_MEMBER_ID);
+        then(mockExpenseRepository).should().findById(TEST_EXPENSE_ID);
     }
 
 }

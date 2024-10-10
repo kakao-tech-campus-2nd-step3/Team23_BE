@@ -102,9 +102,6 @@ public class ExpenseService {
             .orElseThrow(() -> new JeongsanException(ErrorType.EXPENSE_NOT_FOUND));
         List<ItemDetail> personalExpenses = expenseRepository.findItemDetailsByExpenseIdAndMemberId(
             expenseId, memberId);
-        if (personalExpenses.isEmpty()) {
-            throw new JeongsanException(ErrorType.PERSONAL_EXPENSE_NOT_FOUND);
-        }
         String imageUrl = imageStorageService.getImageUrl(expense.getImageUrl());
         return new PersonalExpenseDetailResponse(
             expense.getTitle(), imageUrl, personalExpenses);
