@@ -37,15 +37,16 @@ public class MemberService {
         KakaoProfileResponse kakaoProfileResponse = kakaoApiClient.getKakaoProfile(
             loginRequest.accessToken());
 
-        Member member = memberRepository.findById(kakaoProfileResponse.id())
-            .orElseGet(kakaoProfileResponse::toMember);
-        String token = jwtUtil.createToken(kakaoProfileResponse.id());
+        Member member = memberRepository.findByKakaoId(kakaoProfileResponse.forPartner().uuid())
+            .orElseGet(() -> memberRepository.save(kakaoProfileResponse.toMember()));
+        String accessToken = jwtUtil.createAccessToken(member.getId());
+        String refreshToken = jwtUtil.createRefreshToken();
         member = member.toBuilder()
-            .token(token)
+            .refreshToken(refreshToken)
             .build();
         memberRepository.save(member);
 
-        return new LoginResponse(BEARER, token);
+        return new LoginResponse(BEARER, accessToken, refreshToken);
     }
 
     @Transactional
