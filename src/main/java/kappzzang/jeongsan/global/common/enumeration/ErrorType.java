@@ -31,6 +31,9 @@ public enum ErrorType {
     //408 REQUEST_TIMEOUT
     EXTERNAL_API_REQUEST_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "E408001", "외부 API 요청 시간이 초과되었습니다."),
 
+    //409 CONFLICT
+    TEAM_NAME_DUPLICATED(HttpStatus.CONFLICT, "E409", "중복된 모임 이름이 존재합니다."),
+
     // 500 INTERNAL_SERVER_ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E500001", "서버 내부 오류가 발생했습니다."),
     RECEIPT_EXTRACTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "E500002", "영수증 데이터 추출에 실패했습니다."),
