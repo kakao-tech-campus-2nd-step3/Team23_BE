@@ -45,7 +45,8 @@ class TeamMemberRepositoryTest {
     @DisplayName("모임의 멤버 초대 현황 조회 - 레포지토리 테스트")
     void findInvitationStatusByTeamId() {
         // when
-        List<InvitationStatusResponse> result = teamMemberRepository.findInvitationStatusByTeamId(team.getId());
+        List<InvitationStatusResponse> result = teamMemberRepository.findInvitationStatusByTeamId(
+            team.getId());
 
         // then
         assertThat(result).hasSize(2);

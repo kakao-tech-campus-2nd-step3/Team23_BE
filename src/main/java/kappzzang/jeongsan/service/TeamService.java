@@ -45,11 +45,11 @@ public class TeamService {
             .orElseThrow(() -> new JeongsanException(ErrorType.USER_NOT_FOUND));
 
         List<Member> members = Collections.emptyList();
-        if(!request.members().isEmpty()) {
+        if (!request.members().isEmpty()) {
             members = request.members().stream()
-            .map(id -> memberRepository.findById(id)
-                .orElseThrow(() -> new JeongsanException(ErrorType.USER_NOT_FOUND)))
-            .toList();
+                .map(id -> memberRepository.findById(id)
+                    .orElseThrow(() -> new JeongsanException(ErrorType.USER_NOT_FOUND)))
+                .toList();
         }
 
         Team team = Team.createTeam(owner, request.name(), request.subject(), members);

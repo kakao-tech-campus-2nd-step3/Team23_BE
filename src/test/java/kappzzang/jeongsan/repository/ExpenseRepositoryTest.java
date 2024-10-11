@@ -51,7 +51,8 @@ public class ExpenseRepositoryTest {
 
         PersonalExpense personalExpenseB = testDataUtil.createAndPersistPersonalExpense(memberB, 3);
         PersonalExpense personalExpenseC = testDataUtil.createAndPersistPersonalExpense(memberB, 9);
-        PersonalExpense personalExpenseD = testDataUtil.createAndPersistPersonalExpense(memberB, 10);
+        PersonalExpense personalExpenseD = testDataUtil.createAndPersistPersonalExpense(memberB,
+            10);
 
         Item itemA = testDataUtil.createAndPersistItem("TEST_ITEM_A", 10, 2000);
         Item itemB = testDataUtil.createAndPersistItem("TEST_ITEM_B", 5, 3000);
@@ -72,7 +73,7 @@ public class ExpenseRepositoryTest {
     @MethodSource("PersonalExpenseCaseProvider")
     @ParameterizedTest(name = "memberOrder: {0}")
     @DisplayName("맴버 별 지출 상세 조회 테스트(PersonalExpense 미등록 품목 포함)")
-    void testFindItemDetailsByExpenseIdAndMemberId(Integer memberOrder, List expectedQuantity) {
+    void testFindItemDetailsByExpenseIdAndMemberId(Integer memberOrder, List<?> expectedQuantity) {
         //given
         final String DEFAULT_TEST_FILED = "consumedQuantity";
         Long expenseId = expense.getId();

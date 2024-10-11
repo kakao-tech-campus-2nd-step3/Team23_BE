@@ -37,9 +37,10 @@ public interface TeamControllerInterface {
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "모임 생성 성공"),
         @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없음(ErrorCode-E404001)"),
-        @ApiResponse(responseCode = "409", description = "중복된 모임 이름이 존재함(ErrorCode-E409)")
+        @ApiResponse(responseCode = "409", description = "중복된 모임 이름이 존재함(ErrorCode-E409001)")
     })
-    ResponseEntity<JeongsanApiResponse<CreateTeamResponse>> createTeam(Long memberId, CreateTeamRequest request);
+    ResponseEntity<JeongsanApiResponse<CreateTeamResponse>> createTeam(Long memberId,
+        CreateTeamRequest request);
 
     @Operation(summary = "모임 종료 API", description = "선택한 모임의 상태를 \"종료\"로 변경하는 API")
     @Parameters({
@@ -60,7 +61,8 @@ public interface TeamControllerInterface {
         @ApiResponse(responseCode = "200", description = "모임의 멤버 초대 현황 조회 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvitationStatusResponse.class))),
         @ApiResponse(responseCode = "404", description = "`teamId`에 해당하는 모임을 찾을 수 없음 (ErrorCode-E404002)"),
-        @ApiResponse(responseCode = "404", description = "모임의 멤버 초대 현황 목록을 찾을 수 없음 (ErrorCode-E404)")
+        @ApiResponse(responseCode = "404", description = "모임의 멤버 초대 현황 목록을 찾을 수 없음 (ErrorCode-E404006)")
     })
-    ResponseEntity<JeongsanApiResponse<List<InvitationStatusResponse>>> getInvitationStatus(Long teamId);
+    ResponseEntity<JeongsanApiResponse<List<InvitationStatusResponse>>> getInvitationStatus(
+        Long teamId);
 }
