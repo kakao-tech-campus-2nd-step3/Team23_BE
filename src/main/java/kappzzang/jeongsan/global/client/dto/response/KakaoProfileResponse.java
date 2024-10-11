@@ -6,13 +6,14 @@ import kappzzang.jeongsan.domain.Member;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record KakaoProfileResponse(
-    Long id,
-    KakaoAccount kakaoAccount
+    KakaoAccount kakaoAccount,
+    ForPartner forPartner
 ) {
 
     public Member toMember() {
         return Member.builder()
-            .id(id)
+            .kakaoId(forPartner.uuid)
+            .email(kakaoAccount.email)
             .nickname(kakaoAccount.profile.nickname)
             .profileImage(kakaoAccount.profile.thumbnailImageUrl)
             .build();
@@ -30,5 +31,11 @@ public record KakaoProfileResponse(
         ) {
 
         }
+    }
+
+    public record ForPartner(
+        String uuid
+    ) {
+
     }
 }
