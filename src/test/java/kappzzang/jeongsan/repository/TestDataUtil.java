@@ -1,7 +1,6 @@
 package kappzzang.jeongsan.repository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import kappzzang.jeongsan.domain.Category;
 import kappzzang.jeongsan.domain.Expense;
@@ -10,6 +9,7 @@ import kappzzang.jeongsan.domain.KakaoPayInfo;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.PersonalExpense;
 import kappzzang.jeongsan.domain.Team;
+import kappzzang.jeongsan.domain.TeamMember;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.TestComponent;
@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.TestComponent;
 @TestComponent
 public class TestDataUtil {
 
+    private static final String DEFAULT_KAKAO_ID = "DEFAULT_KAKAO_ID";
     private static final String DEFAULT_NAME = "DEFAULT_NAME";
     private static final String DEFAULT_EMAIL = "DEFAULT_EMAIL";
     private static final String DEFAULT_URL = "DEFAULT_URL";
@@ -48,14 +49,13 @@ public class TestDataUtil {
         return category;
     }
 
-    //Member 엔티티 생성자 변경시 에러 발생 가능
     public Member createAndPersistMember(String nickname, KakaoPayInfo kakaoToken) {
         Member member = Member.builder()
+            .kakaoId(DEFAULT_KAKAO_ID)
             .email(DEFAULT_EMAIL)
-            .kakaoPayInfo(kakaoToken)
             .nickname(nickname)
             .profileImage(DEFAULT_URL)
-            .teamMemberList(new ArrayList<>())
+            .kakaoPayInfo(kakaoToken)
             .build();
         entityManager.persist(member);
         return member;
@@ -90,6 +90,12 @@ public class TestDataUtil {
         Item item = new Item(name, price, quantity);
         entityManager.persist(item);
         return item;
+    }
+
+    public TeamMember createAndPersistTeamMember(Member member, Team team, Boolean isOwner, Boolean isInviteAccepted) {
+        TeamMember teamMember = new TeamMember(member, team,  isOwner, isInviteAccepted);
+        entityManager.persist(teamMember);
+        return teamMember;
     }
 
     public void commit() {

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.SocketTimeoutException;
 import kappzzang.jeongsan.global.client.dto.response.KakaoProfileResponse;
+import kappzzang.jeongsan.global.client.dto.response.KakaoProfileResponse.ForPartner;
 import kappzzang.jeongsan.global.client.dto.response.KakaoProfileResponse.KakaoAccount;
 import kappzzang.jeongsan.global.client.dto.response.KakaoProfileResponse.KakaoAccount.Profile;
 import kappzzang.jeongsan.global.client.kakao.KakaoApiClient;
@@ -18,6 +19,7 @@ import kappzzang.jeongsan.global.client.kakao.KakaoProfileProperties;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
@@ -58,6 +60,7 @@ public class KakaoApiClientTest {
     }
 
     @Test
+    @DisplayName("카카오 API 요청 실패 - 카카오 서버 오류")
     void kakaoApi_5xxResponse_failsAfterRetries() {
         // Given
         for (int i = 0; i < MAX_ATTEMPTS; i++) {
@@ -73,6 +76,7 @@ public class KakaoApiClientTest {
     }
 
     @Test
+    @DisplayName("카카오 API 요청 실패 - 시간 초과")
     void kakaoApi_timeout_failsAfterRetries() {
         // Given
         for (int i = 0; i < MAX_ATTEMPTS; i++) {
@@ -91,21 +95,24 @@ public class KakaoApiClientTest {
     }
 
     @Test
+    @DisplayName("카카오 API 요청 성공")
     void kakaoApi_successfulResponse_returnKakaoProfileResponse() throws JsonProcessingException {
         // Given
-        Long id = 1L;
         Profile profile = new Profile("홍길동", "http://yyy.kakao.com/.../img_110x110.jpg");
         KakaoAccount kakaoAccount = new KakaoAccount("sample@sample.com", profile);
-        KakaoProfileResponse expected = new KakaoProfileResponse(id, kakaoAccount);
+        ForPartner forPartner = new ForPartner("550e8400-e29b-41d4-a716-446655440000");
+        KakaoProfileResponse expected = new KakaoProfileResponse(kakaoAccount, forPartner);
         String mockResponse = """
             {
-                "id":1,
                 "kakao_account": {
                     "email": "sample@sample.com",
                     "profile": {
                         "nickname": "홍길동",
                         "thumbnail_image_url": "http://yyy.kakao.com/.../img_110x110.jpg"
                     }
+                },
+                "for_partner": {
+                    "uuid": "550e8400-e29b-41d4-a716-446655440000"
                 }
             }
             """;
