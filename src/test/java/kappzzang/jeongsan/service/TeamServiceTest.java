@@ -2,20 +2,24 @@ package kappzzang.jeongsan.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.request.CreateTeamRequest;
 import kappzzang.jeongsan.dto.response.CreateTeamResponse;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
+import kappzzang.jeongsan.repository.MemberRepository;
 import kappzzang.jeongsan.repository.TeamMemberRepository;
 import kappzzang.jeongsan.repository.TeamRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -32,6 +36,8 @@ class TeamServiceTest {
     private TeamRepository teamRepository;
     @Mock
     private TeamMemberRepository teamMemberRepository;
+    @Mock
+    private MemberRepository memberRepository;
     @InjectMocks
     private TeamService teamService;
 
@@ -107,19 +113,37 @@ class TeamServiceTest {
     @DisplayName("모임 생성 성공")
     void createTeam_Success() {
         // given
-        Long memberId = 1L;
+        Long ownerId = 1L;
+        Member owner = new Member();
+        Long memberId1 = 2L;
+        Member member1 = new Member();
+        Long memberId2 = 3L;
+        Member member2 = new Member();
         String teamName = "Test Team";
-        CreateTeamRequest request = new CreateTeamRequest(teamName, "subject", new ArrayList<>());
-        Team team = new Team(teamName, "subject");
-        given(teamRepository.existsByNameAndMemberId(teamName, memberId)).willReturn(false);
-        given(teamRepository.save(team)).willReturn(new Team(teamName, "subject"));
+        CreateTeamRequest request = new CreateTeamRequest(teamName, "subject", new ArrayList<>(
+            Arrays.asList(memberId1, memberId2)));
+        List<Member> members = new ArrayList<>(Arrays.asList(member1, member2));
+        Team team = Team.createTeam(owner, teamName, "subject", members);
+
+        given(teamRepository.existsByNameAndMemberId(teamName, ownerId)).willReturn(false);
+        given(teamRepository.save(any(Team.class))).willReturn(team);
+        given(memberRepository.findById(ownerId)).willReturn(Optional.of(owner));
+        given(memberRepository.findById(memberId1)).willReturn(Optional.of(member1));
+        given(memberRepository.findById(memberId2)).willReturn(Optional.of(member2));
 
         // when
-        CreateTeamResponse actual = teamService.createTeam(memberId, request);
+        CreateTeamResponse actual = teamService.createTeam(ownerId, request);
 
         // then
         assertThat(actual).isNotNull();
-        then(teamRepository).should().existsByNameAndMemberId(teamName, memberId);
-        then(teamRepository).should().save(team);
+
+        then(teamRepository).should().existsByNameAndMemberId(teamName, ownerId);
+        then(teamRepository).should().save(any(Team.class));
+        then(teamRepository).shouldHaveNoMoreInteractions();
+
+        then(memberRepository).should().findById(ownerId);
+        then(memberRepository).should().findById(memberId1);
+        then(memberRepository).should().findById(memberId2);
+        then(memberRepository).shouldHaveNoMoreInteractions();
     }
 }
