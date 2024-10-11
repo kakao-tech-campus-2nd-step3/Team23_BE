@@ -40,7 +40,7 @@ public interface ReceiptControllerInterface {
     @Parameter(name = "teamId", description = "해당 지출이 저장될 teamId")
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "지출 내역 저장 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SaveExpenseResponse.class))),
-        @ApiResponse(responseCode = "400", description = "유효하지 않은 입력 값 (ErrorCode-E400)", content = @Content),
+        @ApiResponse(responseCode = "400", description = "유효하지 않은 입력 값 (ErrorCode-E400006)", content = @Content),
         @ApiResponse(responseCode = "404", description = "존재하지 않는 사용자 (ErrorCode-E404001), 존재하지 않는 모임 (ErrorCode-E404002), 존재하지 않는 카테고리 (ErrorCode-E404)", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 내부 오류 (ErrorCode-E500001), 외부 API 호출 실패 (ErrorCode-E500003)", content = @Content)
     })

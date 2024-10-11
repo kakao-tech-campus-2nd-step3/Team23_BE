@@ -92,8 +92,9 @@ public class TestDataUtil {
         return item;
     }
 
-    public TeamMember createAndPersistTeamMember(Member member, Team team, Boolean isOwner, Boolean isInviteAccepted) {
-        TeamMember teamMember = new TeamMember(member, team,  isOwner, isInviteAccepted);
+    public TeamMember createAndPersistTeamMember(Member member, Team team, Boolean isOwner,
+        Boolean isInviteAccepted) {
+        TeamMember teamMember = new TeamMember(member, team, isOwner, isInviteAccepted);
         entityManager.persist(teamMember);
         return teamMember;
     }
