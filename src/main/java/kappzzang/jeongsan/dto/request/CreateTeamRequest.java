@@ -11,6 +11,7 @@ public record CreateTeamRequest(
     String name,
     @NotNull
     String subject,
+    @NotNull
     List<Long> members
 ) {
 
