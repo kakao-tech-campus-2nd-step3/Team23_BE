@@ -24,15 +24,15 @@ public enum ErrorType {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "E404001", "사용자를 찾을 수 없습니다."),
     TEAM_NOT_FOUND(HttpStatus.NOT_FOUND, "E404002", "모임을 찾을 수 없습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "E404003", "카테고리을 찾을 수 없습니다."),
-    EXPENSE_NOT_FOUND(HttpStatus.NOT_FOUND, "E404", "지출을 찾을 수 없습니다."),
-    PERSONAL_EXPENSE_NOT_FOUND(HttpStatus.NOT_FOUND, "E404", "개인 지출을 찾을 수 없습니다."),
-    INVITATION_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "E404", "초대 현황을 찾을 수 없습니다."),
+    EXPENSE_NOT_FOUND(HttpStatus.NOT_FOUND, "E404004", "지출을 찾을 수 없습니다."),
+    PERSONAL_EXPENSE_NOT_FOUND(HttpStatus.NOT_FOUND, "E404005", "개인 지출을 찾을 수 없습니다."),
+    INVITATION_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "E404006", "초대 현황을 찾을 수 없습니다."),
 
     //408 REQUEST_TIMEOUT
     EXTERNAL_API_REQUEST_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "E408001", "외부 API 요청 시간이 초과되었습니다."),
 
     //409 CONFLICT
-    TEAM_NAME_DUPLICATED(HttpStatus.CONFLICT, "E409", "중복된 모임 이름이 존재합니다."),
+    TEAM_NAME_DUPLICATED(HttpStatus.CONFLICT, "E409001", "중복된 모임 이름이 존재합니다."),
 
     // 500 INTERNAL_SERVER_ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E500001", "서버 내부 오류가 발생했습니다."),
