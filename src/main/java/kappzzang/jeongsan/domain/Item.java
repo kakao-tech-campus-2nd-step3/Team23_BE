@@ -1,5 +1,6 @@
 package kappzzang.jeongsan.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,6 +19,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Item {
 
+    @OneToMany(mappedBy = "item")
+    private final List<PersonalExpense> personalExpenses = new ArrayList<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,13 +30,17 @@ public class Item {
     @JoinColumn(name = "expense_id")
     private Expense expense;
 
+    @Column(nullable = false)
     private String name;
-    private Integer quantity;
-    private Integer unitPrice;
-    private Integer totalPrice;
 
-    @OneToMany(mappedBy = "item")
-    private final List<PersonalExpense> personalExpenses = new ArrayList<>();
+    @Column(nullable = false)
+    private Integer quantity;
+
+    @Column(nullable = false)
+    private Integer unitPrice;
+
+    @Column(nullable = false)
+    private Integer totalPrice;
 
     @Builder
     public Item(String name, Integer quantity, Integer unitPrice) {

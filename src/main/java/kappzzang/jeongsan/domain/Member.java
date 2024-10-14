@@ -1,7 +1,5 @@
 package kappzzang.jeongsan.domain;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -22,20 +20,24 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member")
     private final List<TeamMember> teamMemberList = new ArrayList<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String kakaoId;
+
+    @Column(nullable = false)
     private String email;
+
+    @Column(nullable = false)
     private String nickname;
+
     private String profileImage;
     private String refreshToken;
+
     @Embedded
-    @AttributeOverrides({
-        @AttributeOverride(name = "payUrl", column = @Column(nullable = false)),
-        @AttributeOverride(name = "payAccessToken", column = @Column(nullable = true)),
-        @AttributeOverride(name = "payRefreshToken", column = @Column(nullable = true))
-    })
     private KakaoPayInfo kakaoPayInfo;
 
     @Builder(toBuilder = true)
