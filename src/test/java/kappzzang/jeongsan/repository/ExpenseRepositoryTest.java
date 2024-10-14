@@ -64,7 +64,6 @@ public class ExpenseRepositoryTest {
         personalExpenseC.assignItem(itemC);
         personalExpenseD.assignItem(itemD);
 
-
         List<Item> items = List.of(itemA, itemB, itemC, itemD);
         Category category = testDataUtil.createAndPersistCategory();
 
