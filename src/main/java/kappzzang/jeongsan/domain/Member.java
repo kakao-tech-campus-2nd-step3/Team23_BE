@@ -1,12 +1,14 @@
 package kappzzang.jeongsan.domain;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
@@ -18,21 +20,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Member extends BaseEntity {
 
+    @OneToMany(mappedBy = "member")
+    private final List<TeamMember> teamMemberList = new ArrayList<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String kakaoId;
     private String email;
     private String nickname;
     private String profileImage;
     private String refreshToken;
-
-    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "payUrl", column = @Column(nullable = false)),
+        @AttributeOverride(name = "payAccessToken", column = @Column(nullable = true)),
+        @AttributeOverride(name = "payRefreshToken", column = @Column(nullable = true))
+    })
     private KakaoPayInfo kakaoPayInfo;
-
-    @OneToMany(mappedBy = "member")
-    private final List<TeamMember> teamMemberList = new ArrayList<>();
 
     @Builder(toBuilder = true)
     public Member(String kakaoId, String email, String nickname, String profileImage,
