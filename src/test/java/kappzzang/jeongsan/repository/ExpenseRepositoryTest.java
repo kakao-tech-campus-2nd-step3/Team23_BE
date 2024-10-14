@@ -59,10 +59,11 @@ public class ExpenseRepositoryTest {
         Item itemC = testDataUtil.createAndPersistItem("TEST_ITEM_C", 15, 4000);
         Item itemD = testDataUtil.createAndPersistItem("TEST_ITEM_D", 3, 1000);
 
-        itemA.addPersonalExpense(personalExpenseA);
-        itemB.addPersonalExpense(personalExpenseB);
-        itemC.addPersonalExpense(personalExpenseC);
-        itemD.addPersonalExpense(personalExpenseD);
+        personalExpenseA.assignItem(itemA);
+        personalExpenseB.assignItem(itemB);
+        personalExpenseC.assignItem(itemC);
+        personalExpenseD.assignItem(itemD);
+
 
         List<Item> items = List.of(itemA, itemB, itemC, itemD);
         Category category = testDataUtil.createAndPersistCategory();
