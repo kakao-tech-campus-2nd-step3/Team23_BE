@@ -10,11 +10,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import kappzzang.jeongsan.dto.request.CloseTeamRequest;
+import kappzzang.jeongsan.dto.request.CreateTeamRequest;
+import kappzzang.jeongsan.dto.response.CreateTeamResponse;
+import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
 import kappzzang.jeongsan.dto.response.TeamResponse;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "모임 관리", description = "모임 목록 생성, 조회, 종료 등을 실행하는 API")
+@Tag(name = "모임 관리", description = "모임 생성, 종료, 목록 조회, 멤버 초대 현황 등을 관리하는 API")
 public interface TeamControllerInterface {
 
     @Operation(summary = "모임 목록 조회 API", description = "모임 목록을 조회하는 API")
@@ -24,6 +27,20 @@ public interface TeamControllerInterface {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeamResponse.class))),
     })
     ResponseEntity<JeongsanApiResponse<List<TeamResponse>>> getTeams(Boolean isClosed);
+
+    @Operation(summary = "모임 생성 API", description = "요청한 사용자가 주인으로 모임을 생성하는 API")
+    @Parameters({
+        @Parameter(name = "name", description = "15글자 이내의 모임 이름. 모임의 owner 기준 동일한 모임 이름을 사용할 수 없음"),
+        @Parameter(name = "subject", description = "모임의 목적. 이모지 사용"),
+        @Parameter(name = "members", description = "모임에 초대할 사용자들 ID")
+    })
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "모임 생성 성공"),
+        @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없음(ErrorCode-E404001)"),
+        @ApiResponse(responseCode = "409", description = "중복된 모임 이름이 존재함(ErrorCode-E409001)")
+    })
+    ResponseEntity<JeongsanApiResponse<CreateTeamResponse>> createTeam(Long memberId,
+        CreateTeamRequest request);
 
     @Operation(summary = "모임 종료 API", description = "선택한 모임의 상태를 \"종료\"로 변경하는 API")
     @Parameters({
@@ -37,4 +54,15 @@ public interface TeamControllerInterface {
         @ApiResponse(responseCode = "404", description = "`teamId`에 해당하는 모임을 찾을 수 없음 (ErrorCode-E404002)")
     })
     ResponseEntity<JeongsanApiResponse<Void>> closeTeam(Long teamId, CloseTeamRequest request);
+
+    @Operation(summary = "모임 멤버 초대 현황 조회 API", description = "모임에 초대한 멤버들의 초대 수락/대기 상태를 조회하는 API")
+    @Parameter(name = "teamId", description = "멤버 초대 현황을 조회하려는 모임의 id")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "모임의 멤버 초대 현황 조회 성공",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvitationStatusResponse.class))),
+        @ApiResponse(responseCode = "404", description = "`teamId`에 해당하는 모임을 찾을 수 없음 (ErrorCode-E404002)"),
+        @ApiResponse(responseCode = "404", description = "모임의 멤버 초대 현황 목록을 찾을 수 없음 (ErrorCode-E404006)")
+    })
+    ResponseEntity<JeongsanApiResponse<List<InvitationStatusResponse>>> getInvitationStatus(
+        Long teamId);
 }

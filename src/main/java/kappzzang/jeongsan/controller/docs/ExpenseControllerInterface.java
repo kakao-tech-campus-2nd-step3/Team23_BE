@@ -24,9 +24,9 @@ public interface ExpenseControllerInterface {
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "지출 내역 목록을 성공적으로 조회",
             content = @Content(schema = @Schema(implementation = ExpenseResponse.class))),
-        @ApiResponse(responseCode = "400", description = "누락된 쿼리 파라미터가 존재 (ErrorCode=E400)"),
-        @ApiResponse(responseCode = "400", description = "`state`에 잘못된 값 입력. `ongoing`, `pending`, `completed`만 가능 (ErrorCode-E400)"),
-        @ApiResponse(responseCode = "404", description = "`teamId`에 해당하는 모임이 존재하지 않음. (ErrorCode-E404)")
+        @ApiResponse(responseCode = "400", description = "누락된 쿼리 파라미터가 존재 (ErrorCode=E400002)"),
+        @ApiResponse(responseCode = "400", description = "`state`에 잘못된 값 입력. `ongoing`, `pending`, `completed`만 가능 (ErrorCode-E400003)"),
+        @ApiResponse(responseCode = "404", description = "`teamId`에 해당하는 모임이 존재하지 않음. (ErrorCode-E404002)")
     })
     ResponseEntity<JeongsanApiResponse<ExpenseResponse>> getAllExpenses(Long teamId, String state,
         Boolean isChecked);

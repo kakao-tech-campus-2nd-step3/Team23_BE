@@ -49,4 +49,10 @@ public class Item {
     public void calculateTotalPrice() {
         this.totalPrice = quantity * unitPrice;
     }
+
+    public void addPersonalExpense(PersonalExpense personalExpense) {
+        this.personalExpenses.add(personalExpense);
+        personalExpense.assignItem(this);
+    }
+
 }

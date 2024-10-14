@@ -3,8 +3,8 @@ package kappzzang.jeongsan.global.client;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -16,6 +16,7 @@ import kappzzang.jeongsan.global.client.dto.request.UploadImageRequest;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -77,17 +78,18 @@ public class AwsClientTest {
 
     @BeforeEach
     void setUp() {
-        when(mockProperties.bucket()).thenReturn(MOCK_BUCKET);
+        given(mockProperties.bucket()).willReturn(MOCK_BUCKET);
         uploadImageRequest = new UploadImageRequest(TEST_FILE_PATH,
             mockInputStream,
             TEST_FILE_FORMAT, TEST_LENGTH);
     }
 
     @Test
+    @DisplayName("이미지 업로드 성공 테스트")
     void uploadImage_successfulRequest_returnSavedFilePath() {
         //given
-        when(
-            mockS3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class))).thenReturn(
+        given(
+            mockS3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class))).willReturn(
             PutObjectResponse.builder().build());
 
         //when
@@ -95,17 +97,19 @@ public class AwsClientTest {
 
         //then
         assertThat(savedFilePath).isEqualTo(TEST_FILE_PATH);
-        verify(mockProperties).bucket();
-        verify(mockS3Client).putObject(any(PutObjectRequest.class), any(RequestBody.class));
+        then(mockProperties).should().bucket();
+        then(mockS3Client).should().putObject(any(PutObjectRequest.class), any(RequestBody.class));
     }
 
+    @DisplayName("이미지 업로드 실패 테스트(발생 가능한 모든 예외)")
     @ParameterizedTest
     @ValueSource(classes = {NoSuchBucketException.class, NoSuchKeyException.class,
         SdkClientException.class,
         SdkServiceException.class})
     void uploadImage_invalidRequest_throwExceptions(Class<? extends Exception> exception) {
         //given
-        when(mockS3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class))).thenThrow(
+        given(
+            mockS3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class))).willThrow(
             exception);
 
         //when //then
@@ -113,44 +117,46 @@ public class AwsClientTest {
             () -> awsClient.uploadImage(uploadImageRequest));
 
         assertThat(actualException.getErrorType()).isEqualTo(ErrorType.EXTERNAL_API_GENERAL_ERROR);
-        verify(mockProperties).bucket();
-        verify(mockS3Client).putObject(any(PutObjectRequest.class), any(RequestBody.class));
+        then(mockProperties).should().bucket();
+        then(mockS3Client).should().putObject(any(PutObjectRequest.class), any(RequestBody.class));
     }
 
     @Test
+    @DisplayName("이미지 조회 성공 테스트")
     void getSignedUrl_successfulRequest_returnPresignedUrl() throws MalformedURLException {
         //given
-        when(mockS3Presigner.presignGetObject(any(GetObjectPresignRequest.class))).thenReturn(
+        given(mockS3Presigner.presignGetObject(any(GetObjectPresignRequest.class))).willReturn(
             mockPresignedGetObjectRequest);
-        when(mockPresignedGetObjectRequest.url()).thenReturn(new URL(TEST_PRESIGNED_URL));
-        when(mockProperties.urlExpirationMillis()).thenReturn(TEST_EXPIRES_MILLIS);
+        given(mockPresignedGetObjectRequest.url()).willReturn(new URL(TEST_PRESIGNED_URL));
+        given(mockProperties.urlExpirationMillis()).willReturn(TEST_EXPIRES_MILLIS);
 
         //when
         String presignedUrl = awsClient.getPresignedUrl(TEST_FILE_PATH);
 
         //then
         assertThat(presignedUrl).isEqualTo(TEST_PRESIGNED_URL);
-        verify(mockProperties).bucket();
-        verify(mockProperties).urlExpirationMillis();
-        verify(mockS3Presigner).presignGetObject(any(GetObjectPresignRequest.class));
+        then(mockProperties).should().bucket();
+        then(mockProperties).should().urlExpirationMillis();
+        then(mockS3Presigner).should().presignGetObject(any(GetObjectPresignRequest.class));
     }
 
+    @DisplayName("이미지 조회 실패 테스트(발생 가능한 모든 예외)")
     @ParameterizedTest
     @MethodSource("exceptionProvider")
     void getSignedUrl_invalidRequest_throwExceptions(Class<? extends Exception> exception,
         ErrorType expectedErrorType) {
         // given
-        when(mockS3Presigner.presignGetObject(any(GetObjectPresignRequest.class))).thenThrow(
+        given(mockS3Presigner.presignGetObject(any(GetObjectPresignRequest.class))).willThrow(
             exception);
-        when(mockProperties.urlExpirationMillis()).thenReturn(TEST_EXPIRES_MILLIS);
+        given(mockProperties.urlExpirationMillis()).willReturn(TEST_EXPIRES_MILLIS);
 
         // when // then
         JeongsanException actualException = assertThrows(JeongsanException.class,
             () -> awsClient.getPresignedUrl(TEST_FILE_PATH));
 
         assertThat(actualException.getErrorType()).isEqualTo(expectedErrorType);
-        verify(mockProperties).bucket();
-        verify(mockS3Presigner).presignGetObject(any(GetObjectPresignRequest.class));
+        then(mockProperties).should().bucket();
+        then(mockS3Presigner).should().presignGetObject(any(GetObjectPresignRequest.class));
     }
 
 }

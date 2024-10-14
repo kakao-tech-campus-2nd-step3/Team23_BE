@@ -6,7 +6,6 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import javax.crypto.SecretKey;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -16,13 +15,12 @@ public class JwtUtil {
     private static final String AUTHORIZATION = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
 
+    private final JwtProperties jwtProperties;
     private final SecretKey secretKey;
-    private final long expirationTime;
 
-    public JwtUtil(@Value("${jwt.secret-key}") String secret,
-        @Value("${jwt.expiration-time}") long expirationTime) {
-        this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(secret));
-        this.expirationTime = expirationTime;
+    public JwtUtil(JwtProperties jwtProperties) {
+        this.jwtProperties = jwtProperties;
+        this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(jwtProperties.secretKey()));
     }
 
     public String resolveToken(HttpServletRequest request) {
@@ -42,11 +40,21 @@ public class JwtUtil {
             .getSubject());
     }
 
-    public String createToken(Long id) {
+    public String createAccessToken(Long id) {
         Date now = new Date();
         return Jwts.builder()
             .subject(Long.toString(id))
-            .expiration(new Date(now.getTime() + expirationTime))
+            .issuedAt(now)
+            .expiration(new Date(now.getTime() + jwtProperties.accessExpirationTime()))
+            .signWith(secretKey)
+            .compact();
+    }
+
+    public String createRefreshToken() {
+        Date now = new Date();
+        return Jwts.builder()
+            .issuedAt(now)
+            .expiration(new Date(now.getTime() + jwtProperties.refreshExpirationTime()))
             .signWith(secretKey)
             .compact();
     }
