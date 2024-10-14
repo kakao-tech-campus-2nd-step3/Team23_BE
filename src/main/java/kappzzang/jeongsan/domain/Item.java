@@ -7,9 +7,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,9 +15,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class Item {
-
-    @OneToMany(mappedBy = "item")
-    private final List<PersonalExpense> personalExpenses = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,11 +50,6 @@ public class Item {
 
     public void calculateTotalPrice() {
         this.totalPrice = quantity * unitPrice;
-    }
-
-    public void addPersonalExpense(PersonalExpense personalExpense) {
-        this.personalExpenses.add(personalExpense);
-        personalExpense.assignItem(this);
     }
 
 }
