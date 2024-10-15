@@ -1,5 +1,6 @@
 package kappzzang.jeongsan.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -30,7 +31,10 @@ public class PersonalExpense extends BaseEntity {
     @JoinColumn(name = "item_id")
     private Item item;
 
+    @Column(nullable = false)
     private Integer quantity;
+
+    @Column(nullable = false)
     private Integer totalPrice;
 
     @Builder
