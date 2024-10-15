@@ -1,5 +1,6 @@
 package kappzzang.jeongsan.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,9 +24,16 @@ public class Item {
     @JoinColumn(name = "expense_id")
     private Expense expense;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private Integer quantity;
+
+    @Column(nullable = false)
     private Integer unitPrice;
+
+    @Column(nullable = false)
     private Integer totalPrice;
 
     @Builder
