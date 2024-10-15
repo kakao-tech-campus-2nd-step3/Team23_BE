@@ -25,7 +25,6 @@ public enum ErrorType {
     TEAM_NOT_FOUND(HttpStatus.NOT_FOUND, "E404002", "모임을 찾을 수 없습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "E404003", "카테고리을 찾을 수 없습니다."),
     EXPENSE_NOT_FOUND(HttpStatus.NOT_FOUND, "E404004", "지출을 찾을 수 없습니다."),
-    PERSONAL_EXPENSE_NOT_FOUND(HttpStatus.NOT_FOUND, "E404005", "개인 지출을 찾을 수 없습니다."),
     INVITATION_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "E404006", "초대 현황을 찾을 수 없습니다."),
 
     //408 REQUEST_TIMEOUT
