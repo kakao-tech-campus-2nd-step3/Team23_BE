@@ -4,7 +4,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import javax.crypto.SecretKey;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -41,21 +43,31 @@ public class JwtUtil {
     }
 
     public String createAccessToken(Long id) {
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         return Jwts.builder()
             .subject(Long.toString(id))
-            .issuedAt(now)
-            .expiration(new Date(now.getTime() + jwtProperties.accessExpirationTime()))
+            .claim("iat", createIssueAt(now))
+            .claim("exp", createExpiration(now, jwtProperties.accessExpirationTime()))
             .signWith(secretKey)
             .compact();
     }
 
     public String createRefreshToken() {
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         return Jwts.builder()
-            .issuedAt(now)
-            .expiration(new Date(now.getTime() + jwtProperties.refreshExpirationTime()))
+            .claim("iat", createIssueAt(now))
+            .claim("exp", createExpiration(now, jwtProperties.refreshExpirationTime()))
             .signWith(secretKey)
             .compact();
+    }
+
+    private long createIssueAt(LocalDateTime now) {
+        return now.atZone(ZoneId.systemDefault()).toEpochSecond();
+    }
+
+    private long createExpiration(LocalDateTime now, long expirationTime) {
+        return now.plus(expirationTime, ChronoUnit.MILLIS)
+            .atZone(ZoneId.systemDefault())
+            .toEpochSecond();
     }
 }
