@@ -38,12 +38,9 @@ public class PersonalExpense extends BaseEntity {
     private Integer totalPrice;
 
     @Builder
-    public PersonalExpense(Member member, Integer quantity) {
+    public PersonalExpense(Member member, Integer quantity, Item item) {
         this.member = member;
         this.quantity = quantity;
-    }
-
-    public void assignItem(Item item) {
         this.item = item;
         calculateConsumedItemTotalPrice();
     }
