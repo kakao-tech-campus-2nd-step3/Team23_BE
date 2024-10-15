@@ -1,12 +1,12 @@
 package kappzzang.jeongsan.domain;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
@@ -18,21 +18,27 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Member extends BaseEntity {
 
+    @OneToMany(mappedBy = "member")
+    private final List<TeamMember> teamMemberList = new ArrayList<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String kakaoId;
+
+    @Column(nullable = false)
     private String email;
+
+    @Column(nullable = false)
     private String nickname;
+
     private String profileImage;
     private String refreshToken;
 
-    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
+    @Embedded
     private KakaoPayInfo kakaoPayInfo;
-
-    @OneToMany(mappedBy = "member")
-    private final List<TeamMember> teamMemberList = new ArrayList<>();
 
     @Builder(toBuilder = true)
     public Member(String kakaoId, String email, String nickname, String profileImage,
