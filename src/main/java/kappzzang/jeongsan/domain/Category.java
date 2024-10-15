@@ -22,4 +22,9 @@ public class Category {
 
     @Column(nullable = false)
     private String color;
+
+    public Category(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
 }
