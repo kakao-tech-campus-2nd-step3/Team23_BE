@@ -1,13 +1,19 @@
 package kappzzang.jeongsan.global.util;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import javax.crypto.SecretKey;
+import kappzzang.jeongsan.global.common.enumeration.ErrorType;
+import kappzzang.jeongsan.global.exception.JeongsanException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -33,13 +39,24 @@ public class JwtUtil {
         return null;
     }
 
+    public Claims parseClaims(String token) {
+        try {
+            return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        } catch (SignatureException signatureException) {
+            throw new JeongsanException(ErrorType.JWT_SIGNATURE_INVALID);
+        } catch (ExpiredJwtException expiredJwtException) {
+            throw new JeongsanException(ErrorType.JWT_EXPIRED);
+        } catch (MalformedJwtException malformedJwtException) {
+            throw new JeongsanException(ErrorType.JWT_MALFORMED);
+        }
+    }
+
     public Long getMemberId(String token) {
-        return Long.parseLong(Jwts.parser()
-            .verifyWith(secretKey)
-            .build()
-            .parseSignedClaims(token)
-            .getPayload()
-            .getSubject());
+        return Long.parseLong(parseClaims(token).getSubject());
     }
 
     public String createAccessToken(Long id) {
