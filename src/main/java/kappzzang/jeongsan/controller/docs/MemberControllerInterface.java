@@ -1,6 +1,8 @@
 package kappzzang.jeongsan.controller.docs;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,12 +18,19 @@ import org.springframework.http.ResponseEntity;
 public interface MemberControllerInterface {
 
     @Operation(summary = "로그인 API", description = "카카오 토큰으로 회원가입 및 로그인하여 액세스 토큰을 받는 API")
+    @Parameters({
+        @Parameter(name = "tokenType", description = "카카오 액세스 토큰 타입"),
+        @Parameter(name = "accessToken", description = "카카오 액세스 토큰")
+    })
     @ApiResponses({@ApiResponse(responseCode = "201", description = "로그인 성공"),
         @ApiResponse(responseCode = "408", description = "외부 API 요청 시간 초과. (ErrorCode-E408001"),
         @ApiResponse(responseCode = "500", description = "외부 API 호출 중 오류 발생. (ErrorCode-E500003)")})
     ResponseEntity<JeongsanApiResponse<LoginResponse>> login(LoginRequest loginRequest);
 
     @Operation(summary = "액세스 토큰 재발급 API", description = "리프레시 토큰으로 액세스 토큰을 받는 API")
+    @Parameters({
+        @Parameter(name = "refreshToken", description = "서비스 서버 리프레시 토큰")
+    })
     @ApiResponses({@ApiResponse(responseCode = "200", description = "액세스 토큰 재발급 성공"),
         @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음. (ErrorCode-E404001)"),
         @ApiResponse(responseCode = "403", description = "리프레시 토큰이 유효하지 않음. (ErrorCode-E403001)"),
