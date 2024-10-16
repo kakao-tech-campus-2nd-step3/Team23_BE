@@ -2,6 +2,7 @@ package kappzzang.jeongsan.controller;
 
 import static kappzzang.jeongsan.global.common.enumeration.SuccessType.JOIN_SUCCESS;
 
+import jakarta.validation.Valid;
 import kappzzang.jeongsan.controller.docs.MemberControllerInterface;
 import kappzzang.jeongsan.dto.request.JoinTeamRequest;
 import kappzzang.jeongsan.dto.request.LoginRequest;
@@ -30,7 +31,7 @@ public class MemberController implements MemberControllerInterface {
     @Override
     @PostMapping("/token")
     public ResponseEntity<JeongsanApiResponse<LoginResponse>> login(
-        @RequestBody LoginRequest loginRequest) {
+        @Valid @RequestBody LoginRequest loginRequest) {
         return JeongsanApiResponse.success(SuccessType.LOGGED_IN,
             memberService.login(loginRequest));
     }
@@ -38,7 +39,7 @@ public class MemberController implements MemberControllerInterface {
     @Override
     @PostMapping("/token/refresh")
     public ResponseEntity<JeongsanApiResponse<RefreshResponse>> refresh(
-        @AuthenticationPrincipal Long memberId, RefreshRequest refreshRequest) {
+        @AuthenticationPrincipal Long memberId, @Valid RefreshRequest refreshRequest) {
         return JeongsanApiResponse.success(SuccessType.ACCESS_TOKEN_REISSUED,
             memberService.refresh(memberId, refreshRequest));
     }
