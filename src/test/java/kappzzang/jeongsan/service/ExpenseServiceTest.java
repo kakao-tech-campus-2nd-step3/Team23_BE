@@ -174,7 +174,7 @@ public class ExpenseServiceTest {
         assertThat(response.expenseList().get(0).totalPrice()).isEqualTo(1000);
     }
 
-     @Test
+    @Test
     @DisplayName("지출 목록 반환 - 진행중 상태")
     void getExpenses_Ongoing() {
         // given
@@ -197,7 +197,7 @@ public class ExpenseServiceTest {
         given(mockExpenseRepository.findByTeamIdAndStatus(teamId, status)).willReturn(expenses);
         given(mockItemRepository.findAllByExpenseId(expense.getId())).willReturn(items);
         given(mockPersonalExpenseRepository.countByMemberIdAndItemIds(memberId,
-            items.stream().map(Item::getId).collect(Collectors.toList()))).willReturn(1L);
+            items.stream().map(Item::getId).toList())).willReturn(1L);
 
         // when
         ExpenseResponse response = expenseService.getResponses(memberId, teamId, status, isChecked);
