@@ -58,7 +58,8 @@ public class ExpenseService {
 
         Integer totalPrice = expenses.stream()
             .mapToInt(Expense::getTotalPrice)
-            .sum();
+            .reduce(Integer::sum)
+            .orElse(0);
 
         return ExpenseResponse.of(filteredExpenses, isChecked, totalPrice);
     }
