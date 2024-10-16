@@ -13,6 +13,7 @@ public enum SuccessType {
     EXPENSE_LIST_LOADED(HttpStatus.OK, "지출 목록을 불러오는 데 성공했습니다"),
     PERSONAL_EXPENSE_LOADED(HttpStatus.OK, "개인 지출 목록을 불러오는 데 성공했습니다."),
     INVITATION_STATUS_LOADED(HttpStatus.OK, "모임의 멤버 초대 현황을 불러오는 데 성공했습니다."),
+    ACCESS_TOKEN_REISSUED(HttpStatus.OK, "액세스 토큰이 재발급되었습니다."),
 
     // 201 CREATED
     TEAM_CREATED(HttpStatus.CREATED, "모임이 생성되었습니다."),
