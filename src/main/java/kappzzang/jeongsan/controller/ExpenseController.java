@@ -41,6 +41,6 @@ public class ExpenseController implements ExpenseControllerInterface {
         }
 
         return JeongsanApiResponse.success(SuccessType.EXPENSE_LIST_LOADED,
-            expenseService.getResponses(1L, teamId, status, isChecked));
+            expenseService.getExpenses(1L, teamId, status, isChecked));
     }
 }

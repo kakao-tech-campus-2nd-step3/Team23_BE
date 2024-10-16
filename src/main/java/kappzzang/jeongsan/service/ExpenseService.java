@@ -39,7 +39,7 @@ public class ExpenseService {
     private final TeamRepository teamRepository;
 
     @Transactional(readOnly = true)
-    public ExpenseResponse getResponses(Long memberId, Long teamId, Status status,
+    public ExpenseResponse getExpenses(Long memberId, Long teamId, Status status,
         Boolean isChecked) {
         List<Expense> expenses = expenseRepository.findByTeamIdAndStatus(teamId, status);
         List<Expense> filteredExpenses;

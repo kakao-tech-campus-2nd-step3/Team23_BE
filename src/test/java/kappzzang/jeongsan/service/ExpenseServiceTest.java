@@ -7,11 +7,9 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import kappzzang.jeongsan.domain.Category;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
@@ -134,7 +132,7 @@ public class ExpenseServiceTest {
             items.stream().map(Item::getId).toList())).willReturn(0L);
 
         // when
-        ExpenseResponse response = expenseService.getResponses(memberId, teamId, status, isChecked);
+        ExpenseResponse response = expenseService.getExpenses(memberId, teamId, status, isChecked);
 
         // then
         assertThat(response.expenseList()).isEmpty();
@@ -165,13 +163,13 @@ public class ExpenseServiceTest {
         given(expense.getCategory()).willReturn(mock(Category.class));
 
         // when
-        ExpenseResponse response = expenseService.getResponses(memberId, teamId, status, isChecked);
+        ExpenseResponse response = expenseService.getExpenses(memberId, teamId, status, isChecked);
 
         // then
         assertThat(response.expenseList()).hasSize(1);
         assertThat(response.totalPrice()).isEqualTo(1000);
-        assertThat(response.expenseList().get(0).title()).isEqualTo("Test Expense");
-        assertThat(response.expenseList().get(0).totalPrice()).isEqualTo(1000);
+        assertThat(response.expenseList().getFirst().title()).isEqualTo("Test Expense");
+        assertThat(response.expenseList().getFirst().totalPrice()).isEqualTo(1000);
     }
 
     @Test
@@ -200,12 +198,12 @@ public class ExpenseServiceTest {
             items.stream().map(Item::getId).toList())).willReturn(1L);
 
         // when
-        ExpenseResponse response = expenseService.getResponses(memberId, teamId, status, isChecked);
+        ExpenseResponse response = expenseService.getExpenses(memberId, teamId, status, isChecked);
 
         // then
         assertThat(response.expenseList()).hasSize(1);
         assertThat(response.totalPrice()).isEqualTo(expense.getTotalPrice());
-        assertThat(response.expenseList().get(0).title()).isEqualTo(expense.getTitle());
+        assertThat(response.expenseList().getFirst().title()).isEqualTo(expense.getTitle());
     }
 
 }
