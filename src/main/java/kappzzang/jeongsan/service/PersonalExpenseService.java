@@ -2,7 +2,6 @@ package kappzzang.jeongsan.service;
 
 import jakarta.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.PersonalExpense;
@@ -39,14 +38,14 @@ public class PersonalExpenseService {
 
             personalExpenseRepository.findByMemberAndItem(member, item).ifPresent(data -> {
                 throw new JeongsanException(ErrorType.ALREADY_CHECKED_ITEM);
-            } );
+            });
 
-            Optional.ofNullable(personalExpenseRepository.findAllByItem(item))
-                .filter(list -> !list.isEmpty())
-                .ifPresentOrElse(
-                    personalExpenses -> updateAndSaveRecords(personalExpenses, item,
-                        itemInfo, member),
-                    () -> saveFirstRecord(member, item, itemInfo.quantity()));
+            List<PersonalExpense> personalExpenses = personalExpenseRepository.findAllByItem(item);
+            if (personalExpenses.isEmpty()) {
+                saveFirstRecord(member, item, itemInfo.quantity());
+            } else {
+                updateAndSaveRecords(personalExpenses, item, itemInfo, member);
+            }
         }
     }
 
@@ -81,23 +80,28 @@ public class PersonalExpenseService {
         personalExpenses.forEach(personalExpense -> {
             PersonalExpense updatedPersonalExpense = personalExpense.toBuilder()
                 .totalPrice(newTotalPrice * personalExpense.getQuantity()).build();
-            personalExpenseRepository.save(updatedPersonalExpense);
+            savePersonalExpense(updatedPersonalExpense);
         });
 
         PersonalExpense newPersonalExpense = PersonalExpense.builder().member(member).item(item)
             .quantity(itemInfo.quantity()).totalPrice(requestedMemberPrice).build();
-        personalExpenseRepository.save(newPersonalExpense);
+        savePersonalExpense(newPersonalExpense);
     }
 
     private void saveFirstRecord(Member member, Item item, Integer quantity) {
         PersonalExpense personalExpense = PersonalExpense.builder().member(member).item(item)
             .quantity(quantity).totalPrice(item.getUnitPrice() * quantity).build();
-        personalExpenseRepository.save(personalExpense);
+        savePersonalExpense(personalExpense);
     }
 
-    private int calculateRequestMemberPrice(int totalPrice, int totalQuantity, int requestQuantity) {
+    private int calculateRequestMemberPrice(int totalPrice, int totalQuantity,
+        int requestQuantity) {
         int newTotalPrice = (totalPrice / totalQuantity) * requestQuantity;
         int remainder = totalPrice % totalQuantity;
         return (remainder == 0) ? newTotalPrice : newTotalPrice + remainder;
+    }
+
+    private void savePersonalExpense(PersonalExpense personalExpense) {
+        personalExpenseRepository.save(personalExpense);
     }
 }
