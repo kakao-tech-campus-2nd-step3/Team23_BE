@@ -56,7 +56,7 @@ public class ExpenseService {
             filteredExpenses = new ArrayList<>();
         }
 
-        Integer totalPrice = filteredExpenses.stream()
+        Integer totalPrice = expenses.stream()
             .mapToInt(Expense::getTotalPrice)
             .reduce(Integer::sum)
             .orElse(0);
