@@ -1,6 +1,7 @@
 package kappzzang.jeongsan.service;
 
 import static kappzzang.jeongsan.global.common.enumeration.ErrorType.NOT_INVITED_MEMBER;
+import static kappzzang.jeongsan.global.common.enumeration.ErrorType.REFRESH_TOKEN_INVALID;
 import static kappzzang.jeongsan.global.common.enumeration.ErrorType.TEAM_NOT_FOUND;
 import static kappzzang.jeongsan.global.common.enumeration.ErrorType.USER_NOT_FOUND;
 
@@ -8,7 +9,9 @@ import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.domain.TeamMember;
 import kappzzang.jeongsan.dto.request.LoginRequest;
+import kappzzang.jeongsan.dto.request.RefreshRequest;
 import kappzzang.jeongsan.dto.response.LoginResponse;
+import kappzzang.jeongsan.dto.response.RefreshResponse;
 import kappzzang.jeongsan.global.client.dto.response.KakaoProfileResponse;
 import kappzzang.jeongsan.global.client.kakao.KakaoApiClient;
 import kappzzang.jeongsan.global.exception.JeongsanException;
@@ -47,6 +50,19 @@ public class MemberService {
         memberRepository.save(member);
 
         return new LoginResponse(BEARER, accessToken, refreshToken);
+    }
+
+    @Transactional
+    public RefreshResponse refresh(Long memberId, RefreshRequest refreshRequest) {
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new JeongsanException(USER_NOT_FOUND));
+        String refreshToken = refreshRequest.refreshToken();
+        if (!refreshToken.equals(member.getRefreshToken())
+            || !jwtUtil.validateRefreshToken(refreshToken)) {
+            throw new JeongsanException(REFRESH_TOKEN_INVALID);
+        }
+
+        return new RefreshResponse(BEARER, jwtUtil.createAccessToken(memberId));
     }
 
     @Transactional
