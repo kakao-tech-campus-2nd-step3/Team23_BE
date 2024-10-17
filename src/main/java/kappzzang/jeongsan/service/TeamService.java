@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.Team;
-import kappzzang.jeongsan.dto.request.CloseTeamRequest;
 import kappzzang.jeongsan.dto.request.CreateTeamRequest;
 import kappzzang.jeongsan.dto.response.CreateTeamResponse;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
@@ -58,10 +57,10 @@ public class TeamService {
     }
 
     @Transactional
-    public void closeTeam(Long teamId, CloseTeamRequest request) {
+    public void closeTeam(Long teamId) {
         Team team = teamRepository.findById(teamId)
             .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_NOT_FOUND));
-        team.closeTeam(request.isClosed());
+        team.closeTeam();
     }
 
     public List<InvitationStatusResponse> getInvitationStatus(Long teamId) {
