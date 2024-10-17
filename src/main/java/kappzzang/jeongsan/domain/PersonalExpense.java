@@ -10,12 +10,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder(toBuilder = true)
+@AllArgsConstructor
 @NoArgsConstructor
 public class PersonalExpense extends BaseEntity {
 
@@ -37,6 +40,8 @@ public class PersonalExpense extends BaseEntity {
     @Column(nullable = false)
     private Integer totalPrice;
 
+
+    // 아래 메서드들 정리 필요
     @Builder
     public PersonalExpense(Member member, Integer quantity, Item item) {
         this.member = member;

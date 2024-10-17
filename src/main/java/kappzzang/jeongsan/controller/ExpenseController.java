@@ -1,6 +1,8 @@
 package kappzzang.jeongsan.controller;
 
+import jakarta.validation.Valid;
 import kappzzang.jeongsan.controller.docs.ExpenseControllerInterface;
+import kappzzang.jeongsan.dto.request.SavePersonalExpenseRequest;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
@@ -8,11 +10,14 @@ import kappzzang.jeongsan.global.common.enumeration.Status;
 import kappzzang.jeongsan.global.common.enumeration.SuccessType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import kappzzang.jeongsan.service.ExpenseService;
+import kappzzang.jeongsan.service.PersonalExpenseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ExpenseController implements ExpenseControllerInterface {
 
     private final ExpenseService expenseService;
+    private final PersonalExpenseService personalExpenseService;
 
     @Override
     @GetMapping("{teamId}")
@@ -44,5 +50,16 @@ public class ExpenseController implements ExpenseControllerInterface {
 
         return JeongsanApiResponse.success(SuccessType.EXPENSE_LIST_LOADED,
             expenseService.getExpenses(memberId, teamId, status, isChecked));
+    }
+
+    @Override
+    @PostMapping("/personal/{teamId}/{expenseId}")
+    public ResponseEntity<JeongsanApiResponse<Void>> savePersonalExpense(
+        @AuthenticationPrincipal Long memberId,
+        @PathVariable("teamId") Long teamId,
+        @PathVariable("expenseId") Long expenseId,
+        @Valid @RequestBody SavePersonalExpenseRequest personalExpense) {
+        personalExpenseService.savePersonalExpense(memberId, teamId, expenseId, personalExpense);
+        return JeongsanApiResponse.success(SuccessType.PERSONAL_EXPENSE_SAVED);
     }
 }
