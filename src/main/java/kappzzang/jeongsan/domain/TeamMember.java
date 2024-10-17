@@ -2,6 +2,7 @@ package kappzzang.jeongsan.domain;
 
 import static kappzzang.jeongsan.global.common.enumeration.ErrorType.ALREADY_JOINED_MEMBER;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,20 +30,23 @@ public class TeamMember extends BaseEntity {
     @JoinColumn(name = "team_id")
     private Team team;
 
+    @Column(nullable = false)
     private Boolean isOwner;
-    private Boolean isInviteAccepted;
 
-    public void acceptInvite() {
-        if (this.isInviteAccepted) {
-            throw new JeongsanException(ALREADY_JOINED_MEMBER);
-        }
-        this.isInviteAccepted = true;
-    }
+    @Column(nullable = false)
+    private Boolean isInviteAccepted;
 
     public TeamMember(Member member, Team team, Boolean isOwner, Boolean isInviteAccepted) {
         this.member = member;
         this.team = team;
         this.isOwner = isOwner;
         this.isInviteAccepted = isInviteAccepted;
+    }
+
+    public void acceptInvite() {
+        if (this.isInviteAccepted) {
+            throw new JeongsanException(ALREADY_JOINED_MEMBER);
+        }
+        this.isInviteAccepted = true;
     }
 }

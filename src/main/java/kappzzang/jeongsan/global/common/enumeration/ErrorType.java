@@ -22,12 +22,14 @@ public enum ErrorType {
     JWT_EXPIRED(HttpStatus.UNAUTHORIZED, "E401002", "토큰이 만료되었습니다."),
     JWT_MALFORMED(HttpStatus.UNAUTHORIZED, "E401003", "토큰 형식이 잘못되었습니다."),
 
+    // 403 FORBIDDEN
+    REFRESH_TOKEN_INVALID(HttpStatus.FORBIDDEN, "E403001", "리프레시 토큰이 유효하지 않습니다."),
+
     // 404 NOT_FOUND
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "E404001", "사용자를 찾을 수 없습니다."),
     TEAM_NOT_FOUND(HttpStatus.NOT_FOUND, "E404002", "모임을 찾을 수 없습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "E404003", "카테고리을 찾을 수 없습니다."),
     EXPENSE_NOT_FOUND(HttpStatus.NOT_FOUND, "E404004", "지출을 찾을 수 없습니다."),
-    PERSONAL_EXPENSE_NOT_FOUND(HttpStatus.NOT_FOUND, "E404005", "개인 지출을 찾을 수 없습니다."),
     INVITATION_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "E404006", "초대 현황을 찾을 수 없습니다."),
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "E404", "아이템(영수증 품목)을 찾을 수 없습니다."),
 

@@ -1,11 +1,18 @@
 package kappzzang.jeongsan.global.util;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import javax.crypto.SecretKey;
+import kappzzang.jeongsan.global.common.enumeration.ErrorType;
+import kappzzang.jeongsan.global.exception.JeongsanException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -32,30 +39,60 @@ public class JwtUtil {
     }
 
     public Long getMemberId(String token) {
-        return Long.parseLong(Jwts.parser()
-            .verifyWith(secretKey)
-            .build()
-            .parseSignedClaims(token)
-            .getPayload()
-            .getSubject());
+        try {
+            return Long.parseLong(Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject());
+        } catch (SignatureException signatureException) {
+            throw new JeongsanException(ErrorType.JWT_SIGNATURE_INVALID);
+        } catch (ExpiredJwtException expiredJwtException) {
+            throw new JeongsanException(ErrorType.JWT_EXPIRED);
+        } catch (MalformedJwtException malformedJwtException) {
+            throw new JeongsanException(ErrorType.JWT_MALFORMED);
+        }
+    }
+
+    public boolean validateRefreshToken(String refreshToken) {
+        try {
+            Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(refreshToken);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public String createAccessToken(Long id) {
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         return Jwts.builder()
             .subject(Long.toString(id))
-            .issuedAt(now)
-            .expiration(new Date(now.getTime() + jwtProperties.accessExpirationTime()))
+            .claim("iat", createIssueAt(now))
+            .claim("exp", createExpiration(now, jwtProperties.accessExpirationTime()))
             .signWith(secretKey)
             .compact();
     }
 
     public String createRefreshToken() {
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         return Jwts.builder()
-            .issuedAt(now)
-            .expiration(new Date(now.getTime() + jwtProperties.refreshExpirationTime()))
+            .claim("iat", createIssueAt(now))
+            .claim("exp", createExpiration(now, jwtProperties.refreshExpirationTime()))
             .signWith(secretKey)
             .compact();
+    }
+
+    private long createIssueAt(LocalDateTime now) {
+        return now.atZone(ZoneId.of("Asia/Seoul")).toEpochSecond();
+    }
+
+    private long createExpiration(LocalDateTime now, long expirationTime) {
+        return now.plus(expirationTime, ChronoUnit.MILLIS)
+            .atZone(ZoneId.of("Asia/Seoul"))
+            .toEpochSecond();
     }
 }

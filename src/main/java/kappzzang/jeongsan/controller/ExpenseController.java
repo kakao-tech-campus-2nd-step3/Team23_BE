@@ -13,6 +13,7 @@ import kappzzang.jeongsan.service.ExpenseService;
 import kappzzang.jeongsan.service.PersonalExpenseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +33,9 @@ public class ExpenseController implements ExpenseControllerInterface {
     @Override
     @GetMapping("{teamId}")
     public ResponseEntity<JeongsanApiResponse<ExpenseResponse>> getAllExpenses(
-        @PathVariable Long teamId, @RequestParam String state,
+        @AuthenticationPrincipal Long memberId,
+        @PathVariable Long teamId,
+        @RequestParam String state,
         @RequestParam(required = false) Boolean isChecked) {
         Status status;
         try {
@@ -46,7 +49,7 @@ public class ExpenseController implements ExpenseControllerInterface {
         }
 
         return JeongsanApiResponse.success(SuccessType.EXPENSE_LIST_LOADED,
-            expenseService.getResponses(1L, teamId, status, isChecked));
+            expenseService.getExpenses(memberId, teamId, status, isChecked));
     }
 
     @PostMapping("/personal/{teamId}/{expenseId}/{memberId}")

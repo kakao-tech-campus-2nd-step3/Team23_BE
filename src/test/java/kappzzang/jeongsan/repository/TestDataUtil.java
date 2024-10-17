@@ -19,6 +19,8 @@ public class TestDataUtil {
 
     private static final String DEFAULT_KAKAO_ID = "DEFAULT_KAKAO_ID";
     private static final String DEFAULT_NAME = "DEFAULT_NAME";
+    private static final String DEFAULT_COLOR = "DEFAULT_COLOR";
+    private static final String DEFAULT_SUBJECT = "DEFAULT_SUBJECT";
     private static final String DEFAULT_EMAIL = "DEFAULT_EMAIL";
     private static final String DEFAULT_URL = "DEFAULT_URL";
 
@@ -29,38 +31,34 @@ public class TestDataUtil {
         this.entityManager = entityManager;
     }
 
-    //생성 방식 확정 이후 리펙토링 필요
+    //Team
     public Team createAndPersistTeam() {
-        Team team = new Team();
+        Team team = new Team(DEFAULT_NAME, DEFAULT_SUBJECT);
         entityManager.persist(team);
         return team;
     }
 
-    //생성 방식 확정 이후 리펙토링 필요
-    public KakaoPayInfo createAndPersistKakaoPayInfo() {
-        KakaoPayInfo kakaoPayInfo = new KakaoPayInfo();
-        entityManager.persist(kakaoPayInfo);
-        return kakaoPayInfo;
-    }
-
+    //Category
     public Category createAndPersistCategory() {
-        Category category = new Category();
+        Category category = new Category(DEFAULT_NAME, DEFAULT_COLOR);
         entityManager.persist(category);
         return category;
     }
 
-    public Member createAndPersistMember(String nickname, KakaoPayInfo kakaoToken) {
+    //Member
+    public Member createAndPersistMember(String nickname, KakaoPayInfo kakaoPayInfo) {
         Member member = Member.builder()
             .kakaoId(DEFAULT_KAKAO_ID)
             .email(DEFAULT_EMAIL)
             .nickname(nickname)
             .profileImage(DEFAULT_URL)
-            .kakaoPayInfo(kakaoToken)
+            .kakaoPayInfo(kakaoPayInfo)
             .build();
         entityManager.persist(member);
         return member;
     }
 
+    //Expense
     public Expense createAndPersistExpense(Team team, Member payer, Category category,
         List<Item> items) {
         Expense expense = Expense.builder()
@@ -76,22 +74,26 @@ public class TestDataUtil {
         return expense;
     }
 
+    //PersonalExpense
     public PersonalExpense createAndPersistPersonalExpense(Member member,
-        Integer consumedQuantity) {
+        Integer consumedQuantity, Item item) {
         PersonalExpense personalExpense = PersonalExpense.builder()
             .member(member)
             .quantity(consumedQuantity)
+            .item(item)
             .build();
         entityManager.persist(personalExpense);
         return personalExpense;
     }
 
+    //Item
     public Item createAndPersistItem(String name, Integer price, Integer quantity) {
         Item item = new Item(name, price, quantity);
         entityManager.persist(item);
         return item;
     }
 
+    //TeamMember
     public TeamMember createAndPersistTeamMember(Member member, Team team, Boolean isOwner,
         Boolean isInviteAccepted) {
         TeamMember teamMember = new TeamMember(member, team, isOwner, isInviteAccepted);

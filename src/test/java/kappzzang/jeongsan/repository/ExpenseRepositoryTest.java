@@ -38,7 +38,7 @@ public class ExpenseRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        KakaoPayInfo kakaoPayInfo = testDataUtil.createAndPersistKakaoPayInfo();
+        KakaoPayInfo kakaoPayInfo = new KakaoPayInfo();
 
         Member memberA = testDataUtil.createAndPersistMember("TEST_USER_A", kakaoPayInfo);
         Member memberB = testDataUtil.createAndPersistMember("TEST_USER_B", kakaoPayInfo);
@@ -47,22 +47,20 @@ public class ExpenseRepositoryTest {
 
         Team team = testDataUtil.createAndPersistTeam();
 
-        PersonalExpense personalExpenseA = testDataUtil.createAndPersistPersonalExpense(memberA, 5);
-
-        PersonalExpense personalExpenseB = testDataUtil.createAndPersistPersonalExpense(memberB, 3);
-        PersonalExpense personalExpenseC = testDataUtil.createAndPersistPersonalExpense(memberB, 9);
-        PersonalExpense personalExpenseD = testDataUtil.createAndPersistPersonalExpense(memberB,
-            10);
-
         Item itemA = testDataUtil.createAndPersistItem("TEST_ITEM_A", 10, 2000);
         Item itemB = testDataUtil.createAndPersistItem("TEST_ITEM_B", 5, 3000);
         Item itemC = testDataUtil.createAndPersistItem("TEST_ITEM_C", 15, 4000);
         Item itemD = testDataUtil.createAndPersistItem("TEST_ITEM_D", 3, 1000);
 
-        personalExpenseA.assignItem(itemA);
-        personalExpenseB.assignItem(itemB);
-        personalExpenseC.assignItem(itemC);
-        personalExpenseD.assignItem(itemD);
+        PersonalExpense personalExpenseA = testDataUtil.createAndPersistPersonalExpense(memberA, 5,
+            itemA);
+
+        PersonalExpense personalExpenseB = testDataUtil.createAndPersistPersonalExpense(memberB, 3,
+            itemB);
+        PersonalExpense personalExpenseC = testDataUtil.createAndPersistPersonalExpense(memberB, 9,
+            itemC);
+        PersonalExpense personalExpenseD = testDataUtil.createAndPersistPersonalExpense(memberB,
+            10, itemD);
 
         List<Item> items = List.of(itemA, itemB, itemC, itemD);
         Category category = testDataUtil.createAndPersistCategory();

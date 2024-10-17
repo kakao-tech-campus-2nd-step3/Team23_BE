@@ -1,5 +1,6 @@
 package kappzzang.jeongsan.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -33,18 +34,18 @@ public class PersonalExpense extends BaseEntity {
     @JoinColumn(name = "item_id")
     private Item item;
 
+    @Column(nullable = false)
     private Integer quantity;
+
+    @Column(nullable = false)
     private Integer totalPrice;
 
 
     // 아래 메서드들 정리 필요
     @Builder
-    public PersonalExpense(Member member, Integer quantity) {
+    public PersonalExpense(Member member, Integer quantity, Item item) {
         this.member = member;
         this.quantity = quantity;
-    }
-
-    public void assignItem(Item item) {
         this.item = item;
         calculateConsumedItemTotalPrice();
     }
