@@ -28,6 +28,6 @@ public interface ExpenseControllerInterface {
         @ApiResponse(responseCode = "400", description = "`state`에 잘못된 값 입력. `ongoing`, `pending`, `completed`만 가능 (ErrorCode-E400003)"),
         @ApiResponse(responseCode = "404", description = "`teamId`에 해당하는 모임이 존재하지 않음. (ErrorCode-E404002)")
     })
-    ResponseEntity<JeongsanApiResponse<ExpenseResponse>> getAllExpenses(Long teamId, String state,
-        Boolean isChecked);
+    ResponseEntity<JeongsanApiResponse<ExpenseResponse>> getAllExpenses(Long memberId, Long teamId,
+        String state, Boolean isChecked);
 }
