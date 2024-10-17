@@ -32,9 +32,9 @@ public class SecurityConfig {
                 (config) -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests((registry) -> registry
                 // 개발할 땐 모든 경로 접근 허용
-                .anyRequest().permitAll()
+                .anyRequest()
+                .permitAll()
             )
-            .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
             .addFilterAfter(
                 new JwtAuthenticationFilter(jwtUtil, authenticationManagerBuilder.getOrBuild()),
                 LogoutFilter.class)
