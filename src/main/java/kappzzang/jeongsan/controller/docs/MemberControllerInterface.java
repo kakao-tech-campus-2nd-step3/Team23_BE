@@ -33,10 +33,7 @@ public interface MemberControllerInterface {
     })
     @ApiResponses({@ApiResponse(responseCode = "200", description = "액세스 토큰 재발급 성공"),
         @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음. (ErrorCode-E404001)"),
-        @ApiResponse(responseCode = "403", description = "리프레시 토큰이 유효하지 않음. (ErrorCode-E403001)"),
-        @ApiResponse(responseCode = "401", description = "토큰 서명이 유효하지 않음. (ErrorCode-E401001"),
-        @ApiResponse(responseCode = "401", description = "토큰이 만료됨. (ErrorCode-E401002)"),
-        @ApiResponse(responseCode = "401", description = "토큰 형식이 잘못됨. (ErrorCode-E401003)")})
+        @ApiResponse(responseCode = "403", description = "리프레시 토큰이 유효하지 않음. (ErrorCode-E403001)")})
     ResponseEntity<JeongsanApiResponse<RefreshResponse>> refresh(Long memberId,
         RefreshRequest refreshRequest);
 
@@ -45,6 +42,6 @@ public interface MemberControllerInterface {
         @ApiResponse(responseCode = "400", description = "모임에 초대 되지 않은 멤버. (ErrorCode-E400002"),
         @ApiResponse(responseCode = "400", description = "이미 모임에 참여중인 멤버. (ErrorCode-E400003)"),
         @ApiResponse(responseCode = "404", description = "잘못된 memberId, 사용자를 찾을 수 없음. (ErrorCode-E404001)"),
-        @ApiResponse(responseCode = "404", description = "잘못된 teamId, 모임을 찾을 수 없음. (ErrorCode-E404002)"),})
+        @ApiResponse(responseCode = "404", description = "잘못된 teamId, 모임을 찾을 수 없음. (ErrorCode-E404002)")})
     ResponseEntity<JeongsanApiResponse<Void>> joinTeam(Long teamId, JoinTeamRequest request);
 }

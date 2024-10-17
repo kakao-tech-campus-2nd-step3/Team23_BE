@@ -7,10 +7,8 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
-import io.jsonwebtoken.Claims;
 import java.util.Optional;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.dto.request.LoginRequest;
@@ -22,6 +20,7 @@ import kappzzang.jeongsan.global.client.dto.response.KakaoProfileResponse.ForPar
 import kappzzang.jeongsan.global.client.dto.response.KakaoProfileResponse.KakaoAccount;
 import kappzzang.jeongsan.global.client.dto.response.KakaoProfileResponse.KakaoAccount.Profile;
 import kappzzang.jeongsan.global.client.kakao.KakaoApiClient;
+import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import kappzzang.jeongsan.global.util.JwtUtil;
 import kappzzang.jeongsan.repository.MemberRepository;
@@ -81,7 +80,8 @@ public class MemberServiceTest {
 
         // when & then
         assertThatThrownBy(() -> memberService.refresh(anyLong(), refreshRequest))
-            .isInstanceOf(JeongsanException.class);
+            .isInstanceOf(JeongsanException.class)
+            .hasFieldOrPropertyWithValue("errorType", ErrorType.REFRESH_TOKEN_INVALID);
     }
 
     @Test
@@ -90,11 +90,12 @@ public class MemberServiceTest {
         // given
         RefreshRequest refreshRequest = new RefreshRequest(TEST_REFRESH_TOKEN);
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(createMember()));
-        given(jwtUtil.parseClaims(TEST_REFRESH_TOKEN)).willThrow(JeongsanException.class);
+        given(jwtUtil.validateRefreshToken(TEST_REFRESH_TOKEN)).willReturn(false);
 
         // when & then
         assertThatThrownBy(() -> memberService.refresh(anyLong(), refreshRequest))
-            .isInstanceOf(JeongsanException.class);
+            .isInstanceOf(JeongsanException.class)
+            .hasFieldOrPropertyWithValue("errorType", ErrorType.REFRESH_TOKEN_INVALID);
     }
 
     @Test
@@ -103,7 +104,7 @@ public class MemberServiceTest {
         // given
         RefreshRequest refreshRequest = new RefreshRequest(TEST_REFRESH_TOKEN);
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(createMember()));
-        given(jwtUtil.parseClaims(TEST_REFRESH_TOKEN)).willReturn(mock(Claims.class));
+        given(jwtUtil.validateRefreshToken(TEST_REFRESH_TOKEN)).willReturn(true);
         given(jwtUtil.createAccessToken(anyLong())).willReturn(TEST_ACCESS_TOKEN);
 
         // when

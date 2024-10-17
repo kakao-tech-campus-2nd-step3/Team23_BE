@@ -57,10 +57,10 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new JeongsanException(USER_NOT_FOUND));
         String refreshToken = refreshRequest.refreshToken();
-        if(!refreshToken.equals(member.getRefreshToken())) {
+        if (!refreshToken.equals(member.getRefreshToken())
+            || !jwtUtil.validateRefreshToken(refreshToken)) {
             throw new JeongsanException(REFRESH_TOKEN_INVALID);
         }
-        jwtUtil.parseClaims(refreshToken);
 
         return new RefreshResponse(BEARER, jwtUtil.createAccessToken(memberId));
     }

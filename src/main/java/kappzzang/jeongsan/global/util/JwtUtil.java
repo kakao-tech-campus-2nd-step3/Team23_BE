@@ -1,6 +1,5 @@
 package kappzzang.jeongsan.global.util;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -39,13 +38,14 @@ public class JwtUtil {
         return null;
     }
 
-    public Claims parseClaims(String token) {
+    public Long getMemberId(String token) {
         try {
-            return Jwts.parser()
+            return Long.parseLong(Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
-                .getPayload();
+                .getPayload()
+                .getSubject());
         } catch (SignatureException signatureException) {
             throw new JeongsanException(ErrorType.JWT_SIGNATURE_INVALID);
         } catch (ExpiredJwtException expiredJwtException) {
@@ -55,8 +55,16 @@ public class JwtUtil {
         }
     }
 
-    public Long getMemberId(String token) {
-        return Long.parseLong(parseClaims(token).getSubject());
+    public boolean validateRefreshToken(String refreshToken) {
+        try {
+            Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(refreshToken);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public String createAccessToken(Long id) {
