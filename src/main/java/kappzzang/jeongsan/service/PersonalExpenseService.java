@@ -1,5 +1,7 @@
 package kappzzang.jeongsan.service;
 
+import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
@@ -26,7 +28,7 @@ public class PersonalExpenseService {
     private final ItemRepository itemRepository;
     private final PersonalExpenseRepository personalExpenseRepository;
 
-    //    @Transactional
+    @Transactional
     public void savePersonalExpense(Long memberId, Long teamId, Long expenseId,
         SavePersonalExpenseRequest personalExpense) {
 
@@ -37,8 +39,10 @@ public class PersonalExpenseService {
 
             Optional.ofNullable(personalExpenseRepository.findAllByItem(item))
                 .filter(list -> !list.isEmpty())
-                .ifPresentOrElse(personalExpenses -> saveAndUpdateRecord(),
-                    () -> saveFirstRecord(member, item, itemInfo.quantity(), item.getUnitPrice()));
+                .ifPresentOrElse(
+                    personalExpenses -> updateAndSaveRecords(personalExpenses, item,
+                        itemInfo, member),
+                    () -> saveFirstRecord(member, item, itemInfo.quantity()));
         }
     }
 
@@ -61,18 +65,35 @@ public class PersonalExpenseService {
             .orElseThrow(() -> new JeongsanException(ErrorType.USER_NOT_FOUND));
     }
 
-    private void saveAndUpdateRecord() {
+    private void updateAndSaveRecords(List<PersonalExpense> personalExpenses, Item item,
+        ItemInfo itemInfo, Member member) {
 
+        int totalQuantity = personalExpenses.stream().mapToInt(PersonalExpense::getQuantity)
+            .sum() + itemInfo.quantity();
+        int requestedMemberPrice = calculateRequestMemberPrice(item.getTotalPrice(),
+            totalQuantity, itemInfo.quantity());
+        int newTotalPrice = item.getTotalPrice() / totalQuantity;
+
+        personalExpenses.forEach(personalExpense -> {
+            PersonalExpense updatedPersonalExpense = personalExpense.toBuilder()
+                .totalPrice(newTotalPrice * personalExpense.getQuantity()).build();
+            personalExpenseRepository.save(updatedPersonalExpense);
+        });
+
+        PersonalExpense newPersonalExpense = PersonalExpense.builder().member(member).item(item)
+            .quantity(itemInfo.quantity()).totalPrice(requestedMemberPrice).build();
+        personalExpenseRepository.save(newPersonalExpense);
     }
 
-    private void saveFirstRecord(Member member, Item item, Integer quantity, Integer itemUnitPrice) {
+    private void saveFirstRecord(Member member, Item item, Integer quantity) {
         PersonalExpense personalExpense = PersonalExpense.builder().member(member).item(item)
-            .quantity(quantity).totalPrice(itemUnitPrice*quantity).build();
+            .quantity(quantity).totalPrice(item.getUnitPrice() * quantity).build();
         personalExpenseRepository.save(personalExpense);
     }
 
-    //같은 item을 가지고 있는 data 조회, 수량 합 ->
-
-    //item의 총 금액 확인, 나누기
-
+    private int calculateRequestMemberPrice(int totalPrice, int totalQuantity, int requestQuantity) {
+        int newTotalPrice = (totalPrice / totalQuantity) * requestQuantity;
+        int remainder = totalPrice % totalQuantity;
+        return (remainder == 0) ? newTotalPrice : newTotalPrice + remainder;
+    }
 }
