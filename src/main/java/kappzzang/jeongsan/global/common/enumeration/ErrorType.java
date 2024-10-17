@@ -15,6 +15,7 @@ public enum ErrorType {
     ALREADY_JOINED_MEMBER(HttpStatus.BAD_REQUEST, "E400005", "이미 모임에 참여한 멤버입니다."),
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "E400006", "요청 입력값이 유효하지 않습니다."),
     INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "E400", "잘못된 quantity 값 요청입니다."),
+    ALREADY_CHECKED_ITEM(HttpStatus.BAD_REQUEST, "E400", "이미 선택 완료 한 품목이 포함된 요청입니다."),
 
     // 401 UNAUTHORIZED
     JWT_SIGNATURE_INVALID(HttpStatus.UNAUTHORIZED, "E401001", "토큰 서명이 유효하지 않습니다."),

@@ -37,6 +37,10 @@ public class PersonalExpenseService {
         for (ItemInfo itemInfo : personalExpense.items()) {
             Item item = getItemIfItemInfoValid(itemInfo);
 
+            personalExpenseRepository.findByMemberAndItem(member, item).ifPresent(data -> {
+                throw new JeongsanException(ErrorType.ALREADY_CHECKED_ITEM);
+            } );
+
             Optional.ofNullable(personalExpenseRepository.findAllByItem(item))
                 .filter(list -> !list.isEmpty())
                 .ifPresentOrElse(

@@ -36,6 +36,8 @@ public class PersonalExpense extends BaseEntity {
     private Integer quantity;
     private Integer totalPrice;
 
+
+    // 아래 메서드들 정리 필요
     @Builder
     public PersonalExpense(Member member, Integer quantity) {
         this.member = member;
