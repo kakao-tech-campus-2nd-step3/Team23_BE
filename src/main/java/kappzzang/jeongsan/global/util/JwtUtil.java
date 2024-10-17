@@ -87,12 +87,12 @@ public class JwtUtil {
     }
 
     private long createIssueAt(LocalDateTime now) {
-        return now.atZone(ZoneId.systemDefault()).toEpochSecond();
+        return now.atZone(ZoneId.of("Asia/Seoul")).toEpochSecond();
     }
 
     private long createExpiration(LocalDateTime now, long expirationTime) {
         return now.plus(expirationTime, ChronoUnit.MILLIS)
-            .atZone(ZoneId.systemDefault())
+            .atZone(ZoneId.of("Asia/Seoul"))
             .toEpochSecond();
     }
 }
