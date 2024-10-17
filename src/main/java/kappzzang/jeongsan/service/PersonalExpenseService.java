@@ -34,28 +34,15 @@ public class PersonalExpenseService {
         Member member = getMemberIfTeamAndExpenseValid(memberId, teamId, expenseId);
 
         for (ItemInfo itemInfo : personalExpense.items()) {
-            Item item = getItemIfItemInfoValid(itemInfo);
-
-            personalExpenseRepository.findByMemberAndItem(member, item).ifPresent(data -> {
-                throw new JeongsanException(ErrorType.ALREADY_CHECKED_ITEM);
-            });
-
+            Item item = getItemIfItemInfoValid(itemInfo, member);
             List<PersonalExpense> personalExpenses = personalExpenseRepository.findAllByItem(item);
             if (personalExpenses.isEmpty()) {
-                saveFirstRecord(member, item, itemInfo.quantity());
+                saveNewPersonalExpense(member, item, itemInfo.quantity(),
+                    item.getUnitPrice() * itemInfo.quantity());
             } else {
                 updateAndSaveRecords(personalExpenses, item, itemInfo, member);
             }
         }
-    }
-
-    private Item getItemIfItemInfoValid(ItemInfo itemInfo) {
-        Item item = itemRepository.findById(itemInfo.itemId())
-            .orElseThrow(() -> new JeongsanException(ErrorType.ITEM_NOT_FOUND));
-        if (item.getQuantity() < itemInfo.quantity()) {
-            throw new JeongsanException(ErrorType.INVALID_QUANTITY);
-        }
-        return item;
     }
 
     private Member getMemberIfTeamAndExpenseValid(Long memberId, Long teamId, Long expenseId) {
@@ -68,6 +55,18 @@ public class PersonalExpenseService {
             .orElseThrow(() -> new JeongsanException(ErrorType.USER_NOT_FOUND));
     }
 
+    private Item getItemIfItemInfoValid(ItemInfo itemInfo, Member member) {
+        Item item = itemRepository.findById(itemInfo.itemId())
+            .orElseThrow(() -> new JeongsanException(ErrorType.ITEM_NOT_FOUND));
+        personalExpenseRepository.findByMemberAndItem(member, item).ifPresent(data -> {
+            throw new JeongsanException(ErrorType.ALREADY_CHECKED_ITEM);
+        });
+        if (item.getQuantity() < itemInfo.quantity()) {
+            throw new JeongsanException(ErrorType.INVALID_QUANTITY);
+        }
+        return item;
+    }
+
     private void updateAndSaveRecords(List<PersonalExpense> personalExpenses, Item item,
         ItemInfo itemInfo, Member member) {
 
@@ -75,23 +74,26 @@ public class PersonalExpenseService {
             .sum() + itemInfo.quantity();
         int requestedMemberPrice = calculateRequestMemberPrice(item.getTotalPrice(),
             totalQuantity, itemInfo.quantity());
-        int newTotalPrice = item.getTotalPrice() / totalQuantity;
+        int newPersonalUnitPrice = item.getTotalPrice() / totalQuantity;
+
+        updateExistingPersonalExpenses(personalExpenses, newPersonalUnitPrice);
+        saveNewPersonalExpense(member, item, itemInfo.quantity(), requestedMemberPrice);
+    }
+
+    private void updateExistingPersonalExpenses(List<PersonalExpense> personalExpenses,
+        int newPersonalUnitPrice) {
 
         personalExpenses.forEach(personalExpense -> {
             PersonalExpense updatedPersonalExpense = personalExpense.toBuilder()
-                .totalPrice(newTotalPrice * personalExpense.getQuantity()).build();
+                .totalPrice(newPersonalUnitPrice * personalExpense.getQuantity()).build();
             savePersonalExpense(updatedPersonalExpense);
         });
-
-        PersonalExpense newPersonalExpense = PersonalExpense.builder().member(member).item(item)
-            .quantity(itemInfo.quantity()).totalPrice(requestedMemberPrice).build();
-        savePersonalExpense(newPersonalExpense);
     }
 
-    private void saveFirstRecord(Member member, Item item, Integer quantity) {
-        PersonalExpense personalExpense = PersonalExpense.builder().member(member).item(item)
-            .quantity(quantity).totalPrice(item.getUnitPrice() * quantity).build();
-        savePersonalExpense(personalExpense);
+    private void saveNewPersonalExpense(Member member, Item item, int quantity, int totalPrice) {
+        PersonalExpense newPersonalExpense = PersonalExpense.builder().member(member).item(item)
+            .quantity(quantity).totalPrice(totalPrice).build();
+        savePersonalExpense(newPersonalExpense);
     }
 
     private int calculateRequestMemberPrice(int totalPrice, int totalQuantity,
