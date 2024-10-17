@@ -52,6 +52,7 @@ public class ExpenseController implements ExpenseControllerInterface {
             expenseService.getExpenses(memberId, teamId, status, isChecked));
     }
 
+    @Override
     @PostMapping("/personal/{teamId}/{expenseId}")
     public ResponseEntity<JeongsanApiResponse<Void>> savePersonalExpense(
         @AuthenticationPrincipal Long memberId,
