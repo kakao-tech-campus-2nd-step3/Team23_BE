@@ -65,9 +65,16 @@ jobs:
 
       - name: Deploy to Test Server EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
+          # Create Temporary Key file
+          echo "${{ secrets.EC2_SSH_KEY }}" > /tmp/ec2-key.pem
+          chmod 600 /tmp/ec2-key.pem
+          
+          ssh -o StrictHostKeyChecking=no -i /tmp/ec2-key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
           docker pull ${{ secrets.TEST_ECR_REPOSITORY }}:latest
           docker stop test-server || true
           docker rm test-server || true
           docker run -d --name test-server -p 80:8080 ${{ secrets.TEST_ECR_REPOSITORY }}:latest
           EOF
+          
+          # Delete Temporary Key file
+          rm /tmp/ec2-key.pem
