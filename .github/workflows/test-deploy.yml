@@ -64,10 +64,14 @@ jobs:
         run: docker push ${{ secrets.TEST_ECR_REPOSITORY }}:latest
 
       - name: Deploy to Test Server EC2
-        run: |
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
-          docker pull ${{ secrets.TEST_ECR_REPOSITORY }}:latest
-          docker stop test-server || true
-          docker rm test-server || true
-          docker run -d --name test-server -p 80:8080 ${{ secrets.TEST_ECR_REPOSITORY }}:latest
-          EOF
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.TEST_ECR_REPOSITORY }}
+            docker pull ${{ secrets.TEST_ECR_REPOSITORY }}:latest
+            docker stop test-server || true
+            docker rm test-server || true
+            docker run -d --name test-server -p 80:8080 ${{ secrets.TEST_ECR_REPOSITORY }}:latest
