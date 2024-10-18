@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatusCode;
 public enum ErrorType {
 
     // 400 BAD_REQUEST
+    TEAM_ALREADY_CLOSED(HttpStatus.BAD_REQUEST, "E400001", "이미 종료된 모임입니다."),
     EXPENSE_MISSING_PARAM(HttpStatus.BAD_REQUEST, "E400002", "누락된 쿼리 파라미터가 존재합니다."),
     EXPENSE_INVALID_STATE(HttpStatus.BAD_REQUEST, "E400003", "잘못된 state 값 요청입니다."),
     NOT_INVITED_MEMBER(HttpStatus.BAD_REQUEST, "E400004", "해당 모임에 초대되지 않은 멤버입니다."),

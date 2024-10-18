@@ -48,6 +48,7 @@ public interface TeamControllerInterface {
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "모임을 `종료` 상태로 변경",
             content = @Content),
+        @ApiResponse(responseCode = "400", description = "모임이 이미 종료된 상태 (ErrorCode-E400001)"),
         @ApiResponse(responseCode = "404", description = "`teamId`에 해당하는 모임을 찾을 수 없음 (ErrorCode-E404002)")
     })
     ResponseEntity<JeongsanApiResponse<Void>> closeTeam(Long teamId);

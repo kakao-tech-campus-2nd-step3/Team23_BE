@@ -10,6 +10,8 @@ import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import kappzzang.jeongsan.global.common.enumeration.ErrorType;
+import kappzzang.jeongsan.global.exception.JeongsanException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -61,6 +63,10 @@ public class Team extends BaseEntity {
     }
 
     public void closeTeam() {
+        if (this.isClosed) {
+            throw new JeongsanException(ErrorType.TEAM_ALREADY_CLOSED);
+        }
+
         this.isClosed = true;
     }
 
