@@ -62,12 +62,12 @@ public class Team extends BaseEntity {
         }
     }
 
-    public void closeTeam(Boolean isClosed) {
+    public void closeTeam() {
         if (this.isClosed) {
             throw new JeongsanException(ErrorType.TEAM_ALREADY_CLOSED);
         }
 
-        this.isClosed = isClosed;
+        this.isClosed = true;
     }
 
     @Override
