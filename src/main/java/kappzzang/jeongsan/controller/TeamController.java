@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
 import java.util.List;
 import kappzzang.jeongsan.controller.docs.TeamControllerInterface;
-import kappzzang.jeongsan.dto.request.CloseTeamRequest;
 import kappzzang.jeongsan.dto.request.CreateTeamRequest;
 import kappzzang.jeongsan.dto.response.CreateTeamResponse;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
@@ -50,8 +49,8 @@ public class TeamController implements TeamControllerInterface {
     @Override
     @PatchMapping("/{teamId}")
     public ResponseEntity<JeongsanApiResponse<Void>> closeTeam(
-        @PathVariable("teamId") Long teamId, @RequestBody CloseTeamRequest request) {
-        teamService.closeTeam(teamId, request);
+        @PathVariable("teamId") Long teamId) {
+        teamService.closeTeam(teamId);
         return JeongsanApiResponse.success(SuccessType.TEAM_CLOSED);
     }
 

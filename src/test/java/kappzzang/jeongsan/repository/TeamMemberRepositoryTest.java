@@ -32,7 +32,7 @@ class TeamMemberRepositoryTest {
         // given
         team = testDataUtil.createAndPersistTeam();
 
-        KakaoPayInfo kakaoPayInfo = testDataUtil.createAndPersistKakaoPayInfo();
+        KakaoPayInfo kakaoPayInfo = new KakaoPayInfo();
 
         member1 = testDataUtil.createAndPersistMember("nickname1", kakaoPayInfo);
         member2 = testDataUtil.createAndPersistMember("nickname2", kakaoPayInfo);

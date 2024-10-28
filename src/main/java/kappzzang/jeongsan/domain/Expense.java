@@ -2,6 +2,7 @@ package kappzzang.jeongsan.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -27,6 +28,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Expense extends BaseEntity {
 
+    @OneToMany(mappedBy = "expense", cascade = CascadeType.PERSIST)
+    private final List<Item> items = new ArrayList<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,18 +47,22 @@ public class Expense extends BaseEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false)
     private String imageUrl;
+
+    @Column(nullable = false)
     private Integer totalPrice;
 
+    @Column(nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime paymentTime;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
-
-    @OneToMany(mappedBy = "expense", cascade = CascadeType.PERSIST)
-    private final List<Item> items = new ArrayList<>();
 
     @Builder
     public Expense(Team team, Member member, Category category, String title, String imageUrl,
