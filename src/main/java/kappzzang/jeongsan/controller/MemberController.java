@@ -29,7 +29,7 @@ public class MemberController implements MemberControllerInterface {
     private final MemberService memberService;
 
     @Override
-    @PostMapping("/token")
+    @PostMapping("/login")
     public ResponseEntity<JeongsanApiResponse<LoginResponse>> login(
         @Valid @RequestBody LoginRequest loginRequest) {
         return JeongsanApiResponse.success(SuccessType.LOGGED_IN,

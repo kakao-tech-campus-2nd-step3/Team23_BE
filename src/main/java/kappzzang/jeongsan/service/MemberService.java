@@ -12,8 +12,6 @@ import kappzzang.jeongsan.dto.request.LoginRequest;
 import kappzzang.jeongsan.dto.request.RefreshRequest;
 import kappzzang.jeongsan.dto.response.LoginResponse;
 import kappzzang.jeongsan.dto.response.RefreshResponse;
-import kappzzang.jeongsan.global.client.dto.response.KakaoProfileResponse;
-import kappzzang.jeongsan.global.client.kakao.KakaoApiClient;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import kappzzang.jeongsan.global.util.JwtUtil;
 import kappzzang.jeongsan.repository.MemberRepository;
@@ -29,7 +27,6 @@ public class MemberService {
 
     private static final String BEARER = "Bearer";
 
-    private final KakaoApiClient kakaoApiClient;
     private final JwtUtil jwtUtil;
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
@@ -37,11 +34,8 @@ public class MemberService {
 
     @Transactional
     public LoginResponse login(LoginRequest loginRequest) {
-        KakaoProfileResponse kakaoProfileResponse = kakaoApiClient.getKakaoProfile(
-            loginRequest.accessToken());
-
-        Member member = memberRepository.findByKakaoId(kakaoProfileResponse.forPartner().uuid())
-            .orElseGet(() -> memberRepository.save(kakaoProfileResponse.toMember()));
+        Member member = memberRepository.findByEmail(loginRequest.email())
+            .orElseThrow(() -> new JeongsanException(USER_NOT_FOUND));
         String accessToken = jwtUtil.createAccessToken(member.getId());
         String refreshToken = jwtUtil.createRefreshToken();
         member = member.toBuilder()
