@@ -1,7 +1,9 @@
 package kappzzang.jeongsan.service;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import kappzzang.jeongsan.domain.Category;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
@@ -42,19 +44,16 @@ public class ExpenseService {
     public ExpenseResponse getExpenses(Long memberId, Long teamId, Status status,
         Boolean isChecked) {
         List<Expense> expenses = expenseRepository.findByTeamIdAndStatus(teamId, status);
-        List<Expense> filteredExpenses;
 
-        // PENDING 구현 시 리팩토링 필요
-        if (status == Status.ONGOING) {
-            filteredExpenses = expenses.stream()
-                .filter(expense -> isChecked.equals(isExpenseChecked(expense, memberId)))
-                .toList();
-        } else if (status == Status.COMPLETED) {
-            filteredExpenses = expenses;
-        } else {
-            // PENDING에서 사용
-            filteredExpenses = new ArrayList<>();
-        }
+        Map<Status, Function<List<Expense>, List<Expense>>> filteringStrategies = Map.of(
+            Status.ONGOING, expenseList -> filterOngoingExpenses(expenseList, memberId, isChecked),
+            Status.COMPLETED, expenseList -> expenseList,
+            Status.PENDING, expenseList -> Collections.emptyList()
+        );
+
+        List<Expense> filteredExpenses = filteringStrategies.getOrDefault(status,
+                defaultExpenses -> expenses)
+            .apply(expenses);
 
         Integer totalPrice = expenses.stream()
             .mapToInt(Expense::getTotalPrice)
@@ -62,6 +61,13 @@ public class ExpenseService {
             .orElse(0);
 
         return ExpenseResponse.of(filteredExpenses, isChecked, totalPrice);
+    }
+
+    private List<Expense> filterOngoingExpenses(List<Expense> expenses, Long memberId,
+        Boolean isChecked) {
+        return expenses.stream()
+            .filter(expense -> isChecked.equals(isExpenseChecked(expense, memberId)))
+            .toList();
     }
 
     private Boolean isExpenseChecked(Expense expense, Long memberId) {
