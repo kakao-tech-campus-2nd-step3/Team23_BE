@@ -99,13 +99,13 @@ public class ExpenseService {
     }
 
     @Transactional
-    public void completeExpenses(CompleteExpensesRequest request) {
-        List<Expense> expenses = expenseRepository.findAllById(request.expenses()
-            .stream().map(ExpenseId::id).toList());
-        if (request.expenses().size() != expenses.size()) {
-            throw new JeongsanException(ErrorType.EXPENSE_INVALID_IDS);
+    public void completeExpenses(CompleteExpensesRequest request, Long teamId, Long memberId) {
+        List<Expense> expenses = expenseRepository.findAllByIdWithDetails(
+            request.expenses().stream().map(ExpenseId::id).toList());
+        if (expenses.size() != request.expenses().size()) {
+            throw new JeongsanException(ErrorType.EXPENSE_NOT_FOUND_ID);
         }
-        expenses.forEach(Expense::changeStatusComplete);
+        expenses.forEach(expense -> expense.changeStatusComplete(teamId, memberId));
     }
 
     @Transactional(readOnly = true)

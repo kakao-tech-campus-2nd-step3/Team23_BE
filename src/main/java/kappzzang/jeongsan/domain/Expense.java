@@ -94,14 +94,25 @@ public class Expense extends BaseEntity {
         this.totalPrice = items.stream().mapToInt(Item::getTotalPrice).sum();
     }
 
-    public void changeStatusComplete() {
+    public void changeStatusComplete(Long teamId, Long memberId) {
         if (this.status.equals(Status.COMPLETED)) {
             throw new JeongsanException(ErrorType.EXPENSE_ALREADY_COMPLETED);
         }
         if (this.status.equals(Status.ONGOING)) {
             throw new JeongsanException(ErrorType.EXPENSE_ONGOING);
         }
+        validateOwnerShip(teamId, memberId);
         this.status = Status.COMPLETED;
+    }
+
+    //서비스단에서 호출 해야 할 경우가 생길 시 public으로 변경
+    private void validateOwnerShip(Long teamId, Long memberId) {
+        if (!this.getTeam().getId().equals(teamId)) {
+            throw new JeongsanException(ErrorType.EXPENSE_INVALID_TEAM);
+        }
+        if (!this.getPayer().getId().equals(memberId)) {
+            throw new JeongsanException(ErrorType.EXPENSE_INVALID_PAYER);
+        }
     }
 
     public void changeStatusPending() {

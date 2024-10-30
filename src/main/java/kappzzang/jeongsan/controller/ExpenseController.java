@@ -54,8 +54,9 @@ public class ExpenseController implements ExpenseControllerInterface {
     @PatchMapping("{teamId}")
     public ResponseEntity<JeongsanApiResponse<Void>> changeExpensesStatusComplete(
         @Valid @RequestBody CompleteExpensesRequest request,
-        @PathVariable("teamId") Long teamId) {
-        expenseService.completeExpenses(request);
+        @PathVariable("teamId") Long teamId,
+        @AuthenticationPrincipal Long memberId) {
+        expenseService.completeExpenses(request, teamId, memberId);
         return JeongsanApiResponse.success(SuccessType.EXPENSE_STATUS_CHANGE_SUCCESS);
     }
 }

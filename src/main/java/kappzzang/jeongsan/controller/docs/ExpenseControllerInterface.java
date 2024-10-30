@@ -39,9 +39,13 @@ public interface ExpenseControllerInterface {
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "지출 상태 변경을 성공"),
         @ApiResponse(responseCode = "400", description =
-            "이미 정산 완료된 지출 존재 (ErrorCode=E400), 아직 진행중인 상태의 지출 존재 (ErrorCode=E400), 요청 목록에 존재하지 않는 지출 포함 (ErrorCode=E400)"),
+            "이미 정산 완료된 지출 존재 (ErrorCode=E400), "
+                + "아직 진행중인 상태의 지출 존재 (ErrorCode=E400), "
+                + "요청 목록에 존재하지 않는 지출 포함 (ErrorCode=E400), "
+                + "요청 목록에 타 모임의 지출이 포함(ErrorCode=E400), "
+                + "요청 목록에 본인이 결제하지 않은 지출이 포함(ErrorCode=E400)"),
     })
     public ResponseEntity<JeongsanApiResponse<Void>> changeExpensesStatusComplete(
-        CompleteExpensesRequest request, Long teamId);
+        CompleteExpensesRequest request, Long teamId, Long memberId);
 
 }
