@@ -14,6 +14,10 @@ public enum ErrorType {
     NOT_INVITED_MEMBER(HttpStatus.BAD_REQUEST, "E400004", "해당 모임에 초대되지 않은 멤버입니다."),
     ALREADY_JOINED_MEMBER(HttpStatus.BAD_REQUEST, "E400005", "이미 모임에 참여한 멤버입니다."),
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "E400006", "요청 입력값이 유효하지 않습니다."),
+    EXPENSE_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "E400", "이미 정산 완료된 지출입니다."),
+    EXPENSE_ONGOING(HttpStatus.BAD_REQUEST, "E400", "아직 진행중인 지출입니다."),
+    EXPENSE_INVALID_IDS(HttpStatus.BAD_REQUEST, "E400",
+        "요청 목록에 존재하지 않는 지출이 포함 되어있습니다."),
 
     // 401 UNAUTHORIZED
     JWT_SIGNATURE_INVALID(HttpStatus.UNAUTHORIZED, "E401001", "토큰 서명이 유효하지 않습니다."),
