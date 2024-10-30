@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import kappzzang.jeongsan.domain.Category;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
@@ -38,9 +39,15 @@ public class ExpenseServiceTest {
 
     private static final Long TEST_EXPENSE_ID = 1L;
     private static final Long TEST_MEMBER_ID = 1L;
+    private static final int TEST_EXPENSES_SIZE = 3;
+    private static final int DEFAULT_ITEM_PRICE = 10;
+    private static final int DEFAULT_ITEM_QUANTITY = 10;
+    private static final String DEFAULT_ITEM_NAME = "DEFAULT_ITEM_NAME";
     private static final String TEST_IMAGE_URL = "TEST_IMAGE_URL";
     private final String TEST_PRE_SIGNED_URL = "TEST_PRE_SIGNED_URL";
     private final String TEST_TITLE = "TEST_TITLE";
+    private List<Long> expenseIds;
+    private CompleteExpensesRequest completeExpensesRequest;
 
     @Mock
     private ImageStorageService mockImageStorageService;
@@ -66,6 +73,9 @@ public class ExpenseServiceTest {
             .imageUrl(TEST_IMAGE_URL)
             .items(List.of(new Item("TEST_NAME", 10, 10)))
             .build();
+        expenseIds = LongStream.rangeClosed(1, TEST_EXPENSES_SIZE).boxed().toList();
+        completeExpensesRequest = new CompleteExpensesRequest(
+            expenseIds.stream().map(ExpenseId::new).toList());
     }
 
     @Test
@@ -214,22 +224,18 @@ public class ExpenseServiceTest {
     @Test
     void completeExpenses_Success() {
         //given
-        final Long id1 = 1L, id2 = 2L, id3 = 3L;
-        List<Expense> expenses = createExpenses(3);
+        List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
         expenses.forEach(Expense::changeStatusPending);
-        List<Long> ids = List.of(id1, id2, id3);
-        CompleteExpensesRequest request = new CompleteExpensesRequest(
-            List.of(new ExpenseId(id1), new ExpenseId(id2), new ExpenseId(id3)));
         given(
-            mockExpenseRepository.findAllById(ids)).willReturn(
+            mockExpenseRepository.findAllById(expenseIds)).willReturn(
             expenses);
 
         //when
-        expenseService.completeExpenses(request);
+        expenseService.completeExpenses(completeExpensesRequest);
 
         //then
         assertThat(expenses).extracting(Expense::getStatus).containsOnly(Status.COMPLETED);
-        then(mockExpenseRepository).should().findAllById(ids);
+        then(mockExpenseRepository).should().findAllById(expenseIds);
     }
 
 
@@ -237,19 +243,16 @@ public class ExpenseServiceTest {
     @Test
     void completeExpenses_AlreadyCompleted_Fail() {
         //given
-        final Long id1 = 1L, id2 = 2L, id3 = 3L;
-        List<Expense> expenses = createExpenses(3);
+        List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
         expenses.forEach(Expense::changeStatusPending);
-        List<Long> ids = List.of(id1, id2, id3);
-        CompleteExpensesRequest request = new CompleteExpensesRequest(
-            List.of(new ExpenseId(id1), new ExpenseId(id2), new ExpenseId(id3)));
         expenses.get(0).changeStatusComplete();
         given(
-            mockExpenseRepository.findAllById(ids)).willReturn(
+            mockExpenseRepository.findAllById(expenseIds)).willReturn(
             expenses);
 
         //when //then
-        assertThatThrownBy(() -> expenseService.completeExpenses(request)).isInstanceOf(
+        assertThatThrownBy(
+            () -> expenseService.completeExpenses(completeExpensesRequest)).isInstanceOf(
                 JeongsanException.class)
             .hasMessage(ErrorType.EXPENSE_ALREADY_COMPLETED.getMessage());
     }
@@ -258,17 +261,14 @@ public class ExpenseServiceTest {
     @Test
     void completeExpenses_StatusIsOngoing_Fail() {
         //given
-        final Long id1 = 1L, id2 = 2L, id3 = 3L;
-        List<Expense> expenses = createExpenses(3);
-        List<Long> ids = List.of(id1, id2, id3);
-        CompleteExpensesRequest request = new CompleteExpensesRequest(
-            List.of(new ExpenseId(id1), new ExpenseId(id2), new ExpenseId(id3)));
+        List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
         given(
-            mockExpenseRepository.findAllById(ids)).willReturn(
+            mockExpenseRepository.findAllById(expenseIds)).willReturn(
             expenses);
 
         //when //then
-        assertThatThrownBy(() -> expenseService.completeExpenses(request)).isInstanceOf(
+        assertThatThrownBy(
+            () -> expenseService.completeExpenses(completeExpensesRequest)).isInstanceOf(
                 JeongsanException.class)
             .hasMessage(ErrorType.EXPENSE_ONGOING.getMessage());
     }
@@ -277,17 +277,14 @@ public class ExpenseServiceTest {
     @Test
     void completeExpenses_NoFoundExpense_Fail() {
         //given
-        final Long id1 = 1L, id2 = 2L, id3 = 3L;
-        List<Expense> expenses = createExpenses(2);
-        List<Long> ids = List.of(id1, id2, id3);
-        CompleteExpensesRequest request = new CompleteExpensesRequest(
-            List.of(new ExpenseId(id1), new ExpenseId(id2), new ExpenseId(id3)));
+        List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE - 1);
         given(
-            mockExpenseRepository.findAllById(ids)).willReturn(
+            mockExpenseRepository.findAllById(expenseIds)).willReturn(
             expenses);
 
         //when //then
-        assertThatThrownBy(() -> expenseService.completeExpenses(request)).isInstanceOf(
+        assertThatThrownBy(
+            () -> expenseService.completeExpenses(completeExpensesRequest)).isInstanceOf(
                 JeongsanException.class)
             .hasMessage(ErrorType.EXPENSE_INVALID_IDS.getMessage());
     }
@@ -297,7 +294,8 @@ public class ExpenseServiceTest {
             .mapToObj(o -> Expense.builder()
                 .title(TEST_TITLE)
                 .imageUrl(TEST_IMAGE_URL)
-                .items(List.of(new Item("TEST_NAME", 10, 10)))
+                .items(
+                    List.of(new Item(DEFAULT_ITEM_NAME, DEFAULT_ITEM_QUANTITY, DEFAULT_ITEM_PRICE)))
                 .build())
             .toList();
     }
