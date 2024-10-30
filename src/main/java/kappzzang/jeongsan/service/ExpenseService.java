@@ -65,16 +65,6 @@ public class ExpenseService {
         return ExpenseResponse.of(filteredExpenses, isChecked, totalPrice);
     }
 
-    @Transactional(readOnly = true)
-    public ExpenseResponse getExpensesIPaid(Long memberId, Long teamId) {
-        List<Expense> expenses = expenseRepository.findExpensesIPaid(memberId, teamId, Status.PENDING);
-        Integer totalPrice = expenses.stream()
-            .mapToInt(Expense::getTotalPrice)
-            .reduce(Integer::sum)
-            .orElse(0);
-        return ExpenseResponse.of(expenses, true, totalPrice);
-    }
-
     private List<Expense> filterOngoingExpenses(List<Expense> expenses, Long memberId,
         Boolean isChecked) {
         return expenses.stream()
