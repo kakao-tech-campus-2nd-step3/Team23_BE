@@ -16,8 +16,9 @@ public enum ErrorType {
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "E400006", "요청 입력값이 유효하지 않습니다."),
     EXPENSE_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "E400", "이미 정산 완료된 지출입니다."),
     EXPENSE_ONGOING(HttpStatus.BAD_REQUEST, "E400", "아직 진행중인 지출입니다."),
-    EXPENSE_INVALID_IDS(HttpStatus.BAD_REQUEST, "E400",
-        "요청 목록에 존재하지 않는 지출이 포함 되어있습니다."),
+    EXPENSE_NOT_FOUND_ID(HttpStatus.BAD_REQUEST, "E400", "요청 목록에 존재하지 않는 지출이 포함되어 있습니다."),
+    EXPENSE_INVALID_TEAM(HttpStatus.BAD_REQUEST, "E400", "요청 목록에 타 모임의 지출이 포함되어 있습니다."),
+    EXPENSE_INVALID_PAYER(HttpStatus.BAD_REQUEST, "E400", "요청 목록에 본인이 결제하지 않은 지출이 포함되어 있습니다."),
 
     // 401 UNAUTHORIZED
     JWT_SIGNATURE_INVALID(HttpStatus.UNAUTHORIZED, "E401001", "토큰 서명이 유효하지 않습니다."),
