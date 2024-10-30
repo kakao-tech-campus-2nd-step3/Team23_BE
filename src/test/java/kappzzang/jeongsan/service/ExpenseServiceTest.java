@@ -10,10 +10,13 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 import kappzzang.jeongsan.domain.Category;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.dto.ItemDetail;
+import kappzzang.jeongsan.dto.request.CompleteExpensesRequest;
+import kappzzang.jeongsan.dto.request.CompleteExpensesRequest.ExpenseId;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
 import kappzzang.jeongsan.dto.response.PersonalExpenseDetailResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
@@ -204,6 +207,99 @@ public class ExpenseServiceTest {
         assertThat(response.expenseList()).hasSize(1);
         assertThat(response.totalPrice()).isEqualTo(expense.getTotalPrice());
         assertThat(response.expenseList().getFirst().title()).isEqualTo(expense.getTitle());
+    }
+
+
+    @DisplayName("지출 완료 처리 성공")
+    @Test
+    void completeExpenses_Success() {
+        //given
+        final Long id1 = 1L, id2 = 2L, id3 = 3L;
+        List<Expense> expenses = createExpenses(3);
+        expenses.forEach(Expense::changeStatusPending);
+        List<Long> ids = List.of(id1, id2, id3);
+        CompleteExpensesRequest request = new CompleteExpensesRequest(
+            List.of(new ExpenseId(id1), new ExpenseId(id2), new ExpenseId(id3)));
+        given(
+            mockExpenseRepository.findAllById(ids)).willReturn(
+            expenses);
+
+        //when
+        expenseService.completeExpenses(request);
+
+        //then
+        assertThat(expenses).extracting(Expense::getStatus).containsOnly(Status.COMPLETED);
+        then(mockExpenseRepository).should().findAllById(ids);
+    }
+
+
+    @DisplayName("지출 완료 처리 실패(이미 완료된 지출 존재)")
+    @Test
+    void completeExpenses_AlreadyCompleted_Fail() {
+        //given
+        final Long id1 = 1L, id2 = 2L, id3 = 3L;
+        List<Expense> expenses = createExpenses(3);
+        expenses.forEach(Expense::changeStatusPending);
+        List<Long> ids = List.of(id1, id2, id3);
+        CompleteExpensesRequest request = new CompleteExpensesRequest(
+            List.of(new ExpenseId(id1), new ExpenseId(id2), new ExpenseId(id3)));
+        expenses.get(0).changeStatusComplete();
+        given(
+            mockExpenseRepository.findAllById(ids)).willReturn(
+            expenses);
+
+        //when //then
+        assertThatThrownBy(() -> expenseService.completeExpenses(request)).isInstanceOf(
+                JeongsanException.class)
+            .hasMessage(ErrorType.EXPENSE_ALREADY_COMPLETED.getMessage());
+    }
+
+    @DisplayName("지출 완료 처리 실패(아직 진행중인 지출 존재)")
+    @Test
+    void completeExpenses_StatusIsOngoing_Fail() {
+        //given
+        final Long id1 = 1L, id2 = 2L, id3 = 3L;
+        List<Expense> expenses = createExpenses(3);
+        List<Long> ids = List.of(id1, id2, id3);
+        CompleteExpensesRequest request = new CompleteExpensesRequest(
+            List.of(new ExpenseId(id1), new ExpenseId(id2), new ExpenseId(id3)));
+        given(
+            mockExpenseRepository.findAllById(ids)).willReturn(
+            expenses);
+
+        //when //then
+        assertThatThrownBy(() -> expenseService.completeExpenses(request)).isInstanceOf(
+                JeongsanException.class)
+            .hasMessage(ErrorType.EXPENSE_ONGOING.getMessage());
+    }
+
+    @DisplayName("지출 완료 처리 실패(존재하지 않는 지출이 포함된 요청)")
+    @Test
+    void completeExpenses_NoFoundExpense_Fail() {
+        //given
+        final Long id1 = 1L, id2 = 2L, id3 = 3L;
+        List<Expense> expenses = createExpenses(2);
+        List<Long> ids = List.of(id1, id2, id3);
+        CompleteExpensesRequest request = new CompleteExpensesRequest(
+            List.of(new ExpenseId(id1), new ExpenseId(id2), new ExpenseId(id3)));
+        given(
+            mockExpenseRepository.findAllById(ids)).willReturn(
+            expenses);
+
+        //when //then
+        assertThatThrownBy(() -> expenseService.completeExpenses(request)).isInstanceOf(
+                JeongsanException.class)
+            .hasMessage(ErrorType.EXPENSE_INVALID_IDS.getMessage());
+    }
+
+    private List<Expense> createExpenses(int count) {
+        return IntStream.rangeClosed(1, count)
+            .mapToObj(o -> Expense.builder()
+                .title(TEST_TITLE)
+                .imageUrl(TEST_IMAGE_URL)
+                .items(List.of(new Item("TEST_NAME", 10, 10)))
+                .build())
+            .toList();
     }
 
 }
