@@ -93,4 +93,19 @@ public class Expense extends BaseEntity {
         }
         this.totalPrice = items.stream().mapToInt(Item::getTotalPrice).sum();
     }
+
+    public void changeStatusComplete() {
+        if (this.status.equals(Status.COMPLETED)) {
+            throw new JeongsanException(ErrorType.EXPENSE_ALREADY_COMPLETED);
+        }
+        if (this.status.equals(Status.ONGOING)) {
+            throw new JeongsanException(ErrorType.EXPENSE_ONGOING);
+        }
+        this.status = Status.COMPLETED;
+    }
+
+    public void changeStatusPending() {
+        this.status = Status.PENDING;
+    }
+
 }

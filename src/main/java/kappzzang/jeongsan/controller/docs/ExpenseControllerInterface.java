@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import kappzzang.jeongsan.dto.request.CompleteExpensesRequest;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
 import org.springframework.http.ResponseEntity;
@@ -30,4 +31,17 @@ public interface ExpenseControllerInterface {
     })
     ResponseEntity<JeongsanApiResponse<ExpenseResponse>> getAllExpenses(Long memberId, Long teamId,
         String state, Boolean isChecked);
+
+    @Operation(summary = "지출 상태 변경(송금 대기 -> 완료) 요청 API", description = "송금 메시지를 전송한 지출의 상태를 완료로 변경하는 API")
+    @Parameters({
+        @Parameter(name = "teamId", description = "상태 변경될 지출들의 모임 ID"),
+    })
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "지출 상태 변경을 성공"),
+        @ApiResponse(responseCode = "400", description =
+            "이미 정산 완료된 지출 존재 (ErrorCode=E400), 아직 진행중인 상태의 지출 존재 (ErrorCode=E400), 요청 목록에 존재하지 않는 지출 포함 (ErrorCode=E400)"),
+    })
+    public ResponseEntity<JeongsanApiResponse<Void>> changeExpensesStatusComplete(
+        CompleteExpensesRequest request, Long teamId);
+
 }

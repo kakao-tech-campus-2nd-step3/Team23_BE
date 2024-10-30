@@ -9,6 +9,8 @@ import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.ItemDetail;
 import kappzzang.jeongsan.dto.ItemSummary;
+import kappzzang.jeongsan.dto.request.CompleteExpensesRequest;
+import kappzzang.jeongsan.dto.request.CompleteExpensesRequest.ExpenseId;
 import kappzzang.jeongsan.dto.request.SaveExpenseRequest;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
 import kappzzang.jeongsan.dto.response.PersonalExpenseDetailResponse;
@@ -94,6 +96,16 @@ public class ExpenseService {
             .build();
 
         return expenseRepository.save(expense).getId();
+    }
+
+    @Transactional
+    public void completeExpenses(CompleteExpensesRequest request) {
+        List<Expense> expenses = expenseRepository.findAllById(request.expenses()
+            .stream().map(ExpenseId::id).toList());
+        if (request.expenses().size() != expenses.size()) {
+            throw new JeongsanException(ErrorType.EXPENSE_INVALID_IDS);
+        }
+        expenses.forEach(Expense::changeStatusComplete);
     }
 
     @Transactional(readOnly = true)
