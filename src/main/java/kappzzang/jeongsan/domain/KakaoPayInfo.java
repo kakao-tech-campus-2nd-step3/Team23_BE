@@ -12,4 +12,8 @@ public class KakaoPayInfo {
     private String payUrl;
     private String payAccessToken;
     private String payRefreshToken;
+
+    public KakaoPayInfo(String payUrl) {
+        this.payUrl = payUrl;
+    }
 }

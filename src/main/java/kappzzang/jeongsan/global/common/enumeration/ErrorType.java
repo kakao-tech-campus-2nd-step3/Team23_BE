@@ -34,6 +34,7 @@ public enum ErrorType {
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "E404003", "카테고리을 찾을 수 없습니다."),
     EXPENSE_NOT_FOUND(HttpStatus.NOT_FOUND, "E404004", "지출을 찾을 수 없습니다."),
     INVITATION_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "E404006", "초대 현황을 찾을 수 없습니다."),
+    KAKAO_PAY_LINK_NOT_FOUND(HttpStatus.NOT_FOUND, "E404", "카카오 페이 송금 링크를 찾을 수 없습니다."),
 
     //408 REQUEST_TIMEOUT
     EXTERNAL_API_REQUEST_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "E408001", "외부 API 요청 시간이 초과되었습니다."),
