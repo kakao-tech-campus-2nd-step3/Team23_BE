@@ -1,6 +1,7 @@
 package kappzzang.jeongsan.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,8 @@ import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.PersonalExpense;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.request.SavePersonalExpenseRequest;
+import kappzzang.jeongsan.dto.request.SavePersonalExpenseRequest.ItemInfo;
+import kappzzang.jeongsan.global.exception.JeongsanException;
 import kappzzang.jeongsan.repository.ExpenseRepository;
 import kappzzang.jeongsan.repository.ItemRepository;
 import kappzzang.jeongsan.repository.MemberRepository;
@@ -157,5 +160,24 @@ class PersonalExpenseServiceTest {
 
         assertEquals(personalExpense1.getQuantity(), personalExpense2.getQuantity());
         assertEquals(personalExpense1.getTotalPrice(), personalExpense2.getTotalPrice());
+    }
+
+    @Test
+    @DisplayName("개인 소비 내역 저장 - 예외 발생 테스트")
+    void savePersonalExpenseExceptionTest() {
+
+        // given
+        SavePersonalExpenseRequest request = new SavePersonalExpenseRequest(
+            List.of(new ItemInfo(item2.getId(), 10))
+        );
+
+        // when, then
+        assertThrows(JeongsanException.class, () -> {
+            personalExpenseService.savePersonalExpense(member1.getId(), team.getId(),
+                expense.getId(), request);
+        });
+
+        List<PersonalExpense> savedExpenses = personalExpenseRepository.findAll();
+        assertEquals(1, savedExpenses.size());
     }
 }
