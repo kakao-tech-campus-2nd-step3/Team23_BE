@@ -20,6 +20,7 @@ public enum ErrorType {
     EXPENSE_INVALID_TEAM(HttpStatus.BAD_REQUEST, "E400", "요청 목록에 타 모임의 지출이 포함되어 있습니다."),
     EXPENSE_INVALID_PAYER(HttpStatus.BAD_REQUEST, "E400", "요청 목록에 본인이 결제하지 않은 지출이 포함되어 있습니다."),
     INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "E400", "잘못된 quantity 값 요청입니다."),
+    ALREADY_CHECKED_ITEM(HttpStatus.BAD_REQUEST, "E400", "이미 선택 완료 한 품목이 포함된 요청입니다."),
 
     // 401 UNAUTHORIZED
     JWT_SIGNATURE_INVALID(HttpStatus.UNAUTHORIZED, "E401001", "토큰 서명이 유효하지 않습니다."),
