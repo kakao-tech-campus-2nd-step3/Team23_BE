@@ -47,7 +47,7 @@ class PersonalExpenseServiceTest {
     private Member member1, member2, member3;
     private Team team;
     private Expense expense;
-    private Item item;
+    private Item item1, item2;
 
     @BeforeAll
     void setup() {
@@ -58,30 +58,44 @@ class PersonalExpenseServiceTest {
             new Member("kakaoId2", "email2@test.com", "User2", null, null, null));
         member3 = memberRepository.save(
             new Member("kakaoId3", "email3@test.com", "User3", null, null, null));
-        item = new Item("Test Item", 2, 1000);
+        item1 = new Item("Test Item", 2, 1000);
+        item2 = new Item("Test Item", 1, 1000);
         expense = Expense.builder()
             .title("asdf")
             .category(null)
             .imageUrl("image.jpg")
             .team(team)
             .member(member1)
-            .items(List.of(item))
+            .items(List.of(item1))
             .paymentTime(LocalDateTime.now())
             .build();
         expense = expenseRepository.save(expense);
-        itemRepository.save(item);
+        itemRepository.save(item1);
+        itemRepository.save(item2);
+        personalExpenseRepository.save(new PersonalExpense(member1, item2, 1, 1000));
+    }
+
+    @AfterAll
+    void cleanup() {
+        personalExpenseRepository.deleteAll();
+        itemRepository.deleteAll();
+        expenseRepository.deleteAll();
+        teamRepository.deleteAll();
+        memberRepository.deleteAll();
     }
 
     @Test
     @DisplayName("개인 소비 내역 저장 - 동시성 테스트")
     void personalExpenseSaveConcurrencyTest() throws InterruptedException {
+
+        // given
         int threadCount = 3;
         List<Member> members = List.of(member1, member2, member3);
         CountDownLatch startLatch = new CountDownLatch(1);
         CountDownLatch endLatch = new CountDownLatch(threadCount);
-
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
 
+        // when
         for (int i = 0; i < threadCount; i++) {
             Member testMember = members.get(i);
 
@@ -89,7 +103,7 @@ class PersonalExpenseServiceTest {
                 try {
                     startLatch.await(); // 모든 스레드 대기
                     SavePersonalExpenseRequest request = new SavePersonalExpenseRequest(
-                        List.of(new SavePersonalExpenseRequest.ItemInfo(item.getId(), 1)));
+                        List.of(new SavePersonalExpenseRequest.ItemInfo(item1.getId(), 1)));
                     personalExpenseService.savePersonalExpense(testMember.getId(), team.getId(),
                         expense.getId(), request);
                 } catch (Exception e) {
@@ -104,10 +118,8 @@ class PersonalExpenseServiceTest {
         endLatch.await();
         executorService.shutdown();
 
-        List<PersonalExpense> savedExpenses = personalExpenseRepository.findAllByItem(item);
-        savedExpenses.forEach(
-            o -> System.out.println(o.getId()));
-
+        // then
+        List<PersonalExpense> savedExpenses = personalExpenseRepository.findAllByItem(item1);
         assertEquals(3, savedExpenses.size());
 
         assertTrue(
@@ -124,12 +136,24 @@ class PersonalExpenseServiceTest {
                     + o.getTotalPrice()));
     }
 
-    @AfterAll
-    void cleanup() {
-        personalExpenseRepository.deleteAll();
-        itemRepository.deleteAll();
-        expenseRepository.deleteAll();
-        teamRepository.deleteAll();
-        memberRepository.deleteAll();
+    @Test
+    @DisplayName("개인 소비 내역 저장 - 기존 데이터 업데이트 테스트")
+    void updatePersonalExpenseTest() {
+
+        // given
+        SavePersonalExpenseRequest request = new SavePersonalExpenseRequest(
+            List.of(new SavePersonalExpenseRequest.ItemInfo(item2.getId(), 1)));
+
+        // when
+        personalExpenseService.savePersonalExpense(member2.getId(), team.getId(), expense.getId(),
+            request);
+
+        // then
+        List<PersonalExpense> savedExpenses = personalExpenseRepository.findAllByItem(item2);
+        assertEquals(2, savedExpenses.size());
+
+        //예상 출력값 = 500, 500
+        savedExpenses.forEach(expense -> System.out.println(
+            "member" + expense.getMember().getId() + " totalPrice: " + expense.getTotalPrice()));
     }
 }
