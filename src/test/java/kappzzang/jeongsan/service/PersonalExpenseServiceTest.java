@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -152,8 +153,10 @@ class PersonalExpenseServiceTest {
         List<PersonalExpense> savedExpenses = personalExpenseRepository.findAllByItem(item2);
         assertEquals(2, savedExpenses.size());
 
-        //예상 출력값 = 500, 500
-        savedExpenses.forEach(expense -> System.out.println(
-            "member" + expense.getMember().getId() + " totalPrice: " + expense.getTotalPrice()));
+        PersonalExpense personalExpense1 = savedExpenses.get(0);
+        PersonalExpense personalExpense2 = savedExpenses.get(1);
+
+        assertEquals(personalExpense1.getQuantity(), personalExpense2.getQuantity());
+        assertEquals(personalExpense1.getTotalPrice(), personalExpense2.getTotalPrice());
     }
 }
