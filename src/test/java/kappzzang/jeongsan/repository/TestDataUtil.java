@@ -76,11 +76,12 @@ public class TestDataUtil {
 
     //PersonalExpense
     public PersonalExpense createAndPersistPersonalExpense(Member member,
-        Integer consumedQuantity, Item item) {
+        Integer consumedQuantity, Item item,int totalPrice) {
         PersonalExpense personalExpense = PersonalExpense.builder()
             .member(member)
             .quantity(consumedQuantity)
             .item(item)
+            .totalPrice(totalPrice)
             .build();
         entityManager.persist(personalExpense);
         return personalExpense;
