@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import lombok.Builder;
@@ -36,6 +37,14 @@ public class PersonalExpense extends BaseEntity {
 
     @Column(nullable = false)
     private Integer totalPrice;
+
+    @Builder(toBuilder = true)
+    public PersonalExpense(Member member, Item item, Integer quantity, Integer totalPrice) {
+        this.member = member;
+        this.item = item;
+        this.quantity = quantity;
+        this.totalPrice = totalPrice;
+    }
 
     @Builder
     public PersonalExpense(Member member, Integer quantity, Item item) {

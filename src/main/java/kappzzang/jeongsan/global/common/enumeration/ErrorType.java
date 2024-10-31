@@ -19,6 +19,7 @@ public enum ErrorType {
     EXPENSE_NOT_FOUND_ID(HttpStatus.BAD_REQUEST, "E400", "요청 목록에 존재하지 않는 지출이 포함되어 있습니다."),
     EXPENSE_INVALID_TEAM(HttpStatus.BAD_REQUEST, "E400", "요청 목록에 타 모임의 지출이 포함되어 있습니다."),
     EXPENSE_INVALID_PAYER(HttpStatus.BAD_REQUEST, "E400", "요청 목록에 본인이 결제하지 않은 지출이 포함되어 있습니다."),
+    INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "E400", "잘못된 quantity 값 요청입니다."),
 
     // 401 UNAUTHORIZED
     JWT_SIGNATURE_INVALID(HttpStatus.UNAUTHORIZED, "E401001", "토큰 서명이 유효하지 않습니다."),
@@ -34,6 +35,7 @@ public enum ErrorType {
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "E404003", "카테고리을 찾을 수 없습니다."),
     EXPENSE_NOT_FOUND(HttpStatus.NOT_FOUND, "E404004", "지출을 찾을 수 없습니다."),
     INVITATION_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "E404006", "초대 현황을 찾을 수 없습니다."),
+    ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "E404", "아이템(영수증 품목)을 찾을 수 없습니다."),
 
     //408 REQUEST_TIMEOUT
     EXTERNAL_API_REQUEST_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "E408001", "외부 API 요청 시간이 초과되었습니다."),
