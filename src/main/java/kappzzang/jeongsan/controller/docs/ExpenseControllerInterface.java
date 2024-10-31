@@ -62,6 +62,6 @@ public interface ExpenseControllerInterface {
         @ApiResponse(responseCode = "404", description =
             "`teamId`, `expenseId`, `itemId`에 해당하는 데이터가 존재하지 않음 (ErrorCode-E404002, E404004, E404)", content = @Content)
     })
-    ResponseEntity<JeongsanApiResponse<Void>> savePersonalExpense(Long memberId, Long teamId,
-        Long expenseId, SavePersonalExpenseRequest personalExpense);
+    ResponseEntity<JeongsanApiResponse<Void>> savePersonalExpense(Long teamId,
+        Long expenseId, Long memberId, SavePersonalExpenseRequest personalExpense);
 }
