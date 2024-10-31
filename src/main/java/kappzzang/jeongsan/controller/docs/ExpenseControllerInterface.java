@@ -56,9 +56,11 @@ public interface ExpenseControllerInterface {
     })
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "개인 소비 내역 저장 성공", content = @Content),
-        @ApiResponse(responseCode = "400", description = "아이템 quantity 보다 많은 선택 수량 (ErrorCode=E400)", content = @Content),
-        @ApiResponse(responseCode = "400", description = "이전에 선택하여 저장 한 아이템이 포함된 요청 (ErrorCode-E400)", content = @Content),
-        @ApiResponse(responseCode = "404", description = "`teamId`, `expenseId`, `itemId`에 해당하는 데이터가 존재하지 않음 (ErrorCode-E404002, 004, 00?)", content = @Content)
+        @ApiResponse(responseCode = "400", description =
+            "이전에 선택하여 저장 한 아이템이 포함된 요청 (ErrorCode-E400), "
+                + "아이템 quantity 보다 많은 선택 수량 (ErrorCode=E400)", content = @Content),
+        @ApiResponse(responseCode = "404", description =
+            "`teamId`, `expenseId`, `itemId`에 해당하는 데이터가 존재하지 않음 (ErrorCode-E404002, E404004, E404)", content = @Content)
     })
     ResponseEntity<JeongsanApiResponse<Void>> savePersonalExpense(Long memberId, Long teamId,
         Long expenseId, SavePersonalExpenseRequest personalExpense);

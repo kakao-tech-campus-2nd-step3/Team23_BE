@@ -64,6 +64,7 @@ public class ExpenseController implements ExpenseControllerInterface {
         return JeongsanApiResponse.success(SuccessType.EXPENSE_STATUS_CHANGE_SUCCESS);
     }
 
+    @Override
     @PostMapping("/personal/{teamId}/{expenseId}/{memberId}")
     public ResponseEntity<JeongsanApiResponse<Void>> savePersonalExpense(
         @PathVariable("teamId") Long teamId, @PathVariable("expenseId") Long expenseId,
