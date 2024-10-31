@@ -61,10 +61,14 @@ public class PersonalExpenseService {
         personalExpenseRepository.findByMemberAndItem(member, item).ifPresent(data -> {
             throw new JeongsanException(ErrorType.ALREADY_CHECKED_ITEM);
         });
+        checkRequestQuantityValidity(itemInfo, item);
+        return item;
+    }
+
+    private void checkRequestQuantityValidity(ItemInfo itemInfo, Item item) {
         if (item.getQuantity() < itemInfo.quantity()) {
             throw new JeongsanException(ErrorType.INVALID_QUANTITY);
         }
-        return item;
     }
 
     private void updateAndSaveRecords(List<PersonalExpense> personalExpenses, Item item,
