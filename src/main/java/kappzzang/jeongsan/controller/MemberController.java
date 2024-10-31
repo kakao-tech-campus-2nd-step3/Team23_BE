@@ -37,6 +37,7 @@ public class MemberController implements MemberControllerInterface {
             memberService.login(loginRequest));
     }
 
+    @Override
     @PostMapping("/register")
     public ResponseEntity<JeongsanApiResponse<LoginResponse>> register(
         @Valid @RequestBody RegisterRequest registerRequest) {
