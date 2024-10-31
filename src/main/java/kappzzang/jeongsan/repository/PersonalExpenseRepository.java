@@ -19,5 +19,6 @@ public interface PersonalExpenseRepository extends JpaRepository<PersonalExpense
         @Param("itemIds") List<Long> itemIds);
 
     List<PersonalExpense> findAllByItem(Item item);
+
     Optional<PersonalExpense> findByMemberAndItem(Member member, Item item);
 }

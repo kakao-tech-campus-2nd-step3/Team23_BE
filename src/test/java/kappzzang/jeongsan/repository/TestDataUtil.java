@@ -76,7 +76,7 @@ public class TestDataUtil {
 
     //PersonalExpense
     public PersonalExpense createAndPersistPersonalExpense(Member member,
-        Integer consumedQuantity, Item item,int totalPrice) {
+        Integer consumedQuantity, Item item, int totalPrice) {
         PersonalExpense personalExpense = PersonalExpense.builder()
             .member(member)
             .quantity(consumedQuantity)

@@ -70,10 +70,10 @@ public class PersonalExpenseService {
     private void updateAndSaveRecords(List<PersonalExpense> personalExpenses, Item item,
         ItemInfo itemInfo, Member member) {
 
-        int totalQuantity = personalExpenses.stream().mapToInt(PersonalExpense::getQuantity)
-            .sum() + itemInfo.quantity();
-        int requestedMemberPrice = calculateRequestMemberPrice(item.getTotalPrice(),
-            totalQuantity, itemInfo.quantity());
+        int totalQuantity = personalExpenses.stream().mapToInt(PersonalExpense::getQuantity).sum()
+            + itemInfo.quantity();
+        int requestedMemberPrice = calculateRequestMemberPrice(item.getTotalPrice(), totalQuantity,
+            itemInfo.quantity());
         int newPersonalUnitPrice = item.getTotalPrice() / totalQuantity;
 
         updateExistingPersonalExpenses(personalExpenses, newPersonalUnitPrice);
