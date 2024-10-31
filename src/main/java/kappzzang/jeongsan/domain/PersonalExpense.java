@@ -37,7 +37,7 @@ public class PersonalExpense extends BaseEntity {
     @Column(nullable = false)
     private Integer totalPrice;
 
-    @Builder(toBuilder = true)
+    @Builder
     public PersonalExpense(Member member, Item item, Integer quantity, Integer totalPrice) {
         this.member = member;
         this.item = item;
@@ -60,4 +60,7 @@ public class PersonalExpense extends BaseEntity {
         this.totalPrice = this.quantity * this.item.getUnitPrice();
     }
 
+    public void updateTotalPrice(int newTotalPrice) {
+        this.totalPrice = newTotalPrice;
+    }
 }

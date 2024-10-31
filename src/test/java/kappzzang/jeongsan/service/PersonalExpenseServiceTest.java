@@ -1,0 +1,135 @@
+package kappzzang.jeongsan.service;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import kappzzang.jeongsan.domain.Expense;
+import kappzzang.jeongsan.domain.Item;
+import kappzzang.jeongsan.domain.Member;
+import kappzzang.jeongsan.domain.PersonalExpense;
+import kappzzang.jeongsan.domain.Team;
+import kappzzang.jeongsan.dto.request.SavePersonalExpenseRequest;
+import kappzzang.jeongsan.repository.ExpenseRepository;
+import kappzzang.jeongsan.repository.ItemRepository;
+import kappzzang.jeongsan.repository.MemberRepository;
+import kappzzang.jeongsan.repository.PersonalExpenseRepository;
+import kappzzang.jeongsan.repository.TeamRepository;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class PersonalExpenseServiceTest {
+
+    @Autowired
+    private PersonalExpenseService personalExpenseService;
+    @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
+    private TeamRepository teamRepository;
+    @Autowired
+    private ExpenseRepository expenseRepository;
+    @Autowired
+    private ItemRepository itemRepository;
+    @Autowired
+    private PersonalExpenseRepository personalExpenseRepository;
+
+    private Member member1, member2, member3;
+    private Team team;
+    private Expense expense;
+    private Item item;
+
+    @BeforeAll
+    void setup() {
+        team = teamRepository.save(new Team("Test Team", "🍎"));
+        member1 = memberRepository.save(
+            new Member("kakaoId1", "email1@test.com", "User1", null, null, null));
+        member2 = memberRepository.save(
+            new Member("kakaoId2", "email2@test.com", "User2", null, null, null));
+        member3 = memberRepository.save(
+            new Member("kakaoId3", "email3@test.com", "User3", null, null, null));
+        item = new Item("Test Item", 2, 1000);
+        expense = Expense.builder()
+            .title("asdf")
+            .category(null)
+            .imageUrl("image.jpg")
+            .team(team)
+            .member(member1)
+            .items(List.of(item))
+            .paymentTime(LocalDateTime.now())
+            .build();
+        expense = expenseRepository.save(expense);
+        itemRepository.save(item);
+    }
+
+    @Test
+    @DisplayName("개인 소비 내역 저장 - 동시성 테스트")
+    void personalExpenseSaveConcurrencyTest() throws InterruptedException {
+        int threadCount = 3;
+        List<Member> members = List.of(member1, member2, member3);
+        CountDownLatch startLatch = new CountDownLatch(1);
+        CountDownLatch endLatch = new CountDownLatch(threadCount);
+
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+
+        for (int i = 0; i < threadCount; i++) {
+            Member testMember = members.get(i);
+
+            executorService.submit(() -> {
+                try {
+                    startLatch.await(); // 모든 스레드 대기
+                    SavePersonalExpenseRequest request = new SavePersonalExpenseRequest(
+                        List.of(new SavePersonalExpenseRequest.ItemInfo(item.getId(), 1)));
+                    personalExpenseService.savePersonalExpense(testMember.getId(), team.getId(),
+                        expense.getId(), request);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    endLatch.countDown();
+                }
+            });
+        }
+
+        startLatch.countDown();
+        endLatch.await();
+        executorService.shutdown();
+
+        List<PersonalExpense> savedExpenses = personalExpenseRepository.findAllByItem(item);
+        savedExpenses.forEach(
+            o -> System.out.println(o.getId()));
+
+        assertEquals(3, savedExpenses.size());
+
+        assertTrue(
+            savedExpenses.stream().anyMatch(pe -> pe.getMember().getId().equals(member1.getId())));
+        assertTrue(
+            savedExpenses.stream().anyMatch(pe -> pe.getMember().getId().equals(member2.getId())));
+        assertTrue(
+            savedExpenses.stream().anyMatch(pe -> pe.getMember().getId().equals(member3.getId())));
+
+        //예상 출력값 = 666, 666, 668
+        savedExpenses.forEach(
+            o -> System.out.println(
+                "expenseId" + o.getId() + "-member" + o.getMember().getId() + ": "
+                    + o.getTotalPrice()));
+    }
+
+    @AfterAll
+    void cleanup() {
+        personalExpenseRepository.deleteAll();
+        itemRepository.deleteAll();
+        expenseRepository.deleteAll();
+        teamRepository.deleteAll();
+        memberRepository.deleteAll();
+    }
+}

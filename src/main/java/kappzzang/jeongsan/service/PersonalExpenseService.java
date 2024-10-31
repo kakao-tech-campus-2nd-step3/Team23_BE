@@ -1,6 +1,5 @@
 package kappzzang.jeongsan.service;
 
-import jakarta.transaction.Transactional;
 import java.util.List;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
@@ -16,6 +15,7 @@ import kappzzang.jeongsan.repository.PersonalExpenseRepository;
 import kappzzang.jeongsan.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +28,7 @@ public class PersonalExpenseService {
     private final PersonalExpenseRepository personalExpenseRepository;
 
     @Transactional
-    public void savePersonalExpense(Long memberId, Long teamId, Long expenseId,
+    public synchronized void savePersonalExpense(Long memberId, Long teamId, Long expenseId,
         SavePersonalExpenseRequest personalExpense) {
 
         Member member = getMemberIfTeamAndExpenseValid(memberId, teamId, expenseId);
@@ -84,16 +84,14 @@ public class PersonalExpenseService {
         int newPersonalUnitPrice) {
 
         personalExpenses.forEach(personalExpense -> {
-            PersonalExpense updatedPersonalExpense = personalExpense.toBuilder()
-                .totalPrice(newPersonalUnitPrice * personalExpense.getQuantity()).build();
-            savePersonalExpense(updatedPersonalExpense);
+            personalExpense.updateTotalPrice(newPersonalUnitPrice * personalExpense.getQuantity());
         });
     }
 
     private void saveNewPersonalExpense(Member member, Item item, int quantity, int totalPrice) {
         PersonalExpense newPersonalExpense = PersonalExpense.builder().member(member).item(item)
             .quantity(quantity).totalPrice(totalPrice).build();
-        savePersonalExpense(newPersonalExpense);
+        personalExpenseRepository.save(newPersonalExpense);
     }
 
     private int calculateRequestMemberPrice(int totalPrice, int totalQuantity,
@@ -101,9 +99,5 @@ public class PersonalExpenseService {
         int newTotalPrice = (totalPrice / totalQuantity) * requestQuantity;
         int remainder = totalPrice % totalQuantity;
         return newTotalPrice + remainder;
-    }
-
-    private void savePersonalExpense(PersonalExpense personalExpense) {
-        personalExpenseRepository.save(personalExpense);
     }
 }
