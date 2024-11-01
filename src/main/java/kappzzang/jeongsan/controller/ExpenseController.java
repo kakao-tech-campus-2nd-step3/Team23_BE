@@ -73,4 +73,14 @@ public class ExpenseController implements ExpenseControllerInterface {
         personalExpenseService.savePersonalExpense(memberId, teamId, expenseId, personalExpense);
         return JeongsanApiResponse.success(SuccessType.PERSONAL_EXPENSE_SAVED);
     }
+
+    @Override
+    @GetMapping("ipaid/{teamId}")
+    public ResponseEntity<JeongsanApiResponse<ExpenseResponse>> getExpensesIPaid(
+        @AuthenticationPrincipal Long memberId,
+        @PathVariable Long teamId
+    ) {
+        return JeongsanApiResponse.success(SuccessType.EXPENSE_LIST_LOADED,
+            expenseService.getExpensesIPaid(memberId, teamId));
+    }
 }
