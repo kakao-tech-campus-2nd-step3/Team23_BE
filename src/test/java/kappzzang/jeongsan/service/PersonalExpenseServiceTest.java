@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
@@ -94,9 +95,13 @@ class PersonalExpenseServiceTest {
         // given
         int threadCount = 3;
         List<Member> members = List.of(member1, member2, member3);
+        List<Integer> expectedTotalPrices = List.of(666, 666, 668);
         CountDownLatch startLatch = new CountDownLatch(1);
         CountDownLatch endLatch = new CountDownLatch(threadCount);
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+
+        // 마지막에 완료된 memberId 저장 목적
+        AtomicReference<Long> lastCompletedMemberId = new AtomicReference<>();
 
         // when
         for (int i = 0; i < threadCount; i++) {
@@ -109,6 +114,8 @@ class PersonalExpenseServiceTest {
                         List.of(new SavePersonalExpenseRequest.ItemInfo(item1.getId(), 1)));
                     personalExpenseService.savePersonalExpense(testMember.getId(), team.getId(),
                         expense.getId(), request);
+
+                    lastCompletedMemberId.set(testMember.getId());  // 마지막에 완료된 memberId 저장
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -123,8 +130,15 @@ class PersonalExpenseServiceTest {
 
         // then
         List<PersonalExpense> savedExpenses = personalExpenseRepository.findAllByItem(item1);
-        assertEquals(3, savedExpenses.size());
+        List<Integer> actualTotalPrices = savedExpenses.stream().map(PersonalExpense::getTotalPrice)
+            .sorted().toList();
 
+        Long lastUpdatedMemberId = lastCompletedMemberId.get();
+        Integer lastMemberTotalPrice = savedExpenses.stream()
+            .filter(expense -> expense.getMember().getId().equals(lastUpdatedMemberId))
+            .map(PersonalExpense::getTotalPrice).findFirst().orElse(0);
+
+        assertEquals(3, savedExpenses.size());
         assertTrue(
             savedExpenses.stream().anyMatch(pe -> pe.getMember().getId().equals(member1.getId())));
         assertTrue(
@@ -132,11 +146,8 @@ class PersonalExpenseServiceTest {
         assertTrue(
             savedExpenses.stream().anyMatch(pe -> pe.getMember().getId().equals(member3.getId())));
 
-        //예상 출력값 = 666, 666, 668
-        savedExpenses.forEach(
-            o -> System.out.println(
-                "expenseId" + o.getId() + "-member" + o.getMember().getId() + ": "
-                    + o.getTotalPrice()));
+        assertEquals(expectedTotalPrices, actualTotalPrices);   // 전체 값 검증
+        assertEquals(expectedTotalPrices.get(2), lastMemberTotalPrice); // 마지막에 완료 된 값 668 검증
     }
 
     @Test
