@@ -59,4 +59,13 @@ public class ExpenseController implements ExpenseControllerInterface {
         expenseService.completeExpenses(request, teamId, memberId);
         return JeongsanApiResponse.success(SuccessType.EXPENSE_STATUS_CHANGE_SUCCESS);
     }
+
+    @GetMapping("ipaid/{teamId}")
+    public ResponseEntity<JeongsanApiResponse<ExpenseResponse>> getExpensesIPaid(
+        @AuthenticationPrincipal Long memberId,
+        @PathVariable Long teamId
+    ) {
+        return JeongsanApiResponse.success(SuccessType.EXPENSE_LIST_LOADED,
+            expenseService.getExpensesIPaid(memberId, teamId));
+    }
 }
