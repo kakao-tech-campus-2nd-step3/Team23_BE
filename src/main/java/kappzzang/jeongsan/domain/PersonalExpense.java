@@ -38,6 +38,14 @@ public class PersonalExpense extends BaseEntity {
     private Integer totalPrice;
 
     @Builder
+    public PersonalExpense(Member member, Item item, Integer quantity, Integer totalPrice) {
+        this.member = member;
+        this.item = item;
+        this.quantity = quantity;
+        this.totalPrice = totalPrice;
+    }
+
+    @Builder
     public PersonalExpense(Member member, Integer quantity, Item item) {
         this.member = member;
         this.quantity = quantity;
@@ -52,4 +60,7 @@ public class PersonalExpense extends BaseEntity {
         this.totalPrice = this.quantity * this.item.getUnitPrice();
     }
 
+    public void updateTotalPrice(int newTotalPrice) {
+        this.totalPrice = newTotalPrice;
+    }
 }

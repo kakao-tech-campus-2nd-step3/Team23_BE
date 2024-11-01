@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kappzzang.jeongsan.dto.request.CompleteExpensesRequest;
+import kappzzang.jeongsan.dto.request.SavePersonalExpenseRequest;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +48,22 @@ public interface ExpenseControllerInterface {
     })
     ResponseEntity<JeongsanApiResponse<Void>> changeExpensesStatusComplete(
         CompleteExpensesRequest request, Long teamId, Long memberId);
+
+    @Operation(summary = "지출 내역 저장(선택 완료) API", description = "개인이 소비한 품목(아이템)을 선택하여 저장하는 API")
+    @Parameters({
+        @Parameter(name = "teamId", description = "요청 멤버가 속한 모임의 ID"),
+        @Parameter(name = "expenseId", description = "선택한 아이템이 속한 지출의 ID"),
+    })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "개인 소비 내역 저장 성공", content = @Content),
+        @ApiResponse(responseCode = "400", description =
+            "이전에 선택하여 저장 한 아이템이 포함된 요청 (ErrorCode-E400), "
+                + "아이템 quantity 보다 많은 선택 수량 (ErrorCode=E400)", content = @Content),
+        @ApiResponse(responseCode = "404", description =
+            "`teamId`, `expenseId`, `itemId`에 해당하는 데이터가 존재하지 않음 (ErrorCode-E404002, E404004, E404)", content = @Content)
+    })
+    ResponseEntity<JeongsanApiResponse<Void>> savePersonalExpense(Long teamId,
+        Long expenseId, Long memberId, SavePersonalExpenseRequest personalExpense);
 
     @Operation(summary = "내가 지불한 지출 내역 조회 API", description = "내가 지불한 지출 내역 중 `송금 대기` 상태 지출 내역 조회")
     @Parameter(name = "teamId", description = "조회를 원하는 모임 ID")
