@@ -7,7 +7,6 @@ import kappzzang.jeongsan.controller.docs.MemberControllerInterface;
 import kappzzang.jeongsan.dto.request.JoinTeamRequest;
 import kappzzang.jeongsan.dto.request.LoginRequest;
 import kappzzang.jeongsan.dto.request.RefreshRequest;
-import kappzzang.jeongsan.dto.request.RegisterRequest;
 import kappzzang.jeongsan.dto.response.GetPayLinkResponse;
 import kappzzang.jeongsan.dto.response.LoginResponse;
 import kappzzang.jeongsan.dto.response.RefreshResponse;
@@ -32,19 +31,11 @@ public class MemberController implements MemberControllerInterface {
     private final MemberService memberService;
 
     @Override
-    @PostMapping("/login")
+    @PostMapping("/token")
     public ResponseEntity<JeongsanApiResponse<LoginResponse>> login(
         @Valid @RequestBody LoginRequest loginRequest) {
         return JeongsanApiResponse.success(SuccessType.LOGGED_IN,
             memberService.login(loginRequest));
-    }
-
-    @Override
-    @PostMapping("/register")
-    public ResponseEntity<JeongsanApiResponse<LoginResponse>> register(
-        @Valid @RequestBody RegisterRequest registerRequest) {
-        return JeongsanApiResponse.success(SuccessType.SIGNED_UP,
-            memberService.register(registerRequest));
     }
 
     @Override
