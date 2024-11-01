@@ -4,6 +4,7 @@ import static kappzzang.jeongsan.global.common.enumeration.ErrorType.KAKAO_PAY_L
 import static kappzzang.jeongsan.global.common.enumeration.ErrorType.NOT_INVITED_MEMBER;
 import static kappzzang.jeongsan.global.common.enumeration.ErrorType.REFRESH_TOKEN_INVALID;
 import static kappzzang.jeongsan.global.common.enumeration.ErrorType.TEAM_NOT_FOUND;
+import static kappzzang.jeongsan.global.common.enumeration.ErrorType.USER_ALREADY_EXISTED;
 import static kappzzang.jeongsan.global.common.enumeration.ErrorType.USER_NOT_FOUND;
 
 import kappzzang.jeongsan.domain.Member;
@@ -11,11 +12,10 @@ import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.domain.TeamMember;
 import kappzzang.jeongsan.dto.request.LoginRequest;
 import kappzzang.jeongsan.dto.request.RefreshRequest;
+import kappzzang.jeongsan.dto.request.RegisterRequest;
 import kappzzang.jeongsan.dto.response.GetPayLinkResponse;
 import kappzzang.jeongsan.dto.response.LoginResponse;
 import kappzzang.jeongsan.dto.response.RefreshResponse;
-import kappzzang.jeongsan.global.client.dto.response.KakaoProfileResponse;
-import kappzzang.jeongsan.global.client.kakao.KakaoApiClient;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import kappzzang.jeongsan.global.util.JwtUtil;
 import kappzzang.jeongsan.repository.MemberRepository;
@@ -31,7 +31,6 @@ public class MemberService {
 
     private static final String BEARER = "Bearer";
 
-    private final KakaoApiClient kakaoApiClient;
     private final JwtUtil jwtUtil;
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
@@ -39,11 +38,22 @@ public class MemberService {
 
     @Transactional
     public LoginResponse login(LoginRequest loginRequest) {
-        KakaoProfileResponse kakaoProfileResponse = kakaoApiClient.getKakaoProfile(
-            loginRequest.accessToken());
+        Member member = memberRepository.findByEmail(loginRequest.email())
+            .orElseThrow(() -> new JeongsanException(USER_NOT_FOUND));
+        return createToken(member);
+    }
 
-        Member member = memberRepository.findByKakaoId(kakaoProfileResponse.forPartner().uuid())
-            .orElseGet(() -> memberRepository.save(kakaoProfileResponse.toMember()));
+    @Transactional
+    public LoginResponse register(RegisterRequest registerRequest) {
+        if (memberRepository.findByEmail(registerRequest.email()).isPresent()) {
+            throw new JeongsanException(USER_ALREADY_EXISTED);
+        }
+
+        Member member = memberRepository.save(registerRequest.toMember());
+        return createToken(member);
+    }
+
+    private LoginResponse createToken(Member member) {
         String accessToken = jwtUtil.createAccessToken(member.getId());
         String refreshToken = jwtUtil.createRefreshToken();
         member = member.toBuilder()
