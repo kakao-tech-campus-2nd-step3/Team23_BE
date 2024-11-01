@@ -1,6 +1,8 @@
 package kappzzang.jeongsan.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.PersonalExpense;
@@ -27,20 +29,30 @@ public class PersonalExpenseService {
     private final ItemRepository itemRepository;
     private final PersonalExpenseRepository personalExpenseRepository;
 
+    private final Map<Long, Object> locks = new ConcurrentHashMap<>();
+
     @Transactional
-    public synchronized void savePersonalExpense(Long memberId, Long teamId, Long expenseId,
+    public void savePersonalExpense(Long memberId, Long teamId, Long expenseId,
         SavePersonalExpenseRequest personalExpense) {
 
-        Member member = getMemberIfTeamAndExpenseValid(memberId, teamId, expenseId);
+        locks.computeIfAbsent(expenseId, id -> new Object());
 
-        for (ItemInfo itemInfo : personalExpense.items()) {
-            Item item = getItemIfItemInfoValid(itemInfo, member);
-            List<PersonalExpense> personalExpenses = personalExpenseRepository.findAllByItem(item);
-            if (personalExpenses.isEmpty()) {
-                saveNewPersonalExpense(member, item, itemInfo.quantity(),
-                    item.getUnitPrice() * itemInfo.quantity());
-            } else {
-                updateAndSaveRecords(personalExpenses, item, itemInfo, member);
+        synchronized (locks.get(expenseId)) {
+            try {
+                Member member = getMemberIfTeamAndExpenseValid(memberId, teamId, expenseId);
+
+                for (ItemInfo itemInfo : personalExpense.items()) {
+                    Item item = getItemIfItemInfoValid(itemInfo, member);
+                    List<PersonalExpense> personalExpenses = personalExpenseRepository.findAllByItem(item);
+                    if (personalExpenses.isEmpty()) {
+                        saveNewPersonalExpense(member, item, itemInfo.quantity(),
+                            item.getUnitPrice() * itemInfo.quantity());
+                    } else {
+                        updateAndSaveRecords(personalExpenses, item, itemInfo, member);
+                    }
+                }
+            } finally {
+                locks.remove(expenseId);
             }
         }
     }
