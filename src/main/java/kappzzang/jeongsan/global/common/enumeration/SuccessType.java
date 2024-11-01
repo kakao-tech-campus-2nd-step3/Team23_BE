@@ -13,13 +13,14 @@ public enum SuccessType {
     EXPENSE_LIST_LOADED(HttpStatus.OK, "지출 목록을 불러오는 데 성공했습니다"),
     PERSONAL_EXPENSE_LOADED(HttpStatus.OK, "개인 지출 목록을 불러오는 데 성공했습니다."),
     INVITATION_STATUS_LOADED(HttpStatus.OK, "모임의 멤버 초대 현황을 불러오는 데 성공했습니다."),
+    LOGGED_IN(HttpStatus.CREATED, "로그인을 성공하였습니다."),
     ACCESS_TOKEN_REISSUED(HttpStatus.OK, "액세스 토큰이 재발급되었습니다."),
     PAY_LINK_LOADED(HttpStatus.OK, "카카오 페이 송금 링크 조회 성공"),
     PERSONAL_EXPENSE_SAVED(HttpStatus.OK, "개인 소비 내역이 저장되었습니다."),
 
     // 201 CREATED
+    SIGNED_UP(HttpStatus.CREATED, "회원가입을 성공하였습니다."),
     TEAM_CREATED(HttpStatus.CREATED, "모임이 생성되었습니다."),
-    LOGGED_IN(HttpStatus.CREATED, "로그인을 성공하였습니다."),
     EXPENSE_CREATED(HttpStatus.CREATED, "지출 내역 등록을 성공하였습니다."),
 
     //204 NO_CONTENT

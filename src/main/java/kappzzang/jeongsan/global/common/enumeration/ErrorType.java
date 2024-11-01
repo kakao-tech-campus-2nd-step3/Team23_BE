@@ -36,7 +36,7 @@ public enum ErrorType {
     TEAM_NOT_FOUND(HttpStatus.NOT_FOUND, "E404002", "모임을 찾을 수 없습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "E404003", "카테고리을 찾을 수 없습니다."),
     EXPENSE_NOT_FOUND(HttpStatus.NOT_FOUND, "E404004", "지출을 찾을 수 없습니다."),
-    INVITATION_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "E404006", "초대 현황을 찾을 수 없습니다."),
+    INVITATION_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "E404005", "초대 현황을 찾을 수 없습니다."),
     KAKAO_PAY_LINK_NOT_FOUND(HttpStatus.NOT_FOUND, "E404", "카카오 페이 송금 링크를 찾을 수 없습니다."),
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "E404", "아이템(영수증 품목)을 찾을 수 없습니다."),
     TEAM_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "E404", "팀 멤버를 찾을 수 없습니다."),
@@ -47,6 +47,7 @@ public enum ErrorType {
 
     //409 CONFLICT
     TEAM_NAME_DUPLICATED(HttpStatus.CONFLICT, "E409001", "중복된 모임 이름이 존재합니다."),
+    USER_ALREADY_EXISTED(HttpStatus.CONFLICT, "E409002", "이미 회원가입된 사용자입니다."),
 
     // 500 INTERNAL_SERVER_ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E500001", "서버 내부 오류가 발생했습니다."),
