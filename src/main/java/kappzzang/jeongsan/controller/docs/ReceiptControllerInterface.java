@@ -51,7 +51,7 @@ public interface ReceiptControllerInterface {
     @Parameter(name = "expenseId", description = "조회할 지출 ID")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "지출 상세 내역 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonalExpenseDetailResponse.class))),
-        @ApiResponse(responseCode = "404", description = "존재하지 않는 지출 (ErrorCode-E404), 존재하지 않는 지출 상세 (ErrorCode-E404)", content = @Content),
+        @ApiResponse(responseCode = "404", description = "존재하지 않는 지출 (ErrorCode-E404004), 존재하지 않는 지출 상세 (ErrorCode-E404)", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 내부 오류 (ErrorCode-E500001), 외부 서버 호출 오류(ErrorCode-E500003)(영수증 이미지 로딩 실패)", content = @Content)
     })
     ResponseEntity<JeongsanApiResponse<PersonalExpenseDetailResponse>> getPersonalExpenseDetails(
