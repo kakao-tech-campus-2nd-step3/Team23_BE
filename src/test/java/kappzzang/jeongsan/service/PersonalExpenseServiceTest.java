@@ -15,6 +15,7 @@ import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.PersonalExpense;
 import kappzzang.jeongsan.domain.Team;
+import kappzzang.jeongsan.domain.TeamMember;
 import kappzzang.jeongsan.dto.request.SavePersonalExpenseRequest;
 import kappzzang.jeongsan.dto.request.SavePersonalExpenseRequest.ItemInfo;
 import kappzzang.jeongsan.global.exception.JeongsanException;
@@ -22,6 +23,7 @@ import kappzzang.jeongsan.repository.ExpenseRepository;
 import kappzzang.jeongsan.repository.ItemRepository;
 import kappzzang.jeongsan.repository.MemberRepository;
 import kappzzang.jeongsan.repository.PersonalExpenseRepository;
+import kappzzang.jeongsan.repository.TeamMemberRepository;
 import kappzzang.jeongsan.repository.TeamRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -47,6 +49,8 @@ class PersonalExpenseServiceTest {
     private ItemRepository itemRepository;
     @Autowired
     private PersonalExpenseRepository personalExpenseRepository;
+    @Autowired
+    private TeamMemberRepository teamMemberRepository;
 
     private Member member1, member2, member3;
     private Team team;
@@ -77,6 +81,9 @@ class PersonalExpenseServiceTest {
         itemRepository.save(item1);
         itemRepository.save(item2);
         personalExpenseRepository.save(new PersonalExpense(member1, item2, 1, 1000));
+        teamMemberRepository.save(new TeamMember(member1, team, false, true));
+        teamMemberRepository.save(new TeamMember(member2, team, false, true));
+        teamMemberRepository.save(new TeamMember(member3, team, false, true));
     }
 
     @AfterAll
@@ -86,6 +93,7 @@ class PersonalExpenseServiceTest {
         expenseRepository.deleteAll();
         teamRepository.deleteAll();
         memberRepository.deleteAll();
+        teamMemberRepository.deleteAll();
     }
 
     @Test
