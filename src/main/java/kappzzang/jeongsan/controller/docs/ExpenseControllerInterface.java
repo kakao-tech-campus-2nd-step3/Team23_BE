@@ -45,7 +45,12 @@ public interface ExpenseControllerInterface {
                 + "요청 목록에 타 모임의 지출이 포함(ErrorCode=E400), "
                 + "요청 목록에 본인이 결제하지 않은 지출이 포함(ErrorCode=E400)"),
     })
-    public ResponseEntity<JeongsanApiResponse<Void>> changeExpensesStatusComplete(
+    ResponseEntity<JeongsanApiResponse<Void>> changeExpensesStatusComplete(
         CompleteExpensesRequest request, Long teamId, Long memberId);
 
+    @Operation(summary = "내가 지불한 지출 내역 조회 API", description = "내가 지불한 지출 내역 중 `송금 대기` 상태 지출 내역 조회")
+    @Parameter(name = "teamId", description = "조회를 원하는 모임 ID")
+    @ApiResponse(responseCode = "200", description = "지출 내역 목록을 성공적으로 조회")
+    ResponseEntity<JeongsanApiResponse<ExpenseResponse>> getExpensesIPaid(
+        Long memberId, Long teamId);
 }
