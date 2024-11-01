@@ -59,7 +59,7 @@ public interface TeamControllerInterface {
         @ApiResponse(responseCode = "200", description = "모임의 멤버 초대 현황 조회 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvitationStatusResponse.class))),
         @ApiResponse(responseCode = "404", description = "`teamId`에 해당하는 모임을 찾을 수 없음 (ErrorCode-E404002)"),
-        @ApiResponse(responseCode = "404", description = "모임의 멤버 초대 현황 목록을 찾을 수 없음 (ErrorCode-E404006)")
+        @ApiResponse(responseCode = "404", description = "모임의 멤버 초대 현황 목록을 찾을 수 없음 (ErrorCode-E404005)")
     })
     ResponseEntity<JeongsanApiResponse<List<InvitationStatusResponse>>> getInvitationStatus(
         Long teamId);
