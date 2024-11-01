@@ -2,6 +2,7 @@ package kappzzang.jeongsan.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -10,10 +11,12 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
 import java.util.Optional;
+import kappzzang.jeongsan.domain.KakaoPayInfo;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.dto.request.LoginRequest;
 import kappzzang.jeongsan.dto.request.RefreshRequest;
 import kappzzang.jeongsan.dto.request.RegisterRequest;
+import kappzzang.jeongsan.dto.response.GetPayLinkResponse;
 import kappzzang.jeongsan.dto.response.LoginResponse;
 import kappzzang.jeongsan.dto.response.RefreshResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
@@ -153,6 +156,33 @@ public class MemberServiceTest {
         // then
         assertThat(refreshResponse.tokenType()).isEqualTo(BEARER);
         assertThat(refreshResponse.accessToken()).isEqualTo(TEST_ACCESS_TOKEN);
+    }
+
+    @Test
+    @DisplayName("카카오 페이 송금 링크 조회 테스트")
+    void getPayLink() {
+        // given
+        KakaoPayInfo kakaoPayInfo = new KakaoPayInfo("payLink");
+        given(memberRepository.findById(anyLong())).willReturn(
+            Optional.of(new Member("member", kakaoPayInfo)));
+
+        // when
+        GetPayLinkResponse getPayLinkResponse = memberService.getPayLink(1L);
+
+        // then
+        assertThat(getPayLinkResponse.kakaoPayLink()).isEqualTo("payLink");
+    }
+
+    @Test
+    @DisplayName("카카오 페이 송금 링크 조회 테스트 - 페이 링크가 null인 경우")
+    void getPayLinkException() {
+        // given
+        KakaoPayInfo kakaoPayInfo = new KakaoPayInfo(null);
+        given(memberRepository.findById(anyLong())).willReturn(
+            Optional.of(new Member("member", kakaoPayInfo)));
+
+        // when, then
+        assertThrows(JeongsanException.class, () -> memberService.getPayLink(1L));
     }
 
     private Member createMember() {

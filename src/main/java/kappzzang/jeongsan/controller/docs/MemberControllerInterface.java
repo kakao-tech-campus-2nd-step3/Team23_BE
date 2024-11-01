@@ -10,6 +10,7 @@ import kappzzang.jeongsan.dto.request.JoinTeamRequest;
 import kappzzang.jeongsan.dto.request.LoginRequest;
 import kappzzang.jeongsan.dto.request.RefreshRequest;
 import kappzzang.jeongsan.dto.request.RegisterRequest;
+import kappzzang.jeongsan.dto.response.GetPayLinkResponse;
 import kappzzang.jeongsan.dto.response.LoginResponse;
 import kappzzang.jeongsan.dto.response.RefreshResponse;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
@@ -53,4 +54,9 @@ public interface MemberControllerInterface {
         @ApiResponse(responseCode = "404", description = "잘못된 memberId, 사용자를 찾을 수 없음. (ErrorCode-E404001)"),
         @ApiResponse(responseCode = "404", description = "잘못된 teamId, 모임을 찾을 수 없음. (ErrorCode-E404002)")})
     ResponseEntity<JeongsanApiResponse<Void>> joinTeam(Long teamId, JoinTeamRequest request);
+
+    @Operation(summary = "송금 링크 조회 API", description = "카카오페이 송금 링크를 조회하는 API")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "카카오 페이 송금 링크 조회 성공"),
+        @ApiResponse(responseCode = "404", description = "카카오 페이 송금 링크를 찾을 수 없음. (ErrorCode-E404)")})
+    ResponseEntity<JeongsanApiResponse<GetPayLinkResponse>> getPayLink(Long memberId);
 }

@@ -1,5 +1,6 @@
 package kappzzang.jeongsan.service;
 
+import static kappzzang.jeongsan.global.common.enumeration.ErrorType.KAKAO_PAY_LINK_NOT_FOUND;
 import static kappzzang.jeongsan.global.common.enumeration.ErrorType.NOT_INVITED_MEMBER;
 import static kappzzang.jeongsan.global.common.enumeration.ErrorType.REFRESH_TOKEN_INVALID;
 import static kappzzang.jeongsan.global.common.enumeration.ErrorType.TEAM_NOT_FOUND;
@@ -12,6 +13,7 @@ import kappzzang.jeongsan.domain.TeamMember;
 import kappzzang.jeongsan.dto.request.LoginRequest;
 import kappzzang.jeongsan.dto.request.RefreshRequest;
 import kappzzang.jeongsan.dto.request.RegisterRequest;
+import kappzzang.jeongsan.dto.response.GetPayLinkResponse;
 import kappzzang.jeongsan.dto.response.LoginResponse;
 import kappzzang.jeongsan.dto.response.RefreshResponse;
 import kappzzang.jeongsan.global.exception.JeongsanException;
@@ -77,7 +79,6 @@ public class MemberService {
 
     @Transactional
     public void acceptInvite(Long teamId, Long memberId) {
-
         Team team = teamRepository.findById(teamId)
             .orElseThrow(() -> new JeongsanException(TEAM_NOT_FOUND));
         Member member = memberRepository.findById(memberId)
@@ -86,5 +87,17 @@ public class MemberService {
             .orElseThrow(() -> new JeongsanException(NOT_INVITED_MEMBER));
 
         teamMember.acceptInvite();
+    }
+
+    @Transactional(readOnly = true)
+    public GetPayLinkResponse getPayLink(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new JeongsanException(USER_NOT_FOUND));
+        String payLink = member.getKakaoPayInfo().getPayUrl();
+        if (payLink == null) {
+            throw new JeongsanException(KAKAO_PAY_LINK_NOT_FOUND);
+        }
+
+        return new GetPayLinkResponse(payLink);
     }
 }
