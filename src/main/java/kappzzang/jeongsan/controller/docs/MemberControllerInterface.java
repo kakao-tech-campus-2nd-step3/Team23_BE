@@ -57,6 +57,6 @@ public interface MemberControllerInterface {
 
     @Operation(summary = "송금 링크 조회 API", description = "카카오페이 송금 링크를 조회하는 API")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "카카오 페이 송금 링크 조회 성공"),
-        @ApiResponse(responseCode = "404", description = "카카오 페이 송금 링크를 찾을 수 없음. (ErrorCode-E404)")})
+        @ApiResponse(responseCode = "404", description = "카카오 페이 송금 링크를 찾을 수 없음. (ErrorCode-E404006)")})
     ResponseEntity<JeongsanApiResponse<GetPayLinkResponse>> getPayLink(Long memberId);
 }
