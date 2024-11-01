@@ -47,6 +47,7 @@ public enum ErrorType {
 
     // 409 CONFLICT
     TEAM_NAME_DUPLICATED(HttpStatus.CONFLICT, "E409001", "중복된 모임 이름이 존재합니다."),
+    USER_ALREADY_EXISTED(HttpStatus.CONFLICT, "E409002", "이미 회원가입된 사용자입니다."),
 
     // 500 INTERNAL_SERVER_ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E500001", "서버 내부 오류가 발생했습니다."),
