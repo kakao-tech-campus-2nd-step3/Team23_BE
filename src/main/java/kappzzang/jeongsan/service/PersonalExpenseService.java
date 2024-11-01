@@ -3,9 +3,11 @@ package kappzzang.jeongsan.service;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.PersonalExpense;
+import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.request.SavePersonalExpenseRequest;
 import kappzzang.jeongsan.dto.request.SavePersonalExpenseRequest.ItemInfo;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
@@ -14,6 +16,7 @@ import kappzzang.jeongsan.repository.ExpenseRepository;
 import kappzzang.jeongsan.repository.ItemRepository;
 import kappzzang.jeongsan.repository.MemberRepository;
 import kappzzang.jeongsan.repository.PersonalExpenseRepository;
+import kappzzang.jeongsan.repository.TeamMemberRepository;
 import kappzzang.jeongsan.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,7 @@ public class PersonalExpenseService {
     private final ExpenseRepository expenseRepository;
     private final ItemRepository itemRepository;
     private final PersonalExpenseRepository personalExpenseRepository;
+    private final TeamMemberRepository teamMemberRepository;
 
     private final Map<Long, Object> locks = new ConcurrentHashMap<>();
 
@@ -43,7 +47,8 @@ public class PersonalExpenseService {
 
                 for (ItemInfo itemInfo : personalExpense.items()) {
                     Item item = getItemIfItemInfoValid(itemInfo, member);
-                    List<PersonalExpense> personalExpenses = personalExpenseRepository.findAllByItem(item);
+                    List<PersonalExpense> personalExpenses = personalExpenseRepository.findAllByItem(
+                        item);
                     if (personalExpenses.isEmpty()) {
                         saveNewPersonalExpense(member, item, itemInfo.quantity(),
                             item.getUnitPrice() * itemInfo.quantity());
@@ -58,13 +63,19 @@ public class PersonalExpenseService {
     }
 
     private Member getMemberIfTeamAndExpenseValid(Long memberId, Long teamId, Long expenseId) {
-        teamRepository.findById(teamId)
+        Team team = teamRepository.findById(teamId)
             .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_NOT_FOUND));
-        expenseRepository.findById(expenseId)
+        Expense expense = expenseRepository.findById(expenseId)
             .orElseThrow(() -> new JeongsanException(ErrorType.EXPENSE_NOT_FOUND));
-
-        return memberRepository.findById(memberId)
+        Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new JeongsanException(ErrorType.USER_NOT_FOUND));
+        teamMemberRepository.findTeamMemberByTeamAndMember(team, member)
+            .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_MEMBER_NOT_FOUND));
+        if (!expense.getTeam().equals(team)) {
+            throw new JeongsanException(ErrorType.EXPENSE_NOT_IN_TEAM);
+        }
+
+        return member;
     }
 
     private Item getItemIfItemInfoValid(ItemInfo itemInfo, Member member) {
