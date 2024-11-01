@@ -50,4 +50,9 @@ public class Member extends BaseEntity {
         this.refreshToken = refreshToken;
         this.kakaoPayInfo = kakaoPayInfo;
     }
+
+    public Member(String nickname, KakaoPayInfo kakaoPayInfo) {
+        this.nickname = nickname;
+        this.kakaoPayInfo = kakaoPayInfo;
+    }
 }
