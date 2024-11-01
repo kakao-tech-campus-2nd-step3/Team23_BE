@@ -60,6 +60,7 @@ public class ExpenseController implements ExpenseControllerInterface {
         return JeongsanApiResponse.success(SuccessType.EXPENSE_STATUS_CHANGE_SUCCESS);
     }
 
+    @Override
     @GetMapping("ipaid/{teamId}")
     public ResponseEntity<JeongsanApiResponse<ExpenseResponse>> getExpensesIPaid(
         @AuthenticationPrincipal Long memberId,
