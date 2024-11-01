@@ -61,11 +61,11 @@ class PersonalExpenseServiceTest {
     void setup() {
         team = teamRepository.save(new Team("Test Team", "🍎"));
         member1 = memberRepository.save(
-            new Member("email1@test.com", "User1", null, null, null));
+            new Member("kakaoId1", "email1@test.com", "User1", null, null, null));
         member2 = memberRepository.save(
-            new Member("email2@test.com", "User2", null, null, null));
+            new Member("kakaoId2", "email2@test.com", "User2", null, null, null));
         member3 = memberRepository.save(
-            new Member("email3@test.com", "User3", null, null, null));
+            new Member("kakaoId3", "email3@test.com", "User3", null, null, null));
         item1 = new Item("Test Item", 2, 1000);
         item2 = new Item("Test Item", 1, 1000);
         expense = Expense.builder()
