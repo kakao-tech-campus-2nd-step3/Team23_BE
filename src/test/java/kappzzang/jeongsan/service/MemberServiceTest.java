@@ -7,11 +7,13 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
 
 import java.util.Optional;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.dto.request.LoginRequest;
 import kappzzang.jeongsan.dto.request.RefreshRequest;
+import kappzzang.jeongsan.dto.request.RegisterRequest;
 import kappzzang.jeongsan.dto.response.LoginResponse;
 import kappzzang.jeongsan.dto.response.RefreshResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
@@ -31,6 +33,9 @@ public class MemberServiceTest {
     private static final String BEARER = "Bearer";
     private static final String TEST_ACCESS_TOKEN = "TestAccessToken";
     private static final String TEST_REFRESH_TOKEN = "TestRefreshToken";
+    private static final String TEST_NICKNAME = "TestNickName";
+    private static final String TEST_EMAIL = "TestEmail";
+    private static final String TEST_PROFILE_IMAGE = "TestProfileImage";
 
     @Mock
     private JwtUtil jwtUtil;
@@ -66,6 +71,41 @@ public class MemberServiceTest {
 
         // then
         then(memberRepository).should().save(any(Member.class));
+        then(loginResponse.tokenType()).equals(BEARER);
+        then(loginResponse.accessToken()).equals(TEST_ACCESS_TOKEN);
+        then(loginResponse.refreshToken()).equals(TEST_REFRESH_TOKEN);
+    }
+
+    @Test
+    @DisplayName("회원가입 실패 - 이미 회원가입됨")
+    void registerAfterRegistration() {
+        // given
+        RegisterRequest registerRequest = new RegisterRequest(TEST_NICKNAME, TEST_EMAIL,
+            TEST_PROFILE_IMAGE);
+        given(memberRepository.findByEmail(anyString())).willReturn(Optional.of(createMember()));
+
+        // when & then
+        assertThatThrownBy(() -> memberService.register(registerRequest))
+            .isInstanceOf(JeongsanException.class)
+            .hasFieldOrPropertyWithValue("errorType", ErrorType.USER_ALREADY_EXISTED);
+    }
+
+    @Test
+    @DisplayName("회원가입 성공")
+    void register() {
+        // given
+        RegisterRequest registerRequest = new RegisterRequest(TEST_NICKNAME, TEST_EMAIL,
+            TEST_PROFILE_IMAGE);
+        given(memberRepository.findByEmail(anyString())).willReturn(Optional.empty());
+        given(memberRepository.save(any(Member.class))).willReturn(createMember());
+        given(jwtUtil.createAccessToken(any())).willReturn(TEST_ACCESS_TOKEN);
+        given(jwtUtil.createRefreshToken()).willReturn(TEST_REFRESH_TOKEN);
+
+        // when
+        LoginResponse loginResponse = memberService.register(registerRequest);
+
+        // then
+        then(memberRepository).should(times(2)).save(any(Member.class));
         then(loginResponse.tokenType()).equals(BEARER);
         then(loginResponse.accessToken()).equals(TEST_ACCESS_TOKEN);
         then(loginResponse.refreshToken()).equals(TEST_REFRESH_TOKEN);
