@@ -1,6 +1,8 @@
 package kappzzang.jeongsan.controller;
 
+import jakarta.validation.Valid;
 import kappzzang.jeongsan.controller.docs.ExpenseControllerInterface;
+import kappzzang.jeongsan.dto.request.CompleteExpensesRequest;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
@@ -12,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,5 +48,15 @@ public class ExpenseController implements ExpenseControllerInterface {
 
         return JeongsanApiResponse.success(SuccessType.EXPENSE_LIST_LOADED,
             expenseService.getExpenses(memberId, teamId, status, isChecked));
+    }
+
+    @Override
+    @PatchMapping("{teamId}")
+    public ResponseEntity<JeongsanApiResponse<Void>> changeExpensesStatusComplete(
+        @Valid @RequestBody CompleteExpensesRequest request,
+        @PathVariable("teamId") Long teamId,
+        @AuthenticationPrincipal Long memberId) {
+        expenseService.completeExpenses(request, teamId, memberId);
+        return JeongsanApiResponse.success(SuccessType.EXPENSE_STATUS_CHANGE_SUCCESS);
     }
 }

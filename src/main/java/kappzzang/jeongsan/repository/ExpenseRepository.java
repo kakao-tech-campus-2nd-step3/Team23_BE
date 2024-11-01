@@ -45,4 +45,11 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     List<ItemDetail> findItemDetailsByExpenseIdAndMemberId(@Param("expenseId") Long expenseId,
         @Param("memberId") Long memberId);
 
+    @Query("SELECT e FROM Expense e " +
+        "JOIN FETCH e.payer " +
+        "JOIN FETCH e.team " +
+        "JOIN FETCH e.category " +
+        "WHERE e.id IN :ids")
+    List<Expense> findAllByIdWithDetails(List<Long> ids);
+
 }
