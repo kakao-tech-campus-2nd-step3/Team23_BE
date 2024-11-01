@@ -14,7 +14,6 @@ public enum ErrorType {
     NOT_INVITED_MEMBER(HttpStatus.BAD_REQUEST, "E400004", "해당 모임에 초대되지 않은 멤버입니다."),
     ALREADY_JOINED_MEMBER(HttpStatus.BAD_REQUEST, "E400005", "이미 모임에 참여한 멤버입니다."),
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "E400006", "요청 입력값이 유효하지 않습니다."),
-    USER_ALREADY_EXISTED(HttpStatus.BAD_REQUEST, "E400007", "이미 회원가입된 사용자입니다."),
     EXPENSE_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "E400", "이미 정산 완료된 지출입니다."),
     EXPENSE_ONGOING(HttpStatus.BAD_REQUEST, "E400", "아직 진행중인 지출입니다."),
     EXPENSE_NOT_FOUND_ID(HttpStatus.BAD_REQUEST, "E400", "요청 목록에 존재하지 않는 지출이 포함되어 있습니다."),
@@ -41,6 +40,7 @@ public enum ErrorType {
 
     //409 CONFLICT
     TEAM_NAME_DUPLICATED(HttpStatus.CONFLICT, "E409001", "중복된 모임 이름이 존재합니다."),
+    USER_ALREADY_EXISTED(HttpStatus.CONFLICT, "E409002", "이미 회원가입된 사용자입니다."),
 
     // 500 INTERNAL_SERVER_ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E500001", "서버 내부 오류가 발생했습니다."),
