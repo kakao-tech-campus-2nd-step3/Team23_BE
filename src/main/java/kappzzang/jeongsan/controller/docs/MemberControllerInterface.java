@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kappzzang.jeongsan.dto.request.JoinTeamRequest;
 import kappzzang.jeongsan.dto.request.LoginRequest;
 import kappzzang.jeongsan.dto.request.RefreshRequest;
+import kappzzang.jeongsan.dto.request.RegisterRequest;
 import kappzzang.jeongsan.dto.response.GetPayLinkResponse;
 import kappzzang.jeongsan.dto.response.LoginResponse;
 import kappzzang.jeongsan.dto.response.RefreshResponse;
@@ -18,15 +19,23 @@ import org.springframework.http.ResponseEntity;
 @Tag(name = "회원 관리", description = "JWT 반환, 멤버 그룹 참여, 초대 현황 등을 관리하는 API")
 public interface MemberControllerInterface {
 
-    @Operation(summary = "로그인 API", description = "카카오 토큰으로 회원가입 및 로그인하여 액세스 토큰을 받는 API")
+    @Operation(summary = "로그인 API", description = "카카오 로그인으로 토큰을 받는 API")
     @Parameters({
-        @Parameter(name = "tokenType", description = "카카오 액세스 토큰 타입"),
-        @Parameter(name = "accessToken", description = "카카오 액세스 토큰")
+        @Parameter(name = "email", description = "카카오 회원 정보의 이메일")
     })
-    @ApiResponses({@ApiResponse(responseCode = "201", description = "로그인 성공"),
-        @ApiResponse(responseCode = "408", description = "외부 API 요청 시간 초과. (ErrorCode-E408001"),
-        @ApiResponse(responseCode = "500", description = "외부 API 호출 중 오류 발생. (ErrorCode-E500003)")})
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "로그인 성공"),
+        @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음. (ErrorCode-E404001")})
     ResponseEntity<JeongsanApiResponse<LoginResponse>> login(LoginRequest loginRequest);
+
+    @Operation(summary = "회원가입 API", description = "카카오 로그인으로 회원가입 후 토큰을 받는 API")
+    @Parameters({
+        @Parameter(name = "nickname", description = "카카오 회원 정보의 닉네임"),
+        @Parameter(name = "email", description = "카카오 회원 정보의 이메일"),
+        @Parameter(name = "profileImage", description = "카카오 회원 정보의 프로필 URL")
+    })
+    @ApiResponses({@ApiResponse(responseCode = "201", description = "회원가입 성공"),
+        @ApiResponse(responseCode = "400", description = "해당 사용자는 이미 회원가입됨. (ErrorCode-E400007")})
+    ResponseEntity<JeongsanApiResponse<LoginResponse>> register(RegisterRequest registerRequest);
 
     @Operation(summary = "액세스 토큰 재발급 API", description = "리프레시 토큰으로 액세스 토큰을 받는 API")
     @Parameters({
