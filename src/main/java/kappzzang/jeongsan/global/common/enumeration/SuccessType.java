@@ -15,6 +15,7 @@ public enum SuccessType {
     INVITATION_STATUS_LOADED(HttpStatus.OK, "모임의 멤버 초대 현황을 불러오는 데 성공했습니다."),
     ACCESS_TOKEN_REISSUED(HttpStatus.OK, "액세스 토큰이 재발급되었습니다."),
     PAY_LINK_LOADED(HttpStatus.OK, "카카오 페이 송금 링크 조회 성공"),
+    PERSONAL_EXPENSE_SAVED(HttpStatus.OK, "개인 소비 내역이 저장되었습니다."),
 
     // 201 CREATED
     TEAM_CREATED(HttpStatus.CREATED, "모임이 생성되었습니다."),
