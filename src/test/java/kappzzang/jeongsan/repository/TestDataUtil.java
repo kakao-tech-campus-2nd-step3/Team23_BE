@@ -17,7 +17,6 @@ import org.springframework.boot.test.context.TestComponent;
 @TestComponent
 public class TestDataUtil {
 
-    private static final String DEFAULT_KAKAO_ID = "DEFAULT_KAKAO_ID";
     private static final String DEFAULT_NAME = "DEFAULT_NAME";
     private static final String DEFAULT_COLOR = "DEFAULT_COLOR";
     private static final String DEFAULT_SUBJECT = "DEFAULT_SUBJECT";
@@ -48,7 +47,6 @@ public class TestDataUtil {
     //Member
     public Member createAndPersistMember(String nickname, KakaoPayInfo kakaoPayInfo) {
         Member member = Member.builder()
-            .kakaoId(DEFAULT_KAKAO_ID)
             .email(DEFAULT_EMAIL)
             .nickname(nickname)
             .profileImage(DEFAULT_URL)
@@ -76,11 +74,12 @@ public class TestDataUtil {
 
     //PersonalExpense
     public PersonalExpense createAndPersistPersonalExpense(Member member,
-        Integer consumedQuantity, Item item) {
+        Integer consumedQuantity, Item item, int totalPrice) {
         PersonalExpense personalExpense = PersonalExpense.builder()
             .member(member)
             .quantity(consumedQuantity)
             .item(item)
+            .totalPrice(totalPrice)
             .build();
         entityManager.persist(personalExpense);
         return personalExpense;

@@ -26,9 +26,6 @@ public class Member extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String kakaoId;
-
-    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
@@ -41,13 +38,17 @@ public class Member extends BaseEntity {
     private KakaoPayInfo kakaoPayInfo;
 
     @Builder(toBuilder = true)
-    public Member(String kakaoId, String email, String nickname, String profileImage,
+    public Member(String email, String nickname, String profileImage,
         String refreshToken, KakaoPayInfo kakaoPayInfo) {
-        this.kakaoId = kakaoId;
         this.email = email;
         this.nickname = nickname;
         this.profileImage = profileImage;
         this.refreshToken = refreshToken;
+        this.kakaoPayInfo = kakaoPayInfo;
+    }
+
+    public Member(String nickname, KakaoPayInfo kakaoPayInfo) {
+        this.nickname = nickname;
         this.kakaoPayInfo = kakaoPayInfo;
     }
 }
