@@ -64,10 +64,11 @@ public class TeamController implements TeamControllerInterface {
         return JeongsanApiResponse.success(SuccessType.INVITATION_STATUS_LOADED, data);
     }
 
+    @Override
     @PostMapping("/{teamId}/transfers")
     public ResponseEntity<JeongsanApiResponse<List<TransferTargetResponse>>> getTransferTargetList(
         @PathVariable("teamId") Long teamId, @Valid @RequestBody TransferTargetRequest request) {
         List<TransferTargetResponse> data = teamService.getTransferTargetList(teamId, request);
-        return JeongsanApiResponse.success(SuccessType.INVITATION_STATUS_LOADED, data);
+        return JeongsanApiResponse.success(SuccessType.TRANSFER_TARGET_LIST_LOADED, data);
     }
 }
