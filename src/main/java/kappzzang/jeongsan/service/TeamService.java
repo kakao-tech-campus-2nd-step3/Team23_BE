@@ -88,6 +88,9 @@ public class TeamService {
             .map(TransferTargetRequest.ExpenseId::id).toList();
         List<PersonalExpense> personalExpenses = personalExpenseRepository
             .findAllByExpenseIdsWithItemAndMember(expenseIds);
+        if (personalExpenses.isEmpty()) {
+            throw new JeongsanException(ErrorType.PERSONAL_EXPENSE_NOT_FOUND);
+        }
         Map<Member, Integer> totalPricesByMember = personalExpenses.stream()
             .collect(Collectors.groupingBy(
                 PersonalExpense::getMember,

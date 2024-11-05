@@ -40,6 +40,8 @@ public enum ErrorType {
     KAKAO_PAY_LINK_NOT_FOUND(HttpStatus.NOT_FOUND, "E404006", "카카오 페이 송금 링크를 찾을 수 없습니다."),
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "E404007", "아이템(영수증 품목)을 찾을 수 없습니다."),
     TEAM_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "E404008", "팀 멤버를 찾을 수 없습니다."),
+    PERSONAL_EXPENSE_NOT_FOUND(HttpStatus.NOT_FOUND, "E404", "개인 소비 내역을 찾을 수 없습니다."),
+
 
 
     // 408 REQUEST_TIMEOUT
