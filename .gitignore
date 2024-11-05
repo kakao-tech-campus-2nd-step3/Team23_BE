@@ -37,3 +37,4 @@ out/
 .vscode/
 
 src/main/resources/*.properties
+src/test/resources/*.properties
