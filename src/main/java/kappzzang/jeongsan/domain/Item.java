@@ -44,6 +44,10 @@ public class Item {
         calculateTotalPrice();
     }
 
+    public Item(Expense expense) {
+        this.expense = expense;
+    }
+
     public void assignExpense(Expense expense) {
         this.expense = expense;
     }
