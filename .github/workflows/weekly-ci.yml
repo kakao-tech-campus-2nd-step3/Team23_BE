@@ -22,11 +22,11 @@ jobs:
           java-version: '21'
           distribution: 'corretto'
 
-      # Set up properties
+      # Set up test properties
       - name: Set up properties
         run: |
           mkdir -p ./src/main/resources
-          echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.properties
+          echo "${{ secrets.APPLICATION_TEST }}" > ./src/test/resources/application-test.properties
 
       # Gradle caching
       - name: Gradle Caching
