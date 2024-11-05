@@ -38,8 +38,9 @@ public class Member extends BaseEntity {
     private KakaoPayInfo kakaoPayInfo;
 
     @Builder(toBuilder = true)
-    public Member(String email, String nickname, String profileImage,
+    public Member(Long id, String email, String nickname, String profileImage,
         String refreshToken, KakaoPayInfo kakaoPayInfo) {
+        this.id = id;
         this.email = email;
         this.nickname = nickname;
         this.profileImage = profileImage;
