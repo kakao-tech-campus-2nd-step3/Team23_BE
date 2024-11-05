@@ -81,5 +81,5 @@ public interface TeamControllerInterface {
                 + "개인 소비 내역을 찾을 수 없음 (ErrorCode-E404)")
     })
     ResponseEntity<JeongsanApiResponse<List<TransferTargetResponse>>> getTransferTargetList(
-        Long teamId, TransferTargetRequest request);
+        Long memberId, Long teamId, TransferTargetRequest request);
 }

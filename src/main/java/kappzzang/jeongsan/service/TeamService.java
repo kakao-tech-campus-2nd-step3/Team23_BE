@@ -80,22 +80,41 @@ public class TeamService {
     }
 
     @Transactional(readOnly = true)
-    public List<TransferTargetResponse> getTransferTargetList(Long teamId,
+    public List<TransferTargetResponse> getTransferTargetList(Long memberId, Long teamId,
         TransferTargetRequest request) {
+
+        Member payer = memberRepository.findById(memberId)
+            .orElseThrow(() -> new JeongsanException(ErrorType.USER_NOT_FOUND));
         teamRepository.findById(teamId)
             .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_NOT_FOUND));
+
         List<Long> expenseIds = request.expenses().stream()
             .map(TransferTargetRequest.ExpenseId::id).toList();
+
+        List<PersonalExpense> personalExpenses = findPersonalExpensesByExpenseIds(expenseIds);
+        return getTransferTargetResponseList(personalExpenses, payer);
+    }
+
+    private List<PersonalExpense> findPersonalExpensesByExpenseIds(List<Long> expenseIds) {
         List<PersonalExpense> personalExpenses = personalExpenseRepository
             .findAllByExpenseIdsWithItemAndMember(expenseIds);
         if (personalExpenses.isEmpty()) {
             throw new JeongsanException(ErrorType.PERSONAL_EXPENSE_NOT_FOUND);
         }
+
+        return personalExpenses;
+    }
+
+    private List<TransferTargetResponse> getTransferTargetResponseList(
+        List<PersonalExpense> personalExpenses, Member payer) {
+
         Map<Member, Integer> totalPricesByMember = personalExpenses.stream()
+            .filter(personalExpense -> !personalExpense.getMember().equals(payer))
             .collect(Collectors.groupingBy(
                 PersonalExpense::getMember,
                 Collectors.summingInt(PersonalExpense::getTotalPrice)
             ));
+
         return totalPricesByMember.entrySet().stream()
             .map(entry -> new TransferTargetResponse(entry.getKey(), entry.getValue()))
             .toList();
