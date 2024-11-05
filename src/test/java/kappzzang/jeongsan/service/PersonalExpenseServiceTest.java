@@ -36,7 +36,7 @@ import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestPropertySource(locations = "classpath:test.properties")
+@TestPropertySource(locations = "classpath:application-test.properties")
 class PersonalExpenseServiceTest {
 
     @Autowired
