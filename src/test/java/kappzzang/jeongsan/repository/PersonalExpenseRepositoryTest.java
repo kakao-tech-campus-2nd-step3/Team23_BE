@@ -1,5 +1,7 @@
 package kappzzang.jeongsan.repository;
+
 import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.List;
 import kappzzang.jeongsan.domain.Category;
@@ -13,11 +15,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
+
 @DataJpaTest
 @Import(TestDataUtil.class)
 class PersonalExpenseRepositoryTest {
+
     @Autowired
     private PersonalExpenseRepository personalExpenseRepository;
     @Autowired
@@ -25,6 +28,7 @@ class PersonalExpenseRepositoryTest {
     Member member1, member2;
     Expense expense1, expense2;
     PersonalExpense personalExpense1, personalExpense2, personalExpense3;
+
     @BeforeEach
     void setUp() {
         KakaoPayInfo kakaoPayInfo = new KakaoPayInfo();
@@ -45,6 +49,7 @@ class PersonalExpenseRepositoryTest {
         personalExpense3 = testDataUtil.createAndPersistPersonalExpense(member1, 1,
             item2, 1);
     }
+
     @Test
     void findAllByExpenseIdsWithItemAndMember() {
         // given
@@ -53,6 +58,7 @@ class PersonalExpenseRepositoryTest {
         List<PersonalExpense> results = personalExpenseRepository.findAllByExpenseIdsWithItemAndMember(
             expenseIds);
         // then
-        assertThat(results).containsExactlyInAnyOrder(personalExpense1, personalExpense2, personalExpense3);
+        assertThat(results).containsExactlyInAnyOrder(personalExpense1, personalExpense2,
+            personalExpense3);
     }
 }
