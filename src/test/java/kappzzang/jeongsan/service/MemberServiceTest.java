@@ -65,7 +65,7 @@ public class MemberServiceTest {
     @DisplayName("로그인 성공")
     void login() {
         // given
-        given(memberRepository.findByEmail(anyString())).willReturn(Optional.of(createMember()));
+        given(memberRepository.findByEmail(anyString())).willReturn(Optional.of(createMember(null)));
         given(jwtUtil.createAccessToken(any())).willReturn(TEST_ACCESS_TOKEN);
         given(jwtUtil.createRefreshToken()).willReturn(TEST_REFRESH_TOKEN);
 
@@ -85,7 +85,7 @@ public class MemberServiceTest {
         // given
         RegisterRequest registerRequest = new RegisterRequest(TEST_NICKNAME, TEST_EMAIL,
             TEST_PROFILE_IMAGE);
-        given(memberRepository.findByEmail(anyString())).willReturn(Optional.of(createMember()));
+        given(memberRepository.findByEmail(anyString())).willReturn(Optional.of(createMember(null)));
 
         // when & then
         assertThatThrownBy(() -> memberService.register(registerRequest))
@@ -100,7 +100,7 @@ public class MemberServiceTest {
         RegisterRequest registerRequest = new RegisterRequest(TEST_NICKNAME, TEST_EMAIL,
             TEST_PROFILE_IMAGE);
         given(memberRepository.findByEmail(anyString())).willReturn(Optional.empty());
-        given(memberRepository.save(any(Member.class))).willReturn(createMember());
+        given(memberRepository.save(any(Member.class))).willReturn(createMember(null));
         given(jwtUtil.createAccessToken(any())).willReturn(TEST_ACCESS_TOKEN);
         given(jwtUtil.createRefreshToken()).willReturn(TEST_REFRESH_TOKEN);
 
@@ -119,7 +119,7 @@ public class MemberServiceTest {
     void refreshWithMismatchedRefreshToken() {
         // given
         RefreshRequest refreshRequest = new RefreshRequest("RefreshToken");
-        given(memberRepository.findById(anyLong())).willReturn(Optional.of(createMember()));
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(createMember(null)));
 
         // when & then
         assertThatThrownBy(() -> memberService.refresh(anyLong(), refreshRequest))
@@ -132,7 +132,7 @@ public class MemberServiceTest {
     void refreshWithInvalidRefreshToken() {
         // given
         RefreshRequest refreshRequest = new RefreshRequest(TEST_REFRESH_TOKEN);
-        given(memberRepository.findById(anyLong())).willReturn(Optional.of(createMember()));
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(createMember(null)));
         given(jwtUtil.validateRefreshToken(TEST_REFRESH_TOKEN)).willReturn(false);
 
         // when & then
@@ -146,7 +146,7 @@ public class MemberServiceTest {
     void refresh() {
         // given
         RefreshRequest refreshRequest = new RefreshRequest(TEST_REFRESH_TOKEN);
-        given(memberRepository.findById(anyLong())).willReturn(Optional.of(createMember()));
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(createMember(null)));
         given(jwtUtil.validateRefreshToken(TEST_REFRESH_TOKEN)).willReturn(true);
         given(jwtUtil.createAccessToken(anyLong())).willReturn(TEST_ACCESS_TOKEN);
 
@@ -164,7 +164,7 @@ public class MemberServiceTest {
         // given
         KakaoPayInfo kakaoPayInfo = new KakaoPayInfo("payLink");
         given(memberRepository.findById(anyLong())).willReturn(
-            Optional.of(new Member("member", kakaoPayInfo)));
+            Optional.of(createMember(kakaoPayInfo)));
 
         // when
         GetPayLinkResponse getPayLinkResponse = memberService.getPayLink(1L);
@@ -179,14 +179,16 @@ public class MemberServiceTest {
         // given
         KakaoPayInfo kakaoPayInfo = new KakaoPayInfo(null);
         given(memberRepository.findById(anyLong())).willReturn(
-            Optional.of(new Member("member", kakaoPayInfo)));
+            Optional.of(createMember(kakaoPayInfo)));
 
         // when, then
         assertThrows(JeongsanException.class, () -> memberService.getPayLink(1L));
     }
 
-    private Member createMember() {
+    private Member createMember(KakaoPayInfo kakaoPayInfo) {
         return Member.builder()
+            .nickname("member")
+            .kakaoPayInfo(kakaoPayInfo)
             .refreshToken(TEST_REFRESH_TOKEN)
             .build();
     }
