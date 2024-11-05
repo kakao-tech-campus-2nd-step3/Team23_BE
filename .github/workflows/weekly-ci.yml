@@ -25,7 +25,7 @@ jobs:
       # Set up test properties
       - name: Set up properties
         run: |
-          mkdir -p ./src/main/resources
+          mkdir -p ./src/test/resources
           echo "${{ secrets.APPLICATION_TEST }}" > ./src/test/resources/application-test.properties
 
       # Gradle caching
