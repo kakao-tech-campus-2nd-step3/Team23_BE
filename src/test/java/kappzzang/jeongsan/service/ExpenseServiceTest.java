@@ -153,7 +153,10 @@ public class ExpenseServiceTest {
         List<Expense> expenses = Collections.singletonList(expense);
         List<Item> items = Collections.singletonList(item);
 
-        given(mockExpenseRepository.findByTeamIdAndStatus(teamId, status)).willReturn(expenses);
+        given(mockExpenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
+        given(teamRepository.findById(any(Long.class))).willReturn(Optional.of(mockTeam));
+
+        given(mockExpenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
         given(mockItemRepository.findAllByExpenseId(expense.getId())).willReturn(items);
         given(mockPersonalExpenseRepository.countByMemberIdAndItemIds(memberId,
             items.stream().map(Item::getId).toList())).willReturn(0L);
@@ -166,7 +169,7 @@ public class ExpenseServiceTest {
         assertThat(response.totalPrice()).isEqualTo(0);
         assertThat(response.checked()).isTrue();
 
-        then(mockExpenseRepository).should().findByTeamIdAndStatus(teamId, status);
+        then(mockExpenseRepository).should().findByTeamAndStatus(mockTeam, status);
         then(mockItemRepository).should().findAllByExpenseId(expense.getId());
     }
 
@@ -181,7 +184,9 @@ public class ExpenseServiceTest {
         Expense expense = mock(Expense.class);
         List<Expense> expenses = Collections.singletonList(expense);
 
-        given(mockExpenseRepository.findByTeamIdAndStatus(teamId, status)).willReturn(expenses);
+        given(mockExpenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
+        given(teamRepository.findById(any(Long.class))).willReturn(Optional.of(mockTeam));
+
         given(expense.getId()).willReturn(1L);
         given(expense.getTitle()).willReturn("Test Expense");
         given(expense.getTotalPrice()).willReturn(1000);
@@ -219,7 +224,10 @@ public class ExpenseServiceTest {
         given(expense.getStatus()).willReturn(Status.COMPLETED);
         given(expense.getCategory()).willReturn(mock(Category.class));
 
-        given(mockExpenseRepository.findByTeamIdAndStatus(teamId, status)).willReturn(expenses);
+        given(mockExpenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
+        given(teamRepository.findById(any(Long.class))).willReturn(Optional.of(mockTeam));
+
+        given(mockExpenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
         given(mockItemRepository.findAllByExpenseId(expense.getId())).willReturn(items);
         given(mockPersonalExpenseRepository.countByMemberIdAndItemIds(memberId,
             items.stream().map(Item::getId).toList())).willReturn(1L);
