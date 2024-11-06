@@ -36,6 +36,7 @@ public class MemberServiceTest {
     private static final String BEARER = "Bearer";
     private static final String TEST_ACCESS_TOKEN = "TestAccessToken";
     private static final String TEST_REFRESH_TOKEN = "TestRefreshToken";
+    private static final String TEST_UUID = "TestUUID";
     private static final String TEST_NICKNAME = "TestNickName";
     private static final String TEST_EMAIL = "TestEmail";
     private static final String TEST_PROFILE_IMAGE = "TestProfileImage";
@@ -83,7 +84,7 @@ public class MemberServiceTest {
     @DisplayName("회원가입 실패 - 이미 회원가입됨")
     void registerAfterRegistration() {
         // given
-        RegisterRequest registerRequest = new RegisterRequest(TEST_NICKNAME, TEST_EMAIL,
+        RegisterRequest registerRequest = new RegisterRequest(TEST_UUID, TEST_NICKNAME, TEST_EMAIL,
             TEST_PROFILE_IMAGE);
         given(memberRepository.findByEmail(anyString())).willReturn(Optional.of(createMember(null)));
 
@@ -97,7 +98,7 @@ public class MemberServiceTest {
     @DisplayName("회원가입 성공")
     void register() {
         // given
-        RegisterRequest registerRequest = new RegisterRequest(TEST_NICKNAME, TEST_EMAIL,
+        RegisterRequest registerRequest = new RegisterRequest(TEST_UUID, TEST_NICKNAME, TEST_EMAIL,
             TEST_PROFILE_IMAGE);
         given(memberRepository.findByEmail(anyString())).willReturn(Optional.empty());
         given(memberRepository.save(any(Member.class))).willReturn(createMember(null));

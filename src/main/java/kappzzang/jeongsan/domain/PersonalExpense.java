@@ -45,21 +45,6 @@ public class PersonalExpense extends BaseEntity {
         this.totalPrice = totalPrice;
     }
 
-    @Builder
-    public PersonalExpense(Member member, Integer quantity, Item item) {
-        this.member = member;
-        this.quantity = quantity;
-        this.item = item;
-        calculateConsumedItemTotalPrice();
-    }
-
-    public void calculateConsumedItemTotalPrice() {
-        if (this.item == null) {
-            throw new JeongsanException(ErrorType.INTERNAL_SERVER_ERROR);
-        }
-        this.totalPrice = this.quantity * this.item.getUnitPrice();
-    }
-
     public void updateTotalPrice(int newTotalPrice) {
         this.totalPrice = newTotalPrice;
     }

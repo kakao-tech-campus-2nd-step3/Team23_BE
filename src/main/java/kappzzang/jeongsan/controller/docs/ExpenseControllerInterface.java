@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kappzzang.jeongsan.dto.request.CompleteExpensesRequest;
 import kappzzang.jeongsan.dto.request.SavePersonalExpenseRequest;
+import kappzzang.jeongsan.dto.response.CategoryListResponse;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
 import kappzzang.jeongsan.global.common.ApiErrorTypeExample;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
@@ -56,6 +57,12 @@ public interface ExpenseControllerInterface {
     @Operation(summary = "내가 지불한 지출 내역 조회 API", description = "내가 지불한 지출 내역 중 `송금 대기` 상태 지출 내역 조회")
     @Parameter(name = "teamId", description = "조회를 원하는 모임 ID")
     @ApiResponse(responseCode = "200", description = "지출 내역 목록을 성공적으로 조회")
+    @ApiErrorTypeExample(ErrorType.TEAM_NOT_FOUND)
     ResponseEntity<JeongsanApiResponse<ExpenseResponse>> getExpensesIPaid(
         Long memberId, Long teamId);
+
+    @Operation(summary = "카테고리 목록 조회 API", description = "지출 카테고리 목록을 조회하는 API")
+    @ApiResponse(responseCode = "200", description = "카테고리 목록을 성공적으로 조회", content = @Content(schema = @Schema(implementation = CategoryListResponse.class)))
+    @ApiErrorTypeExample(ErrorType.CATEGORY_NOT_FOUND)
+    public ResponseEntity<JeongsanApiResponse<CategoryListResponse>> getCategoryList();
 }

@@ -12,7 +12,7 @@ public record CreateTeamRequest(
     @NotNull
     String subject,
     @NotNull
-    List<Long> members
+    List<String> members
 ) {
 
 }

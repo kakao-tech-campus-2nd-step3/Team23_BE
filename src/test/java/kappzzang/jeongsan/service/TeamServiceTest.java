@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +18,7 @@ import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.request.CreateTeamRequest;
 import kappzzang.jeongsan.dto.response.CreateTeamResponse;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
+import kappzzang.jeongsan.dto.response.TeamResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import kappzzang.jeongsan.repository.MemberRepository;
@@ -94,42 +96,25 @@ class TeamServiceTest {
     }
 
     @Test
-    @DisplayName("모임 생성자에게 동일한 모임 이름이 존재")
-    void createTeam_NameDuplicateException() {
-        // given
-        Long memberId = 1L;
-        String teamName = "Test Team";
-        given(teamRepository.existsByNameAndMemberId(teamName, memberId)).willReturn(true);
-
-        // when & then
-        assertThatThrownBy(() ->
-            teamService.createTeam(memberId,
-                new CreateTeamRequest(teamName, "subject", new ArrayList<>()))
-        ).isInstanceOf(JeongsanException.class);
-        then(teamRepository).should().existsByNameAndMemberId(teamName, memberId);
-    }
-
-    @Test
     @DisplayName("모임 생성 성공")
     void createTeam_Success() {
         // given
         Long ownerId = 1L;
         Member owner = new Member();
-        Long memberId1 = 2L;
+        String memberKakaoId1 = "memberKakaoId1";
         Member member1 = new Member();
-        Long memberId2 = 3L;
+        String memberKakaoId2 = "memberKakaoId2";
         Member member2 = new Member();
         String teamName = "Test Team";
         CreateTeamRequest request = new CreateTeamRequest(teamName, "subject", new ArrayList<>(
-            Arrays.asList(memberId1, memberId2)));
+            Arrays.asList(memberKakaoId1, memberKakaoId2)));
         List<Member> members = new ArrayList<>(Arrays.asList(member1, member2));
         Team team = Team.createTeam(owner, teamName, "subject", members);
 
-        given(teamRepository.existsByNameAndMemberId(teamName, ownerId)).willReturn(false);
         given(teamRepository.save(any(Team.class))).willReturn(team);
         given(memberRepository.findById(ownerId)).willReturn(Optional.of(owner));
-        given(memberRepository.findById(memberId1)).willReturn(Optional.of(member1));
-        given(memberRepository.findById(memberId2)).willReturn(Optional.of(member2));
+        given(memberRepository.findByKakaoId(memberKakaoId1)).willReturn(Optional.of(member1));
+        given(memberRepository.findByKakaoId(memberKakaoId2)).willReturn(Optional.of(member2));
 
         // when
         CreateTeamResponse actual = teamService.createTeam(ownerId, request);
@@ -137,13 +122,46 @@ class TeamServiceTest {
         // then
         assertThat(actual).isNotNull();
 
-        then(teamRepository).should().existsByNameAndMemberId(teamName, ownerId);
         then(teamRepository).should().save(any(Team.class));
         then(teamRepository).shouldHaveNoMoreInteractions();
 
         then(memberRepository).should().findById(ownerId);
-        then(memberRepository).should().findById(memberId1);
-        then(memberRepository).should().findById(memberId2);
+        then(memberRepository).should().findByKakaoId(memberKakaoId1);
+        then(memberRepository).should().findByKakaoId(memberKakaoId2);
         then(memberRepository).shouldHaveNoMoreInteractions();
+    }
+
+    @Test
+    @DisplayName("잘못된 teamId를 이용한 조회로 notfound 발생")
+    void getTeam_NotFound() {
+        // given
+        given(teamRepository.findById(any(Long.class))).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> teamService.getTeam(1L))
+            .isInstanceOf(JeongsanException.class).hasMessageContaining("찾을 수 없습니다.");
+        then(teamRepository).should().findById(any(Long.class));
+    }
+
+    @Test
+    @DisplayName("teamId를 이용한 조회 성공")
+    void getTeam_success() {
+        // given
+        String teamName = "Test Team";
+        Team team = mock(Team.class);
+
+        given(team.getId()).willReturn(1L);
+        given(team.getName()).willReturn(teamName);
+        given(team.getIsClosed()).willReturn(false);
+        given(team.getSubject()).willReturn("subject");
+        given(team.getTeamMemberList()).willReturn(Collections.emptyList());
+        given(teamRepository.findById(1L)).willReturn(Optional.of(team));
+
+        // when
+        TeamResponse actual = teamService.getTeam(1L);
+
+        // then
+        assertThat(actual).isNotNull();
+        then(teamRepository).should().findById(1L);
     }
 }

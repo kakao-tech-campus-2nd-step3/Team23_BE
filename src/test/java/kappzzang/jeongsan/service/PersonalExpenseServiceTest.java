@@ -64,16 +64,19 @@ class PersonalExpenseServiceTest {
         team = teamRepository.save(new Team("Test Team", "🍎"));
         member1 = memberRepository.save(
             Member.builder()
+                .kakaoId("kakaoId1")
                 .email("email1@test.com")
                 .nickname("User1")
                 .build());
         member2 = memberRepository.save(
             Member.builder()
+                .kakaoId("kakaoId2")
                 .email("email2@test.com")
                 .nickname("User2")
                 .build());
         member3 = memberRepository.save(
             Member.builder()
+                .kakaoId("kakaoId3")
                 .email("email3@test.com")
                 .nickname("User3")
                 .build());

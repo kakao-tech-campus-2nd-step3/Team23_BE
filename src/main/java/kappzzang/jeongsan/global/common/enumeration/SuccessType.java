@@ -9,6 +9,7 @@ public enum SuccessType {
 
     // 200 OK
     TEAM_LIST_LOADED(HttpStatus.OK, "모임 목록을 불러오는 데 성공했습니다."),
+    TEAM_LOADED(HttpStatus.OK, "모임을 불러오는 데 성공했습니다"),
     RECEIPT_ANALYSIS_SUCCESS(HttpStatus.OK, "영수증 분석을 성공하였습니다."),
     EXPENSE_LIST_LOADED(HttpStatus.OK, "지출 목록을 불러오는 데 성공했습니다"),
     PERSONAL_EXPENSE_LOADED(HttpStatus.OK, "개인 지출 목록을 불러오는 데 성공했습니다."),
@@ -17,6 +18,8 @@ public enum SuccessType {
     ACCESS_TOKEN_REISSUED(HttpStatus.OK, "액세스 토큰이 재발급되었습니다."),
     PAY_LINK_LOADED(HttpStatus.OK, "카카오 페이 송금 링크 조회 성공"),
     PERSONAL_EXPENSE_SAVED(HttpStatus.OK, "개인 소비 내역이 저장되었습니다."),
+    TRANSFER_TARGET_LIST_LOADED(HttpStatus.OK, "송금 요청 대상과 금액 목록을 불러오는 데 성공했습니다."),
+    CATEGORY_LIST_LOADED(HttpStatus.OK, "카테고리 목록을 불러오는 데 성공했습니다."),
 
     // 201 CREATED
     SIGNED_UP(HttpStatus.CREATED, "회원가입을 성공하였습니다."),

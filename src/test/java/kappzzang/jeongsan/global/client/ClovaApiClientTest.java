@@ -17,16 +17,22 @@ import kappzzang.jeongsan.global.exception.JeongsanException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.web.client.MockServerRestClientCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClient;
 
-@RestClientTest(ClovaApiClient.class)
+@RestClientTest(value = ClovaApiClient.class)
 @MockBean(JpaMetamodelMappingContext.class)
 @EnableRetry
 public class ClovaApiClientTest {
@@ -36,16 +42,20 @@ public class ClovaApiClientTest {
     private final Image testImage = new Image("", "", "", "");
 
     @Autowired
-    private MockRestServiceServer mockRestServiceServer;
-
-    @Autowired
     private ClovaApiClient clovaApiClient;
 
     @MockBean
     private ClovaOcrProperties clovaOcrProperties;
 
+    @Autowired
+    private MockServerRestClientCustomizer mockServerCustomizer;
+
+    private MockRestServiceServer mockRestServiceServer;
+
     @BeforeEach
     void setUp() {
+        mockRestServiceServer = mockServerCustomizer.getServer();
+        mockRestServiceServer.reset();
         when(clovaOcrProperties.general()).thenReturn(new ClovaOcrProperties.GeneralOcr(TEST_URL));
     }
 
@@ -131,6 +141,19 @@ public class ClovaApiClientTest {
         assertThat(field.lineBreak()).isFalse();
 
         mockRestServiceServer.verify();
+    }
+
+    @TestConfiguration
+    static class TestConfig {
+
+        @Bean
+        @Primary
+        @Qualifier("clovaOcrClientBuilder")
+        public RestClient.Builder clovaOcrClientBuilder(MockServerRestClientCustomizer customizer) {
+            RestClient.Builder builder = RestClient.builder();
+            customizer.customize(builder);
+            return builder;
+        }
     }
 
 }
