@@ -45,7 +45,8 @@ public class ExpenseService {
     @Transactional(readOnly = true)
     public ExpenseResponse getExpenses(Long memberId, Long teamId, Status status,
         Boolean isChecked) {
-        List<Expense> expenses = expenseRepository.findByTeamIdAndStatus(teamId, status);
+        Team team = findTeamById(teamId);
+        List<Expense> expenses = expenseRepository.findByTeamAndStatus(team, status);
 
         Map<Status, Function<List<Expense>, List<Expense>>> filteringStrategies = Map.of(
             Status.ONGOING, expenseList -> filterOngoingExpenses(expenseList, memberId, isChecked),
@@ -67,7 +68,9 @@ public class ExpenseService {
 
     @Transactional(readOnly = true)
     public ExpenseResponse getExpensesIPaid(Long memberId, Long teamId) {
-        List<Expense> expenses = expenseRepository.findExpensesIPaid(memberId, teamId, Status.PENDING);
+        Member payer = findMemberById(memberId);
+        Team team = findTeamById(teamId);
+        List<Expense> expenses = expenseRepository.findExpensesIPaid(payer, team, Status.PENDING);
         Integer totalPrice = expenses.stream()
             .mapToInt(Expense::getTotalPrice)
             .reduce(Integer::sum)

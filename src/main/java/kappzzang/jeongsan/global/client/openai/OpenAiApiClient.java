@@ -8,6 +8,7 @@ import kappzzang.jeongsan.global.client.dto.response.ChatGptResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -31,7 +32,8 @@ public class OpenAiApiClient {
     private final RestClient openAiClient;
     private final GptPromptManager gptPromptManager;
 
-    public OpenAiApiClient(OpenAiProperties properties, RestClient.Builder openAiClientBuilder,
+    public OpenAiApiClient(OpenAiProperties properties,
+        @Qualifier("openAiClientBuilder") RestClient.Builder openAiClientBuilder,
         GptPromptManager gptPromptManager) {
         this.properties = properties;
         this.openAiClient = openAiClientBuilder.build();

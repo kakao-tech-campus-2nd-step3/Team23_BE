@@ -20,6 +20,7 @@ public class TestDataUtil {
     private static final String DEFAULT_NAME = "DEFAULT_NAME";
     private static final String DEFAULT_COLOR = "DEFAULT_COLOR";
     private static final String DEFAULT_SUBJECT = "DEFAULT_SUBJECT";
+    private static final String DEFAULT_KAKAO_ID = "DEFAULT_KAKAO_ID";
     private static final String DEFAULT_EMAIL = "DEFAULT_EMAIL";
     private static final String DEFAULT_URL = "DEFAULT_URL";
 
@@ -47,6 +48,7 @@ public class TestDataUtil {
     //Member
     public Member createAndPersistMember(String nickname, KakaoPayInfo kakaoPayInfo) {
         Member member = Member.builder()
+            .kakaoId(DEFAULT_KAKAO_ID)
             .email(DEFAULT_EMAIL)
             .nickname(nickname)
             .profileImage(DEFAULT_URL)

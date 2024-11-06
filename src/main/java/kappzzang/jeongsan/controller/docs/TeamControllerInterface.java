@@ -31,6 +31,15 @@ public interface TeamControllerInterface {
     })
     ResponseEntity<JeongsanApiResponse<List<TeamResponse>>> getTeams(Boolean isClosed);
 
+    @Operation(summary = "모임 조회 API", description = "`teamId`를 이용해 모임을 조회하는 API")
+    @Parameter(name = "teamId", description = "조회를 원하는 모임의 ID")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "모임 목록 조회 성공",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeamResponse.class))),
+        @ApiResponse(responseCode = "404", description = "해당하는 모임을 찾을 수 없음(ErrorCode-E404)")
+    })
+    ResponseEntity<JeongsanApiResponse<TeamResponse>> getTeam(Long teamId);
+
     @Operation(summary = "모임 생성 API", description = "요청한 사용자가 주인으로 모임을 생성하는 API")
     @Parameters({
         @Parameter(name = "name", description = "15글자 이내의 모임 이름. 모임의 owner 기준 동일한 모임 이름을 사용할 수 없음"),
@@ -40,7 +49,6 @@ public interface TeamControllerInterface {
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "모임 생성 성공"),
         @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없음(ErrorCode-E404001)"),
-        @ApiResponse(responseCode = "409", description = "중복된 모임 이름이 존재함(ErrorCode-E409001)")
     })
     ResponseEntity<JeongsanApiResponse<CreateTeamResponse>> createTeam(Long memberId,
         CreateTeamRequest request);

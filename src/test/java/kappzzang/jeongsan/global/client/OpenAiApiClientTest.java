@@ -20,14 +20,20 @@ import kappzzang.jeongsan.global.exception.JeongsanException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.web.client.MockServerRestClientCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClient;
 
 @RestClientTest(OpenAiApiClient.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -40,7 +46,7 @@ public class OpenAiApiClientTest {
     private static final int MAX_ATTEMPTS = 3;
 
     @Autowired
-    private MockRestServiceServer mockRestServiceServer;
+    private MockServerRestClientCustomizer customizer;
 
     @Autowired
     private OpenAiApiClient openAiApiClient;
@@ -51,8 +57,12 @@ public class OpenAiApiClientTest {
     @MockBean
     private GptPromptManager gptPromptManager;
 
+    private MockRestServiceServer mockRestServiceServer;
+
     @BeforeEach
     void setUp() {
+        mockRestServiceServer = customizer.getServer();
+        mockRestServiceServer.reset();
         when(openAiProperties.url()).thenReturn(TEST_URL);
         when(gptPromptManager.getInstruction()).thenReturn(TEST_INSTRUCTION);
     }
@@ -145,4 +155,18 @@ public class OpenAiApiClientTest {
 
         mockRestServiceServer.verify();
     }
+
+    @TestConfiguration
+    static class TestConfig {
+
+        @Bean
+        @Primary
+        @Qualifier("openAiClientBuilder")
+        public RestClient.Builder openAiClientBuilder(MockServerRestClientCustomizer customizer) {
+            RestClient.Builder builder = RestClient.builder();
+            customizer.customize(builder);
+            return builder;
+        }
+    }
+
 }

@@ -5,6 +5,8 @@ import kappzzang.jeongsan.domain.Member;
 
 public record RegisterRequest(
     @NotBlank
+    String uuid,
+    @NotBlank
     String nickname,
     @NotBlank
     String email,
@@ -13,6 +15,7 @@ public record RegisterRequest(
 
     public Member toMember() {
         return Member.builder()
+            .kakaoId(uuid)
             .nickname(nickname)
             .email(email)
             .profileImage(profileImage)
