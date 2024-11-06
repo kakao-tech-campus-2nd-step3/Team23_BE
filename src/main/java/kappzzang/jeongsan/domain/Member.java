@@ -37,14 +37,17 @@ public class Member extends BaseEntity {
     @Embedded
     private KakaoPayInfo kakaoPayInfo;
 
-    @Builder(toBuilder = true)
-    public Member(Long id, String email, String nickname, String profileImage,
+    @Builder
+    public Member(String email, String nickname, String profileImage,
         String refreshToken, KakaoPayInfo kakaoPayInfo) {
-        this.id = id;
         this.email = email;
         this.nickname = nickname;
         this.profileImage = profileImage;
         this.refreshToken = refreshToken;
         this.kakaoPayInfo = kakaoPayInfo;
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }
