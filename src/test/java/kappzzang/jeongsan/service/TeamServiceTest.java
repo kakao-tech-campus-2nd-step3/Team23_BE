@@ -96,22 +96,6 @@ class TeamServiceTest {
     }
 
     @Test
-    @DisplayName("모임 생성자에게 동일한 모임 이름이 존재")
-    void createTeam_NameDuplicateException() {
-        // given
-        Long memberId = 1L;
-        String teamName = "Test Team";
-        given(teamRepository.existsByNameAndMemberId(teamName, memberId)).willReturn(true);
-
-        // when & then
-        assertThatThrownBy(() ->
-            teamService.createTeam(memberId,
-                new CreateTeamRequest(teamName, "subject", new ArrayList<>()))
-        ).isInstanceOf(JeongsanException.class);
-        then(teamRepository).should().existsByNameAndMemberId(teamName, memberId);
-    }
-
-    @Test
     @DisplayName("모임 생성 성공")
     void createTeam_Success() {
         // given
@@ -127,7 +111,6 @@ class TeamServiceTest {
         List<Member> members = new ArrayList<>(Arrays.asList(member1, member2));
         Team team = Team.createTeam(owner, teamName, "subject", members);
 
-        given(teamRepository.existsByNameAndMemberId(teamName, ownerId)).willReturn(false);
         given(teamRepository.save(any(Team.class))).willReturn(team);
         given(memberRepository.findById(ownerId)).willReturn(Optional.of(owner));
         given(memberRepository.findById(memberId1)).willReturn(Optional.of(member1));
@@ -139,7 +122,6 @@ class TeamServiceTest {
         // then
         assertThat(actual).isNotNull();
 
-        then(teamRepository).should().existsByNameAndMemberId(teamName, ownerId);
         then(teamRepository).should().save(any(Team.class));
         then(teamRepository).shouldHaveNoMoreInteractions();
 
