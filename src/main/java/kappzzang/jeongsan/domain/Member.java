@@ -51,10 +51,4 @@ public class Member extends BaseEntity {
         this.nickname = nickname;
         this.kakaoPayInfo = kakaoPayInfo;
     }
-
-    public Member(Long id, String nickname, String profileImage) {
-        this.id = id;
-        this.nickname = nickname;
-        this.profileImage = profileImage;
-    }
 }
