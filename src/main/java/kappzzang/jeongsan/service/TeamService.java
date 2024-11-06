@@ -34,6 +34,12 @@ public class TeamService {
             .toList();
     }
 
+    @Transactional(readOnly = true)
+    public TeamResponse getTeam(Long id) {
+        return TeamResponse.from(teamRepository.findById(id)
+            .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_NOT_FOUND)));
+    }
+
     @Transactional
     public CreateTeamResponse createTeam(Long memberId, CreateTeamRequest request) {
         if (teamRepository.existsByNameAndMemberId(request.name(), memberId)) {
