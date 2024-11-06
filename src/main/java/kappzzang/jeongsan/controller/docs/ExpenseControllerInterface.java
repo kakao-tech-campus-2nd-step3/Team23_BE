@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kappzzang.jeongsan.dto.request.CompleteExpensesRequest;
 import kappzzang.jeongsan.dto.request.SavePersonalExpenseRequest;
+import kappzzang.jeongsan.dto.response.CategoryListResponse;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
 import org.springframework.http.ResponseEntity;
@@ -76,4 +77,11 @@ public interface ExpenseControllerInterface {
     })
     ResponseEntity<JeongsanApiResponse<ExpenseResponse>> getExpensesIPaid(
         Long memberId, Long teamId);
+
+    @Operation(summary = "카테고리 목록 조회 API", description = "지출 카테고리 목록을 조회하는 API")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "카테고리 목록을 성공적으로 조회", content = @Content(schema = @Schema(implementation = CategoryListResponse.class))),
+        @ApiResponse(responseCode = "404", description = "카테고리 목록이 존재하지 않음 (ErrorCode-E404004)")
+    })
+    public ResponseEntity<JeongsanApiResponse<CategoryListResponse>> getCategoryList();
 }
