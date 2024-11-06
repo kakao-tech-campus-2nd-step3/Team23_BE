@@ -22,13 +22,13 @@ import org.springframework.context.annotation.Import;
 @Import(TestDataUtil.class)
 class PersonalExpenseRepositoryTest {
 
+    Member member1, member2;
+    Expense expense1, expense2;
+    PersonalExpense personalExpense1, personalExpense2, personalExpense3;
     @Autowired
     private PersonalExpenseRepository personalExpenseRepository;
     @Autowired
     private TestDataUtil testDataUtil;
-    Member member1, member2;
-    Expense expense1, expense2;
-    PersonalExpense personalExpense1, personalExpense2, personalExpense3;
 
     @BeforeEach
     void setUp() {

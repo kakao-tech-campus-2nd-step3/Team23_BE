@@ -43,7 +43,6 @@ public enum ErrorType {
     PERSONAL_EXPENSE_NOT_FOUND(HttpStatus.NOT_FOUND, "E404", "개인 소비 내역을 찾을 수 없습니다."),
 
 
-
     // 408 REQUEST_TIMEOUT
     EXTERNAL_API_REQUEST_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "E408001", "외부 API 요청 시간이 초과되었습니다."),
 
