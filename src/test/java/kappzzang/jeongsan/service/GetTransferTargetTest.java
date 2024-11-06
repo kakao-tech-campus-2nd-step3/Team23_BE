@@ -30,10 +30,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class GetTransferTargetTest {
 
-    Member member1, member2, member3, member4, payer;
     List<PersonalExpense> personalExpenses;
     Map<Long, Integer> expectedTotalPrices;
 
+    @Mock
+    Member member1, member2, member3, member4, payer;
+    @Mock
+    List<Member> members;
     @Mock
     private TeamRepository teamRepository;
     @Mock
@@ -82,11 +85,12 @@ public class GetTransferTargetTest {
     }
 
     private void setUpMembers() {
-        member1 = new Member(1L, "member1", "member1");
-        member2 = new Member(2L, "member2", "member2");
-        member3 = new Member(3L, "member3", "member3");
-        member4 = new Member(4L, "member4", "member4");
-        payer = new Member(5L, "payer", "payer");
+        members = List.of(member1, member2, member3, member4);
+
+        for (int i = 0; i < 4; i++) {
+            given(members.get(i).getId()).willReturn((long) i);
+        }
+        given(payer.getId()).willReturn(5L);
     }
 
     private void setUpPersonalExpenses() {
