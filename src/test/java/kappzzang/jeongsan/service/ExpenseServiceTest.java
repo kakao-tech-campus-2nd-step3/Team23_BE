@@ -64,16 +64,16 @@ public class ExpenseServiceTest {
     private TeamRepository teamRepository;
 
     @Mock
-    private ImageStorageService mockImageStorageService;
+    private ImageStorageService imageStorageService;
 
     @Mock
-    private ExpenseRepository mockExpenseRepository;
+    private ExpenseRepository expenseRepository;
 
     @Mock
-    private ItemRepository mockItemRepository;
+    private ItemRepository itemRepository;
 
     @Mock
-    private PersonalExpenseRepository mockPersonalExpenseRepository;
+    private PersonalExpenseRepository personalExpenseRepository;
 
     @InjectMocks
     private ExpenseService expenseService;
@@ -103,12 +103,12 @@ public class ExpenseServiceTest {
         PersonalExpenseDetailResponse expected = new PersonalExpenseDetailResponse(
             expense.getTitle(), TEST_PRE_SIGNED_URL, itemDetails);
 
-        given(mockExpenseRepository.findById(TEST_EXPENSE_ID)).willReturn(
+        given(expenseRepository.findById(TEST_EXPENSE_ID)).willReturn(
             Optional.ofNullable(expense));
-        given(mockExpenseRepository.findItemDetailsByExpenseIdAndMemberId(TEST_EXPENSE_ID,
+        given(expenseRepository.findItemDetailsByExpenseIdAndMemberId(TEST_EXPENSE_ID,
             TEST_MEMBER_ID)).willReturn(
             itemDetails);
-        given(mockImageStorageService.getImageUrl(TEST_IMAGE_URL)).willReturn(TEST_PRE_SIGNED_URL);
+        given(imageStorageService.getImageUrl(TEST_IMAGE_URL)).willReturn(TEST_PRE_SIGNED_URL);
 
         //when
         PersonalExpenseDetailResponse actual = expenseService.getPersonalExpenseDetailResponse(
@@ -117,17 +117,17 @@ public class ExpenseServiceTest {
 
         //then
         assertThat(actual).isEqualTo(expected);
-        then(mockExpenseRepository).should().findById(TEST_EXPENSE_ID);
-        then(mockExpenseRepository).should().findItemDetailsByExpenseIdAndMemberId(TEST_EXPENSE_ID,
+        then(expenseRepository).should().findById(TEST_EXPENSE_ID);
+        then(expenseRepository).should().findItemDetailsByExpenseIdAndMemberId(TEST_EXPENSE_ID,
             TEST_MEMBER_ID);
-        then(mockImageStorageService).should().getImageUrl(TEST_IMAGE_URL);
+        then(imageStorageService).should().getImageUrl(TEST_IMAGE_URL);
     }
 
     @Test
     @DisplayName("개인 지출 목록 조회 실패(존재하지 않는 지출 ID)")
     void testGetPersonalExpenseDetailResponseFailWithNotFoundExpense() {
         //given
-        given(mockExpenseRepository.findById(TEST_EXPENSE_ID)).willThrow(new JeongsanException(
+        given(expenseRepository.findById(TEST_EXPENSE_ID)).willThrow(new JeongsanException(
             ErrorType.EXPENSE_NOT_FOUND));
 
         //when //then
@@ -136,7 +136,7 @@ public class ExpenseServiceTest {
         )
             .isInstanceOf(JeongsanException.class)
             .hasMessage(ErrorType.EXPENSE_NOT_FOUND.getMessage());
-        then(mockExpenseRepository).should().findById(TEST_EXPENSE_ID);
+        then(expenseRepository).should().findById(TEST_EXPENSE_ID);
     }
 
 
@@ -153,12 +153,12 @@ public class ExpenseServiceTest {
         List<Expense> expenses = Collections.singletonList(expense);
         List<Item> items = Collections.singletonList(item);
 
-        given(mockExpenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
+        given(expenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
         given(teamRepository.findById(any(Long.class))).willReturn(Optional.of(mockTeam));
 
-        given(mockExpenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
-        given(mockItemRepository.findAllByExpenseId(expense.getId())).willReturn(items);
-        given(mockPersonalExpenseRepository.countByMemberIdAndItemIds(memberId,
+        given(expenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
+        given(itemRepository.findAllByExpenseId(expense.getId())).willReturn(items);
+        given(personalExpenseRepository.countByMemberIdAndItemIds(memberId,
             items.stream().map(Item::getId).toList())).willReturn(0L);
 
         // when
@@ -169,8 +169,8 @@ public class ExpenseServiceTest {
         assertThat(response.totalPrice()).isEqualTo(0);
         assertThat(response.checked()).isTrue();
 
-        then(mockExpenseRepository).should().findByTeamAndStatus(mockTeam, status);
-        then(mockItemRepository).should().findAllByExpenseId(expense.getId());
+        then(expenseRepository).should().findByTeamAndStatus(mockTeam, status);
+        then(itemRepository).should().findAllByExpenseId(expense.getId());
     }
 
     @Test
@@ -184,7 +184,7 @@ public class ExpenseServiceTest {
         Expense expense = mock(Expense.class);
         List<Expense> expenses = Collections.singletonList(expense);
 
-        given(mockExpenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
+        given(expenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
         given(teamRepository.findById(any(Long.class))).willReturn(Optional.of(mockTeam));
 
         given(expense.getId()).willReturn(1L);
@@ -224,12 +224,12 @@ public class ExpenseServiceTest {
         given(expense.getStatus()).willReturn(Status.COMPLETED);
         given(expense.getCategory()).willReturn(mock(Category.class));
 
-        given(mockExpenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
+        given(expenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
         given(teamRepository.findById(any(Long.class))).willReturn(Optional.of(mockTeam));
 
-        given(mockExpenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
-        given(mockItemRepository.findAllByExpenseId(expense.getId())).willReturn(items);
-        given(mockPersonalExpenseRepository.countByMemberIdAndItemIds(memberId,
+        given(expenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
+        given(itemRepository.findAllByExpenseId(expense.getId())).willReturn(items);
+        given(personalExpenseRepository.countByMemberIdAndItemIds(memberId,
             items.stream().map(Item::getId).toList())).willReturn(1L);
 
         // when
@@ -251,14 +251,14 @@ public class ExpenseServiceTest {
         given(mockTeam.getId()).willReturn(TEST_TEAM_ID);
         given(mockPayer.getId()).willReturn(TEST_MEMBER_ID);
         given(
-            mockExpenseRepository.findAllByIdWithDetails(expenseIds)).willReturn(
+            expenseRepository.findAllByIdWithDetails(expenseIds)).willReturn(
             expenses);
         //when
         expenseService.completeExpenses(completeExpensesRequest, TEST_TEAM_ID, TEST_MEMBER_ID);
 
         //then
         assertThat(expenses).extracting(Expense::getStatus).containsOnly(Status.COMPLETED);
-        then(mockExpenseRepository).should()
+        then(expenseRepository).should()
             .findAllByIdWithDetails(expenseIds);
     }
 
@@ -272,7 +272,7 @@ public class ExpenseServiceTest {
         given(mockTeam.getId()).willReturn(TEST_TEAM_ID);
         given(mockPayer.getId()).willReturn(TEST_MEMBER_ID);
         given(
-            mockExpenseRepository.findAllByIdWithDetails(expenseIds)).willReturn(
+            expenseRepository.findAllByIdWithDetails(expenseIds)).willReturn(
             expenses);
         expenses.getFirst().changeStatusComplete(TEST_TEAM_ID, TEST_MEMBER_ID);
 
@@ -290,7 +290,7 @@ public class ExpenseServiceTest {
         //given
         List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE - 1);
         given(
-            mockExpenseRepository.findAllByIdWithDetails(expenseIds)).willReturn(
+            expenseRepository.findAllByIdWithDetails(expenseIds)).willReturn(
             expenses);
 
         //when //then
@@ -307,7 +307,7 @@ public class ExpenseServiceTest {
         //given
         List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
         given(
-            mockExpenseRepository.findAllByIdWithDetails(expenseIds)).willReturn(
+            expenseRepository.findAllByIdWithDetails(expenseIds)).willReturn(
             expenses);
         given(mockTeam.getId()).willReturn(TEST_TEAM_ID);
         given(mockPayer.getId()).willReturn(TEST_MEMBER_ID);
@@ -328,7 +328,7 @@ public class ExpenseServiceTest {
         List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
         expenses.forEach(Expense::changeStatusPending);
         given(
-            mockExpenseRepository.findAllByIdWithDetails(expenseIds)).willReturn(
+            expenseRepository.findAllByIdWithDetails(expenseIds)).willReturn(
             expenses);
         given(mockTeam.getId()).willReturn(INVALID_TEAM_ID);
         //when //then
@@ -348,7 +348,7 @@ public class ExpenseServiceTest {
         List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
         expenses.forEach(Expense::changeStatusPending);
         given(
-            mockExpenseRepository.findAllByIdWithDetails(expenseIds)).willReturn(
+            expenseRepository.findAllByIdWithDetails(expenseIds)).willReturn(
             expenses);
         given(mockTeam.getId()).willReturn(TEST_TEAM_ID);
         given(mockPayer.getId()).willReturn(INVALID_MEMBER_ID);
@@ -367,7 +367,7 @@ public class ExpenseServiceTest {
         // given
         Member member = new Member();
         Team team = new Team();
-        given(mockExpenseRepository.findExpensesIPaid(member, team, Status.PENDING))
+        given(expenseRepository.findExpensesIPaid(member, team, Status.PENDING))
             .willReturn(Collections.emptyList());
         given(teamRepository.findById(any(Long.class))).willReturn(Optional.of(team));
         given(memberRepository.findById(any(Long.class))).willReturn(Optional.of(member));
@@ -379,7 +379,7 @@ public class ExpenseServiceTest {
         assertThat(response.expenseList()).isEmpty();
         assertThat(response.totalPrice()).isEqualTo(0);
         assertThat(response.checked()).isTrue();
-        then(mockExpenseRepository).should().findExpensesIPaid(member, team, Status.PENDING);
+        then(expenseRepository).should().findExpensesIPaid(member, team, Status.PENDING);
     }
 
     @Test
@@ -408,7 +408,7 @@ public class ExpenseServiceTest {
         List<Expense> expenses = List.of(expense1, expense2);
         given(teamRepository.findById(any(Long.class))).willReturn(Optional.of(mockTeam));
         given(memberRepository.findById(any(Long.class))).willReturn(Optional.of(mockPayer));
-        given(mockExpenseRepository.findExpensesIPaid(mockPayer, mockTeam, Status.PENDING))
+        given(expenseRepository.findExpensesIPaid(mockPayer, mockTeam, Status.PENDING))
             .willReturn(expenses);
 
         // when
@@ -418,7 +418,7 @@ public class ExpenseServiceTest {
         assertThat(response.expenseList()).hasSize(2);
         assertThat(response.totalPrice()).isEqualTo(3000);
         assertThat(response.checked()).isTrue();
-        then(mockExpenseRepository).should().findExpensesIPaid(mockPayer, mockTeam, Status.PENDING);
+        then(expenseRepository).should().findExpensesIPaid(mockPayer, mockTeam, Status.PENDING);
     }
 
     private List<Expense> createExpenses(int count) {
