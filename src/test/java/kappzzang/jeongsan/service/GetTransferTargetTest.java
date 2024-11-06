@@ -124,6 +124,7 @@ public class GetTransferTargetTest {
     }
 
     private PersonalExpense createPersonalExpense(Member member, Item item, int price) {
-        return new PersonalExpense(member, item, price);
+        return PersonalExpense.builder()
+            .member(member).item(item).totalPrice(price).build();
     }
 }

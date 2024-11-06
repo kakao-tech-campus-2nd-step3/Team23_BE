@@ -53,12 +53,6 @@ public class PersonalExpense extends BaseEntity {
         calculateConsumedItemTotalPrice();
     }
 
-    public PersonalExpense(Member member, Item item, Integer totalPrice) {
-        this.member = member;
-        this.item = item;
-        this.totalPrice = totalPrice;
-    }
-
     public void calculateConsumedItemTotalPrice() {
         if (this.item == null) {
             throw new JeongsanException(ErrorType.INTERNAL_SERVER_ERROR);
