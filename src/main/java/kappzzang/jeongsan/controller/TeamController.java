@@ -38,6 +38,12 @@ public class TeamController implements TeamControllerInterface {
         return JeongsanApiResponse.success(SuccessType.TEAM_LIST_LOADED, data);
     }
 
+    @GetMapping("{teamId}")
+    public ResponseEntity<JeongsanApiResponse<TeamResponse>> getTeam(@PathVariable Long teamId) {
+        TeamResponse data = teamService.getTeam(teamId);
+        return JeongsanApiResponse.success(SuccessType.TEAM_LIST_LOADED, data);
+    }
+
     @Override
     @PostMapping
     public ResponseEntity<JeongsanApiResponse<CreateTeamResponse>> createTeam(
