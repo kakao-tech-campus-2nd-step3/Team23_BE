@@ -14,9 +14,9 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     @Query("SELECT e FROM Expense e "
         + "JOIN FETCH e.items "
-        + "WHERE e.team.id = :teamId "
+        + "WHERE e.team = :team "
         + "AND e.status = :status")
-    List<Expense> findByTeamIdAndStatus(Long teamId, Status status);
+    List<Expense> findByTeamAndStatus(Team team, Status status);
 
 //    @Query("SELECT e FROM Expense e "
 //        + "WHERE e.team.id = :teamId "
