@@ -48,7 +48,7 @@ jobs:
 
       # Show test result
       - name: Show test result
-        uses: EnricoMi/publish-unit-test-result-action@v2
+        uses: EnricoMi/publish-unit-test-result-action@v2.12.0
         if: always()
         with:
           files: '**/build/test-results/test/TEST-*.xml'
