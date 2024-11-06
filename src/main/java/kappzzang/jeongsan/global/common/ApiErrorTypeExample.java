@@ -10,5 +10,5 @@ import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiErrorTypeExample {
 
-    Class<? extends ErrorType> value();
+    ErrorType[] value();
 }

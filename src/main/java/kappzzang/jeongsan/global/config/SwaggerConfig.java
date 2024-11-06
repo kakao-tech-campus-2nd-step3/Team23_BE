@@ -96,9 +96,8 @@ public class SwaggerConfig {
     }
 
     private void createErrorTypeExampleResponse(Operation operation,
-        Class<? extends ErrorType> type) {
+        ErrorType[] errorTypes) {
         ApiResponses responses = operation.getResponses();
-        ErrorType[] errorTypes = type.getEnumConstants();
 
         Map<Integer, List<ExampleHolder>> statusWithExampleHolders =
             Arrays.stream(errorTypes)
