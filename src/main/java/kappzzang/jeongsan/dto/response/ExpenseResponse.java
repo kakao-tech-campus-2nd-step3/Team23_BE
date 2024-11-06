@@ -9,15 +9,22 @@ import kappzzang.jeongsan.global.common.enumeration.Status;
 public record ExpenseResponse(
     List<ExpenseItem> expenseList,
     Boolean checked,
-    Integer totalPrice
+    Integer totalPrice,
+    Integer totalPersonalExpense
 ) {
 
     public static ExpenseResponse of(List<Expense> expenseList, Boolean isChecked,
-        Integer totalPrice) {
+        Integer totalPrice, Integer personalExpensePrice) {
+
         List<ExpenseItem> expenseItems = expenseList.stream()
-            .map(ExpenseItem::from)
+            .map(expense -> ExpenseItem.from(expense, personalExpensePrice))
             .toList();
-        return new ExpenseResponse(expenseItems, isChecked, totalPrice);
+
+        int totalPersonalExpense = expenseItems.stream()
+            .mapToInt(ExpenseItem::personalExpense)
+            .sum();
+
+        return new ExpenseResponse(expenseItems, isChecked, totalPrice, totalPersonalExpense);
     }
 
     public record ExpenseItem(
@@ -26,17 +33,19 @@ public record ExpenseResponse(
         Integer totalPrice,
         LocalDateTime createdAt,
         Status state,
-        CategoryDto category
+        CategoryDto category,
+        Integer personalExpense
     ) {
 
-        public static ExpenseItem from(Expense expense) {
+        public static ExpenseItem from(Expense expense, Integer personalExpensePrice) {
             return new ExpenseItem(
                 expense.getId(),
                 expense.getTitle(),
                 expense.getTotalPrice(),
                 expense.getCreatedAt(),
                 expense.getStatus(),
-                CategoryDto.from(expense.getCategory())
+                CategoryDto.from(expense.getCategory()),
+                personalExpensePrice
             );
         }
     }
