@@ -42,10 +42,6 @@ public class TeamService {
 
     @Transactional
     public CreateTeamResponse createTeam(Long memberId, CreateTeamRequest request) {
-        if (teamRepository.existsByNameAndMemberId(request.name(), memberId)) {
-            throw new JeongsanException(ErrorType.TEAM_NAME_DUPLICATED);
-        }
-
         Member owner = memberRepository.findById(memberId)
             .orElseThrow(() -> new JeongsanException(ErrorType.USER_NOT_FOUND));
 

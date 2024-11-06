@@ -45,7 +45,6 @@ public interface TeamControllerInterface {
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "모임 생성 성공"),
         @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없음(ErrorCode-E404001)"),
-        @ApiResponse(responseCode = "409", description = "중복된 모임 이름이 존재함(ErrorCode-E409001)")
     })
     ResponseEntity<JeongsanApiResponse<CreateTeamResponse>> createTeam(Long memberId,
         CreateTeamRequest request);
