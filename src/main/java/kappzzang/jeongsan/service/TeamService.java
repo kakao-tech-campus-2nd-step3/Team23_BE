@@ -97,7 +97,7 @@ public class TeamService {
 
     private List<PersonalExpense> findPersonalExpensesByExpenseIds(List<Long> expenseIds) {
         List<PersonalExpense> personalExpenses = personalExpenseRepository
-            .findAllByExpenseIdsWithItemAndMember(expenseIds);
+            .findAllByExpenseIds(expenseIds);
         if (personalExpenses.isEmpty()) {
             throw new JeongsanException(ErrorType.PERSONAL_EXPENSE_NOT_FOUND);
         }

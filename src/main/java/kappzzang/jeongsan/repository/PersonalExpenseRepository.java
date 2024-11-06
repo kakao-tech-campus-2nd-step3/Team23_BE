@@ -24,8 +24,7 @@ public interface PersonalExpenseRepository extends JpaRepository<PersonalExpense
 
     @Query("SELECT pe FROM PersonalExpense pe " +
         "JOIN FETCH pe.item i " +
-        "JOIN FETCH pe.member m " +
         "WHERE i.expense.id IN :expenseIds")
-    List<PersonalExpense> findAllByExpenseIdsWithItemAndMember(
+    List<PersonalExpense> findAllByExpenseIds(
         @Param("expenseIds") List<Long> expenseIds);
 }

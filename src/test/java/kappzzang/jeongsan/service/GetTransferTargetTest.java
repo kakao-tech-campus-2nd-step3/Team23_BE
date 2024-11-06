@@ -58,7 +58,7 @@ public class GetTransferTargetTest {
         // given
         given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(payer));
         given(teamRepository.findById(anyLong())).willReturn(Optional.of(new Team()));
-        given(personalExpenseRepository.findAllByExpenseIdsWithItemAndMember(anyList()))
+        given(personalExpenseRepository.findAllByExpenseIds(anyList()))
             .willReturn(personalExpenses);
 
         ExpenseId id1 = new ExpenseId(1L);
@@ -97,16 +97,16 @@ public class GetTransferTargetTest {
         Item item5 = new Item();
 
         personalExpenses = List.of(
-            createExpense(member1, item1, 1),
-            createExpense(member2, item1, 1),
-            createExpense(member1, item2, 1),
-            createExpense(member1, item3, 1),
-            createExpense(member3, item3, 1),
-            createExpense(member4, item1, 1),
-            createExpense(member2, item4, 1),
-            createExpense(member4, item5, 1),
-            createExpense(payer, item1, 1),
-            createExpense(payer, item3, 1)
+            createPersonalExpense(member1, item1, 1),
+            createPersonalExpense(member2, item1, 1),
+            createPersonalExpense(member1, item2, 1),
+            createPersonalExpense(member1, item3, 1),
+            createPersonalExpense(member3, item3, 1),
+            createPersonalExpense(member4, item1, 1),
+            createPersonalExpense(member2, item4, 1),
+            createPersonalExpense(member4, item5, 1),
+            createPersonalExpense(payer, item1, 1),
+            createPersonalExpense(payer, item3, 1)
         );
     }
 
@@ -119,7 +119,7 @@ public class GetTransferTargetTest {
         );
     }
 
-    private PersonalExpense createExpense(Member member, Item item, int price) {
+    private PersonalExpense createPersonalExpense(Member member, Item item, int price) {
         return new PersonalExpense(member, item, price);
     }
 }
