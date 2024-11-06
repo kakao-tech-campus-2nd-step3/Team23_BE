@@ -5,9 +5,11 @@ import jakarta.validation.Valid;
 import java.util.List;
 import kappzzang.jeongsan.controller.docs.TeamControllerInterface;
 import kappzzang.jeongsan.dto.request.CreateTeamRequest;
+import kappzzang.jeongsan.dto.request.TransferTargetRequest;
 import kappzzang.jeongsan.dto.response.CreateTeamResponse;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
 import kappzzang.jeongsan.dto.response.TeamResponse;
+import kappzzang.jeongsan.dto.response.TransferTargetResponse;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
 import kappzzang.jeongsan.global.common.enumeration.SuccessType;
 import kappzzang.jeongsan.service.TeamService;
@@ -67,5 +69,15 @@ public class TeamController implements TeamControllerInterface {
         @PathVariable("teamId") Long teamId) {
         List<InvitationStatusResponse> data = teamService.getInvitationStatus(teamId);
         return JeongsanApiResponse.success(SuccessType.INVITATION_STATUS_LOADED, data);
+    }
+
+    @Override
+    @PostMapping("/{teamId}/transfers")
+    public ResponseEntity<JeongsanApiResponse<List<TransferTargetResponse>>> getTransferTargetList(
+        @AuthenticationPrincipal Long memberId, @PathVariable("teamId") Long teamId,
+        @Valid @RequestBody TransferTargetRequest request) {
+        List<TransferTargetResponse> data =
+            teamService.getTransferTargetList(memberId, teamId, request);
+        return JeongsanApiResponse.success(SuccessType.TRANSFER_TARGET_LIST_LOADED, data);
     }
 }

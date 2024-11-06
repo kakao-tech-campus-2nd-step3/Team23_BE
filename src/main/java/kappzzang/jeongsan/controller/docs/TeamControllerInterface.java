@@ -3,16 +3,20 @@ package kappzzang.jeongsan.controller.docs;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import kappzzang.jeongsan.dto.request.CreateTeamRequest;
+import kappzzang.jeongsan.dto.request.TransferTargetRequest;
 import kappzzang.jeongsan.dto.response.CreateTeamResponse;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
 import kappzzang.jeongsan.dto.response.TeamResponse;
+import kappzzang.jeongsan.dto.response.TransferTargetResponse;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
 import org.springframework.http.ResponseEntity;
 
@@ -71,4 +75,19 @@ public interface TeamControllerInterface {
     })
     ResponseEntity<JeongsanApiResponse<List<InvitationStatusResponse>>> getInvitationStatus(
         Long teamId);
+
+    @Operation(summary = "송금 요청 대상 및 금액 조회 API", description = "송금을 요청할 멤버와 해당 멤버가 보내야할 금액을 조회하는 API")
+    @Parameter(name = "teamId", description = "송금 요청 대상 및 금액 조회하려는 모임의 id")
+    @RequestBody(description = "송금 요청할 지출 id 목록", required = true,
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransferTargetRequest.class)))
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "송금 요청 대상 및 금액 조회 성공",
+            content = @Content(mediaType = "application/json",
+                array = @ArraySchema(schema = @Schema(implementation = TransferTargetResponse.class)))),
+        @ApiResponse(responseCode = "404", description =
+            "`teamId`에 해당하는 모임을 찾을 수 없음 (ErrorCode-E404002), "
+                + "개인 소비 내역을 찾을 수 없음 (ErrorCode-E404)")
+    })
+    ResponseEntity<JeongsanApiResponse<List<TransferTargetResponse>>> getTransferTargetList(
+        Long memberId, Long teamId, TransferTargetRequest request);
 }
