@@ -70,7 +70,10 @@ public interface ExpenseControllerInterface {
 
     @Operation(summary = "내가 지불한 지출 내역 조회 API", description = "내가 지불한 지출 내역 중 `송금 대기` 상태 지출 내역 조회")
     @Parameter(name = "teamId", description = "조회를 원하는 모임 ID")
-    @ApiResponse(responseCode = "200", description = "지출 내역 목록을 성공적으로 조회")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "지출 내역 목록을 성공적으로 조회"),
+        @ApiResponse(responseCode = "404", description = "`teamId`에 해당하는 모임이 존재하지 않음. (ErrorCode-E404002)")
+    })
     ResponseEntity<JeongsanApiResponse<ExpenseResponse>> getExpensesIPaid(
         Long memberId, Long teamId);
 }
