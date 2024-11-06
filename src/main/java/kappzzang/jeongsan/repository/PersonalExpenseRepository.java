@@ -2,6 +2,7 @@ package kappzzang.jeongsan.repository;
 
 import java.util.List;
 import java.util.Optional;
+import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.PersonalExpense;
@@ -27,4 +28,11 @@ public interface PersonalExpenseRepository extends JpaRepository<PersonalExpense
         "WHERE i.expense.id IN :expenseIds")
     List<PersonalExpense> findAllByExpenseIds(
         @Param("expenseIds") List<Long> expenseIds);
+
+    @Query("SELECT pe FROM PersonalExpense pe " +
+        "JOIN FETCH pe.item i " +
+        "WHERE i.expense = :expense AND pe.member.id = :memberId")
+    List<PersonalExpense> findAllByExpenseAndMemberId(
+        @Param("expense") Expense expense,
+        @Param("memberId") Long memberId);
 }

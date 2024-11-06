@@ -2,8 +2,10 @@ package kappzzang.jeongsan.dto.response;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.dto.CategoryDto;
+import kappzzang.jeongsan.dto.ExpenseWithPersonalExpense;
 import kappzzang.jeongsan.global.common.enumeration.Status;
 
 public record ExpenseResponse(
@@ -13,16 +15,20 @@ public record ExpenseResponse(
     Integer totalPersonalExpense
 ) {
 
-    public static ExpenseResponse of(List<Expense> expenseList, Boolean isChecked,
-        Integer totalPrice, Integer personalExpensePrice) {
+    public static ExpenseResponse of(List<ExpenseWithPersonalExpense> expenseList,
+        Boolean isChecked, Integer totalPrice) {
 
         List<ExpenseItem> expenseItems = expenseList.stream()
-            .map(expense -> ExpenseItem.from(expense, personalExpensePrice))
+            .map(ExpenseItem::from)
             .toList();
 
-        int totalPersonalExpense = expenseItems.stream()
-            .mapToInt(ExpenseItem::personalExpense)
+        Integer totalPersonalExpense = expenseItems.stream()
+            .mapToInt(item -> Optional.ofNullable(item.personalExpense()).orElse(0))
             .sum();
+
+        if (totalPersonalExpense == 0) {
+            totalPersonalExpense = null;
+        }
 
         return new ExpenseResponse(expenseItems, isChecked, totalPrice, totalPersonalExpense);
     }
@@ -37,7 +43,8 @@ public record ExpenseResponse(
         Integer personalExpense
     ) {
 
-        public static ExpenseItem from(Expense expense, Integer personalExpensePrice) {
+        public static ExpenseItem from(ExpenseWithPersonalExpense expenseWithPersonalExpense) {
+            Expense expense = expenseWithPersonalExpense.expense();
             return new ExpenseItem(
                 expense.getId(),
                 expense.getTitle(),
@@ -45,7 +52,7 @@ public record ExpenseResponse(
                 expense.getCreatedAt(),
                 expense.getStatus(),
                 CategoryDto.from(expense.getCategory()),
-                personalExpensePrice
+                expenseWithPersonalExpense.personalExpense()
             );
         }
     }
