@@ -40,6 +40,7 @@ public class TeamController implements TeamControllerInterface {
         return JeongsanApiResponse.success(SuccessType.TEAM_LIST_LOADED, data);
     }
 
+    @Override
     @GetMapping("{teamId}")
     public ResponseEntity<JeongsanApiResponse<TeamResponse>> getTeam(@PathVariable Long teamId) {
         TeamResponse data = teamService.getTeam(teamId);
