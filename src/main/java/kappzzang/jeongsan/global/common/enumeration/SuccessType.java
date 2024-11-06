@@ -18,6 +18,7 @@ public enum SuccessType {
     ACCESS_TOKEN_REISSUED(HttpStatus.OK, "액세스 토큰이 재발급되었습니다."),
     PAY_LINK_LOADED(HttpStatus.OK, "카카오 페이 송금 링크 조회 성공"),
     PERSONAL_EXPENSE_SAVED(HttpStatus.OK, "개인 소비 내역이 저장되었습니다."),
+    TRANSFER_TARGET_LIST_LOADED(HttpStatus.OK, "송금 요청 대상과 금액 목록을 불러오는 데 성공했습니다."),
     CATEGORY_LIST_LOADED(HttpStatus.OK, "카테고리 목록을 불러오는 데 성공했습니다."),
 
     // 201 CREATED
