@@ -10,6 +10,7 @@ import kappzzang.jeongsan.global.client.dto.response.GeneralOcrResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -33,7 +34,7 @@ public class ClovaApiClient {
     private final RestClient clovaOcrClient;
 
     public ClovaApiClient(ClovaOcrProperties clovaOcrProperties,
-        RestClient.Builder clovaOcrClientBuilder) {
+        @Qualifier("clovaOcrClientBuilder") RestClient.Builder clovaOcrClientBuilder) {
         this.clovaOcrProperties = clovaOcrProperties;
         this.clovaOcrClient = clovaOcrClientBuilder.build();
     }
