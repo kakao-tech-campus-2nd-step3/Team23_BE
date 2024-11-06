@@ -46,7 +46,7 @@ public class TeamService {
         List<Member> members = Collections.emptyList();
         if (!request.members().isEmpty()) {
             members = request.members().stream()
-                .map(id -> memberRepository.findById(id)
+                .map(kakaoId -> memberRepository.findByKakaoId(kakaoId)
                     .orElseThrow(() -> new JeongsanException(ErrorType.USER_NOT_FOUND)))
                 .toList();
         }

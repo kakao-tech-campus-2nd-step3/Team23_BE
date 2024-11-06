@@ -115,21 +115,21 @@ class TeamServiceTest {
         // given
         Long ownerId = 1L;
         Member owner = new Member();
-        Long memberId1 = 2L;
+        String memberKakaoId1 = "memberKakaoId1";
         Member member1 = new Member();
-        Long memberId2 = 3L;
+        String memberKakaoId2 = "memberKakaoId2";
         Member member2 = new Member();
         String teamName = "Test Team";
         CreateTeamRequest request = new CreateTeamRequest(teamName, "subject", new ArrayList<>(
-            Arrays.asList(memberId1, memberId2)));
+            Arrays.asList(memberKakaoId1, memberKakaoId2)));
         List<Member> members = new ArrayList<>(Arrays.asList(member1, member2));
         Team team = Team.createTeam(owner, teamName, "subject", members);
 
         given(teamRepository.existsByNameAndMemberId(teamName, ownerId)).willReturn(false);
         given(teamRepository.save(any(Team.class))).willReturn(team);
         given(memberRepository.findById(ownerId)).willReturn(Optional.of(owner));
-        given(memberRepository.findById(memberId1)).willReturn(Optional.of(member1));
-        given(memberRepository.findById(memberId2)).willReturn(Optional.of(member2));
+        given(memberRepository.findByKakaoId(memberKakaoId1)).willReturn(Optional.of(member1));
+        given(memberRepository.findByKakaoId(memberKakaoId2)).willReturn(Optional.of(member2));
 
         // when
         CreateTeamResponse actual = teamService.createTeam(ownerId, request);
@@ -142,8 +142,8 @@ class TeamServiceTest {
         then(teamRepository).shouldHaveNoMoreInteractions();
 
         then(memberRepository).should().findById(ownerId);
-        then(memberRepository).should().findById(memberId1);
-        then(memberRepository).should().findById(memberId2);
+        then(memberRepository).should().findByKakaoId(memberKakaoId1);
+        then(memberRepository).should().findByKakaoId(memberKakaoId2);
         then(memberRepository).shouldHaveNoMoreInteractions();
     }
 }
