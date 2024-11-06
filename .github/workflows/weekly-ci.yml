@@ -1,7 +1,7 @@
-name: CI on PR to weekly-branch
+name: CI on PR
 
 on:
-  pull_request_target:
+  pull_request:
     branches: [ 'Master', 'Develop', 'Weekly/*' ]
 
 jobs:
@@ -22,11 +22,11 @@ jobs:
           java-version: '21'
           distribution: 'corretto'
 
-      # Set up properties
+      # Set up test properties
       - name: Set up properties
         run: |
-          mkdir -p ./src/main/resources
-          echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.properties
+          mkdir -p ./src/test/resources
+          echo "${{ secrets.APPLICATION_TEST }}" > ./src/test/resources/application-test.properties
 
       # Gradle caching
       - name: Gradle Caching
@@ -39,12 +39,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # Build and Test
+      # Test
       - name: Test with Gradle Wrapper
         id: gradle-test
         run: |
           chmod +x ./gradlew
-          ./gradlew clean build
+          ./gradlew clean test
 
       # Show test result
       - name: Show test result
@@ -56,7 +56,7 @@ jobs:
 
       # Add check comments for failed code lines on test failure
       - name: Add comments for failed code lines
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v4
         if: failure()
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
