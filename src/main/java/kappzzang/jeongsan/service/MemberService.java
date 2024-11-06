@@ -56,9 +56,7 @@ public class MemberService {
     private LoginResponse createToken(Member member) {
         String accessToken = jwtUtil.createAccessToken(member.getId());
         String refreshToken = jwtUtil.createRefreshToken();
-        member = member.toBuilder()
-            .refreshToken(refreshToken)
-            .build();
+        member.updateRefreshToken(refreshToken);
         memberRepository.save(member);
 
         return new LoginResponse(BEARER, accessToken, refreshToken);
