@@ -12,6 +12,7 @@ import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.PersonalExpense;
 import kappzzang.jeongsan.domain.Team;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -51,11 +52,12 @@ class PersonalExpenseRepositoryTest {
     }
 
     @Test
-    void findAllByExpenseIdsWithItemAndMember() {
+    @DisplayName("ExpenseId를 입력받아 해당 지출과 연관된 PersonalExpense를 반환한다.")
+    void findAllByExpenseIds() {
         // given
         List<Long> expenseIds = Arrays.asList(expense1.getId(), expense2.getId());
         // when
-        List<PersonalExpense> results = personalExpenseRepository.findAllByExpenseIdsWithItemAndMember(
+        List<PersonalExpense> results = personalExpenseRepository.findAllByExpenseIds(
             expenseIds);
         // then
         assertThat(results).containsExactlyInAnyOrder(personalExpense1, personalExpense2,
