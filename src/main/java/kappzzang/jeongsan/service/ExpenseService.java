@@ -110,9 +110,14 @@ public class ExpenseService {
 
     private Integer findPersonalExpense(Expense expense, Long memberId) {
         List<PersonalExpense> personalExpenses = personalExpenseRepository.findAllByExpenseIdAndMemberId(
-            expense.getId(), memberId);
+            expense.getId(), 1L);
+        int personalExpenseSum = personalExpenses.stream().mapToInt(PersonalExpense::getTotalPrice)
+            .sum();
 
-        return personalExpenses.stream().mapToInt(PersonalExpense::getTotalPrice).sum();
+        if (personalExpenseSum == 0) {
+            return null;
+        }
+        return personalExpenseSum;
     }
 
     private List<ExpenseWithPersonalExpense> createExpenseWithNullPersonalExpense(
