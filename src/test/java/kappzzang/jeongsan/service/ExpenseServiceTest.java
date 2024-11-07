@@ -3,6 +3,7 @@ package kappzzang.jeongsan.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -17,6 +18,7 @@ import kappzzang.jeongsan.domain.Category;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
+import kappzzang.jeongsan.domain.PersonalExpense;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.ItemDetail;
 import kappzzang.jeongsan.dto.request.CompleteExpensesRequest;
@@ -54,6 +56,7 @@ public class ExpenseServiceTest {
     private final String TEST_TITLE = "TEST_TITLE";
     private final Member mockPayer = mock(Member.class);
     private final Team mockTeam = mock(Team.class);
+    private final Item mockItem = mock(Item.class);
     private List<Long> expenseIds;
     private CompleteExpensesRequest completeExpensesRequest;
 
@@ -239,6 +242,45 @@ public class ExpenseServiceTest {
         assertThat(response.expenseList()).hasSize(1);
         assertThat(response.totalPrice()).isEqualTo(expense.getTotalPrice());
         assertThat(response.expenseList().getFirst().title()).isEqualTo(expense.getTitle());
+    }
+
+    @Test
+    @DisplayName("지출 목록 조회 - 대기 상태")
+    void getExpenses_Pending() {
+        // given
+        Long memberId = 1L;
+        Long teamId = 1L;
+        Status status = Status.PENDING;
+        Boolean isChecked = null;
+        Expense expense = mock(Expense.class);
+        List<Expense> expenses = Collections.singletonList(expense);
+        PersonalExpense personalExpense1 = new PersonalExpense(mockPayer, mockItem, 1, 1000);
+        PersonalExpense personalExpense2 = new PersonalExpense(mockPayer, mockItem, 1, 2000);
+        List<PersonalExpense> personalExpenses = List.of(personalExpense1, personalExpense2);
+
+        given(expenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
+        given(teamRepository.findById(any(Long.class))).willReturn(Optional.of(mockTeam));
+        given(personalExpenseRepository.findAllByExpenseAndMemberId(any(Expense.class),
+            anyLong())).willReturn(personalExpenses);
+
+        given(expense.getId()).willReturn(1L);
+        given(expense.getTitle()).willReturn("Test Expense");
+        given(expense.getTotalPrice()).willReturn(1000);
+        given(expense.getCreatedAt()).willReturn(LocalDateTime.now());
+        given(expense.getStatus()).willReturn(Status.PENDING);
+        given(expense.getCategory()).willReturn(mock(Category.class));
+
+        // when
+        ExpenseResponse response = expenseService.getExpenses(memberId, teamId, status, isChecked);
+
+        // then
+        assertThat(response.expenseList()).hasSize(1);
+        assertThat(response.totalPrice()).isEqualTo(1000);
+        assertThat(response.expenseList().getFirst().title()).isEqualTo("Test Expense");
+        assertThat(response.expenseList().getFirst().totalPrice()).isEqualTo(1000);
+
+        assertThat(response.expenseList().getFirst().personalExpense()).isEqualTo(3000);
+        assertThat(response.totalPersonalExpense()).isEqualTo(3000);
     }
 
 
