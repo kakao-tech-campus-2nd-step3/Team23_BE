@@ -2,6 +2,7 @@ package kappzzang.jeongsan.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import kappzzang.jeongsan.domain.Category;
 import kappzzang.jeongsan.domain.Expense;
@@ -108,8 +109,9 @@ public class ExpenseService {
     }
 
     private Integer findPersonalExpense(Expense expense, Long memberId) {
-        return personalExpenseRepository.findPersonalExpenseSum(
+        Integer personalExpenseSum = personalExpenseRepository.findPersonalExpenseSum(
             expense.getId(), memberId);
+        return Objects.requireNonNullElse(personalExpenseSum, 0);
     }
 
     private List<ExpenseWithPersonalExpense> createExpenseWithNullPersonalExpense(

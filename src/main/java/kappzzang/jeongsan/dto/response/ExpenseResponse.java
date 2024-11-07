@@ -2,7 +2,6 @@ package kappzzang.jeongsan.dto.response;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.dto.CategoryDto;
 import kappzzang.jeongsan.dto.ExpenseWithPersonalExpense;
@@ -23,14 +22,17 @@ public record ExpenseResponse(
             .toList();
 
         Integer totalPersonalExpense = expenseItems.stream()
-            .mapToInt(item -> Optional.ofNullable(item.personalExpense()).orElse(0))
-            .sum();
-
-        if (totalPersonalExpense == 0) {
-            totalPersonalExpense = null;
-        }
+            .map(ExpenseItem::personalExpense)
+            .reduce(0, ExpenseResponse::sumPersonalExpenses);
 
         return new ExpenseResponse(expenseItems, isChecked, totalPrice, totalPersonalExpense);
+    }
+
+    private static Integer sumPersonalExpenses(Integer subtotal, Integer personalExpense) {
+        if (personalExpense == null) {
+            return null;
+        }
+        return subtotal + personalExpense;
     }
 
     public record ExpenseItem(
