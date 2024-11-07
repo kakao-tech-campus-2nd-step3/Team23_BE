@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import kappzzang.jeongsan.controller.docs.ReceiptControllerInterface;
 import kappzzang.jeongsan.dto.Image;
 import kappzzang.jeongsan.dto.request.SaveExpenseRequest;
+import kappzzang.jeongsan.dto.response.ExpenseDetailResponse;
 import kappzzang.jeongsan.dto.response.ParsedReceiptResponse;
 import kappzzang.jeongsan.dto.response.PersonalExpenseDetailResponse;
 import kappzzang.jeongsan.dto.response.SaveExpenseResponse;
@@ -65,4 +66,14 @@ public class ReceiptController implements ReceiptControllerInterface {
             expenseId, memberId);
         return JeongsanApiResponse.success(SuccessType.PERSONAL_EXPENSE_LOADED, response);
     }
+
+    @Override
+    @GetMapping("/items/{expenseId}/state")
+    public ResponseEntity<JeongsanApiResponse<ExpenseDetailResponse>> getExpenseDetails(
+        @PathVariable("expenseId") Long expenseId,
+        @AuthenticationPrincipal Long memberId) {
+        return JeongsanApiResponse.success(SuccessType.EXPENSE_DETAIL_LOADED,
+            expenseService.getExpenseDetailResponse(expenseId, memberId));
+    }
+
 }

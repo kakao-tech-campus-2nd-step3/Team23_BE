@@ -1,6 +1,7 @@
 package kappzzang.jeongsan.repository;
 
 import java.util.List;
+import java.util.Optional;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.Team;
@@ -61,4 +62,9 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
         + "AND e.status = :status")
     List<Expense> findExpensesIPaid(@Param("payer") Member payer, @Param("team") Team team,
         @Param("status") Status status);
+
+    @Query("SELECT e FROM Expense e "
+        + "JOIN FETCH e.items "
+        + "WHERE e.id = :id")
+    Optional<Expense> findExpenseByIdWithItem(@Param("id") Long id);
 }

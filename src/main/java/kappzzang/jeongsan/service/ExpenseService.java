@@ -4,16 +4,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import kappzzang.jeongsan.domain.Category;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
+import kappzzang.jeongsan.domain.PersonalExpense;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.ItemDetail;
 import kappzzang.jeongsan.dto.ItemSummary;
 import kappzzang.jeongsan.dto.request.CompleteExpensesRequest;
 import kappzzang.jeongsan.dto.request.CompleteExpensesRequest.ExpenseId;
 import kappzzang.jeongsan.dto.request.SaveExpenseRequest;
+import kappzzang.jeongsan.dto.response.ExpenseDetailResponse;
+import kappzzang.jeongsan.dto.response.ExpenseDetailResponse.ItemDetailWithPersonal;
+import kappzzang.jeongsan.dto.response.ExpenseDetailResponse.ItemDetailWithPersonal.PersonalDetail;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
 import kappzzang.jeongsan.dto.response.PersonalExpenseDetailResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
@@ -137,6 +142,36 @@ public class ExpenseService {
         String imageUrl = imageStorageService.getImageUrl(expense.getImageUrl());
         return new PersonalExpenseDetailResponse(
             expense.getTitle(), imageUrl, personalExpenses);
+    }
+
+    @Transactional(readOnly = true)
+    public ExpenseDetailResponse getExpenseDetailResponse(Long expenseId, Long memberId) {
+        Expense expense = expenseRepository.findExpenseByIdWithItem(expenseId)
+            .orElseThrow(() -> new JeongsanException(ErrorType.EXPENSE_NOT_FOUND));
+
+        expense.validateOwnerShip(memberId);
+
+        List<Long> itemIds = expense.getItems().stream().map(Item::getId).toList();
+        List<PersonalExpense> personalExpenses = personalExpenseRepository.findAllByItemIds(
+            itemIds);
+
+        Map<Long, List<PersonalExpense>> personalExpensesByItemId = personalExpenses.stream()
+            .collect(
+                Collectors.groupingBy(pe -> pe.getItem().getId()));
+
+        List<ItemDetailWithPersonal> itemDetails = expense.getItems().stream()
+            .map(item -> {
+                List<PersonalDetail> personalDetails = personalExpensesByItemId.getOrDefault(
+                        item.getId(), Collections.emptyList())
+                    .stream()
+                    .map(PersonalDetail::from)
+                    .toList();
+
+                return ItemDetailWithPersonal.of(item, personalDetails);
+            }).toList();
+
+        String preSignedUrl = imageStorageService.getImageUrl(expense.getImageUrl());
+        return new ExpenseDetailResponse(expense.getTitle(), preSignedUrl, itemDetails);
     }
 
 
