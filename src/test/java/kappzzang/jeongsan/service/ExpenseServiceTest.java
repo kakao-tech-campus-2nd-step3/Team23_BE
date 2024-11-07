@@ -260,7 +260,7 @@ public class ExpenseServiceTest {
 
         given(expenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
         given(teamRepository.findById(any(Long.class))).willReturn(Optional.of(mockTeam));
-        given(personalExpenseRepository.findAllByExpenseAndMemberId(any(Expense.class),
+        given(personalExpenseRepository.findAllByExpenseIdAndMemberId(anyLong(),
             anyLong())).willReturn(personalExpenses);
 
         given(expense.getId()).willReturn(1L);

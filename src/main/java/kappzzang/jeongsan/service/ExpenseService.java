@@ -109,8 +109,9 @@ public class ExpenseService {
     }
 
     private Integer findPersonalExpense(Expense expense, Long memberId) {
-        List<PersonalExpense> personalExpenses = personalExpenseRepository.findAllByExpenseAndMemberId(
-            expense, memberId);
+        List<PersonalExpense> personalExpenses = personalExpenseRepository.findAllByExpenseIdAndMemberId(
+            expense.getId(), memberId);
+
         return personalExpenses.stream().mapToInt(PersonalExpense::getTotalPrice).sum();
     }
 
