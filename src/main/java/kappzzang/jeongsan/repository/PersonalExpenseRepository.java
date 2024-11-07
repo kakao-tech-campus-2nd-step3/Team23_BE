@@ -28,10 +28,10 @@ public interface PersonalExpenseRepository extends JpaRepository<PersonalExpense
     List<PersonalExpense> findAllByExpenseIds(
         @Param("expenseIds") List<Long> expenseIds);
 
-    @Query("SELECT pe FROM PersonalExpense pe " +
-        "JOIN FETCH pe.item i " +
+    @Query("SELECT SUM(pe.totalPrice) FROM PersonalExpense pe " +
+        "JOIN pe.item i " +
         "WHERE i.expense.id = :expenseId AND pe.member.id = :memberId")
-    List<PersonalExpense> findAllByExpenseIdAndMemberId(
+    Integer findPersonalExpenseSum(
         @Param("expenseId") Long expenseId,
         @Param("memberId") Long memberId);
 }

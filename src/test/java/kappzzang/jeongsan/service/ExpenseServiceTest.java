@@ -18,7 +18,6 @@ import kappzzang.jeongsan.domain.Category;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
-import kappzzang.jeongsan.domain.PersonalExpense;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.ItemDetail;
 import kappzzang.jeongsan.dto.request.CompleteExpensesRequest;
@@ -254,14 +253,11 @@ public class ExpenseServiceTest {
         Boolean isChecked = null;
         Expense expense = mock(Expense.class);
         List<Expense> expenses = Collections.singletonList(expense);
-        PersonalExpense personalExpense1 = new PersonalExpense(mockPayer, mockItem, 1, 1000);
-        PersonalExpense personalExpense2 = new PersonalExpense(mockPayer, mockItem, 1, 2000);
-        List<PersonalExpense> personalExpenses = List.of(personalExpense1, personalExpense2);
 
         given(expenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
         given(teamRepository.findById(any(Long.class))).willReturn(Optional.of(mockTeam));
-        given(personalExpenseRepository.findAllByExpenseIdAndMemberId(anyLong(),
-            anyLong())).willReturn(personalExpenses);
+        given(personalExpenseRepository.findPersonalExpenseSum(anyLong(),
+            anyLong())).willReturn(3000);
 
         given(expense.getId()).willReturn(1L);
         given(expense.getTitle()).willReturn("Test Expense");

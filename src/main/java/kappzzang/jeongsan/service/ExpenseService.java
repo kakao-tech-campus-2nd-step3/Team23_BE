@@ -7,7 +7,6 @@ import kappzzang.jeongsan.domain.Category;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
-import kappzzang.jeongsan.domain.PersonalExpense;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.ExpenseWithPersonalExpense;
 import kappzzang.jeongsan.dto.ItemDetail;
@@ -109,15 +108,8 @@ public class ExpenseService {
     }
 
     private Integer findPersonalExpense(Expense expense, Long memberId) {
-        List<PersonalExpense> personalExpenses = personalExpenseRepository.findAllByExpenseIdAndMemberId(
-            expense.getId(), 1L);
-        int personalExpenseSum = personalExpenses.stream().mapToInt(PersonalExpense::getTotalPrice)
-            .sum();
-
-        if (personalExpenseSum == 0) {
-            return null;
-        }
-        return personalExpenseSum;
+        return personalExpenseRepository.findPersonalExpenseSum(
+            expense.getId(), memberId);
     }
 
     private List<ExpenseWithPersonalExpense> createExpenseWithNullPersonalExpense(
