@@ -131,7 +131,7 @@ public class GetExpenseDetailResponseTest {
 
 
         private ExpenseDetailResponse createExpectedResponse() {
-            var itemDetails = List.of(
+            List<ItemDetailWithPersonal> itemDetails = List.of(
                 new ItemDetailWithPersonal(0L, "item0", 5, 1000, List.of(
                     new PersonalDetail("payer", "testProfileImage0", 2),
                     new PersonalDetail("member1", "testProfileImage1", 3),
