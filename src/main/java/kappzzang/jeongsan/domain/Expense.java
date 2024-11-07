@@ -105,11 +105,15 @@ public class Expense extends BaseEntity {
         this.status = Status.COMPLETED;
     }
 
-    //서비스단에서 호출 해야 할 경우가 생길 시 public으로 변경
-    private void validateOwnerShip(Long teamId, Long memberId) {
+
+    public void validateOwnerShip(Long teamId, Long memberId) {
         if (!this.team.getId().equals(teamId)) {
             throw new JeongsanException(ErrorType.EXPENSE_INVALID_TEAM);
         }
+        this.validateOwnerShip(memberId);
+    }
+
+    public void validateOwnerShip(Long memberId) {
         if (!this.payer.getId().equals(memberId)) {
             throw new JeongsanException(ErrorType.EXPENSE_INVALID_PAYER);
         }
