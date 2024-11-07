@@ -55,7 +55,6 @@ public class ExpenseServiceTest {
     private final String TEST_TITLE = "TEST_TITLE";
     private final Member mockPayer = mock(Member.class);
     private final Team mockTeam = mock(Team.class);
-    private final Item mockItem = mock(Item.class);
     private List<Long> expenseIds;
     private CompleteExpensesRequest completeExpensesRequest;
 
