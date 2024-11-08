@@ -13,8 +13,8 @@ import kappzzang.jeongsan.domain.PersonalExpense;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.ItemDetail;
 import kappzzang.jeongsan.dto.ItemSummary;
-import kappzzang.jeongsan.dto.request.CompleteExpensesRequest;
-import kappzzang.jeongsan.dto.request.CompleteExpensesRequest.ExpenseId;
+import kappzzang.jeongsan.dto.request.ChangeExpensesStateRequest;
+import kappzzang.jeongsan.dto.request.ChangeExpensesStateRequest.ExpenseId;
 import kappzzang.jeongsan.dto.request.SaveExpenseRequest;
 import kappzzang.jeongsan.dto.response.ExpenseDetailResponse;
 import kappzzang.jeongsan.dto.response.ExpenseDetailResponse.ItemDetailWithPersonal;
@@ -127,13 +127,15 @@ public class ExpenseService {
     }
 
     @Transactional
-    public void completeExpenses(CompleteExpensesRequest request, Long teamId, Long memberId) {
+    public void updateExpensesState(ChangeExpensesStateRequest request, Long teamId,
+        Long memberId) {
         List<Expense> expenses = expenseRepository.findAllByIdWithDetails(
             request.expenses().stream().map(ExpenseId::id).toList());
         if (expenses.size() != request.expenses().size()) {
             throw new JeongsanException(ErrorType.EXPENSE_NOT_FOUND_ID);
         }
-        expenses.forEach(expense -> expense.changeStatusComplete(teamId, memberId));
+        expenses.forEach(
+            expense -> expense.changeStatus(teamId, memberId, request.state()));
     }
 
     @Transactional(readOnly = true)

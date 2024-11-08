@@ -43,7 +43,7 @@ public class ApiClientConfig {
     public RestClient.Builder openAiClientBuilder() {
         return getDefaultRestClientBuilder()
             .defaultHeader(AUTHORIZATION_HEADER,
-                openAiProperties.authType() + openAiProperties.key());
+                openAiProperties.authType() + " " + openAiProperties.key());
     }
 
     private RestClient.Builder getDefaultRestClientBuilder() {
