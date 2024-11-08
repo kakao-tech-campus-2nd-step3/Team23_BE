@@ -1,14 +1,15 @@
 package kappzzang.jeongsan.service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import kappzzang.jeongsan.domain.Category;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.Team;
+import kappzzang.jeongsan.dto.ExpenseWithPersonalExpense;
 import kappzzang.jeongsan.dto.ItemDetail;
 import kappzzang.jeongsan.dto.ItemSummary;
 import kappzzang.jeongsan.dto.request.ChangeExpensesStateRequest;
@@ -48,14 +49,14 @@ public class ExpenseService {
         Team team = findTeamById(teamId);
         List<Expense> expenses = expenseRepository.findByTeamAndStatus(team, status);
 
-        Map<Status, Function<List<Expense>, List<Expense>>> filteringStrategies = Map.of(
+        Map<Status, Function<List<Expense>, List<ExpenseWithPersonalExpense>>> filteringStrategies = Map.of(
             Status.ONGOING, expenseList -> filterOngoingExpenses(expenseList, memberId, isChecked),
-            Status.COMPLETED, expenseList -> expenseList,
-            Status.PENDING, expenseList -> Collections.emptyList()
+            Status.COMPLETED, expenseList -> createExpenseWithNullPersonalExpense(expenses),
+            Status.PENDING, expenseList -> createExpenseWithPersonalExpense(expenses, memberId)
         );
 
-        List<Expense> filteredExpenses = filteringStrategies.getOrDefault(status,
-                defaultExpenses -> expenses)
+        List<ExpenseWithPersonalExpense> filteredExpenses = filteringStrategies.getOrDefault(status,
+                defaultExpenses -> createExpenseWithNullPersonalExpense(expenses))
             .apply(expenses);
 
         Integer totalPrice = expenses.stream()
@@ -75,13 +76,17 @@ public class ExpenseService {
             .mapToInt(Expense::getTotalPrice)
             .reduce(Integer::sum)
             .orElse(0);
-        return ExpenseResponse.of(expenses, true, totalPrice);
+        List<ExpenseWithPersonalExpense> expenseWithPersonalExpenses = expenses.stream()
+            .map(expense -> ExpenseWithPersonalExpense.of(expense, null)).toList();
+        return ExpenseResponse.of(expenseWithPersonalExpenses, true, totalPrice);
     }
 
-    private List<Expense> filterOngoingExpenses(List<Expense> expenses, Long memberId,
+    private List<ExpenseWithPersonalExpense> filterOngoingExpenses(List<Expense> expenses,
+        Long memberId,
         Boolean isChecked) {
         return expenses.stream()
             .filter(expense -> isChecked.equals(isExpenseChecked(expense, memberId)))
+            .map(expense -> ExpenseWithPersonalExpense.of(expense, null))
             .toList();
     }
 
@@ -94,6 +99,25 @@ public class ExpenseService {
             itemIds);
 
         return countOfPersonalExpenses.equals((long) itemIds.size());
+    }
+
+    private List<ExpenseWithPersonalExpense> createExpenseWithPersonalExpense(
+        List<Expense> expenses, Long memberId) {
+        return expenses.stream()
+            .map(expense -> ExpenseWithPersonalExpense.of(expense,
+                findPersonalExpense(expense, memberId))).toList();
+    }
+
+    private Integer findPersonalExpense(Expense expense, Long memberId) {
+        Integer personalExpenseSum = personalExpenseRepository.findPersonalExpenseSum(
+            expense.getId(), memberId);
+        return Objects.requireNonNullElse(personalExpenseSum, 0);
+    }
+
+    private List<ExpenseWithPersonalExpense> createExpenseWithNullPersonalExpense(
+        List<Expense> expenses) {
+        return expenses.stream()
+            .map(expense -> ExpenseWithPersonalExpense.of(expense, null)).toList();
     }
 
     @Transactional
@@ -160,5 +184,4 @@ public class ExpenseService {
         return categoryRepository.findById(categoryId)
             .orElseThrow(() -> new JeongsanException(ErrorType.CATEGORY_NOT_FOUND));
     }
-
 }

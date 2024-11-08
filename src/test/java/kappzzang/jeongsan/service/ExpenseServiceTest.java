@@ -3,6 +3,7 @@ package kappzzang.jeongsan.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -242,6 +243,42 @@ public class ExpenseServiceTest {
         assertThat(response.expenseList()).hasSize(1);
         assertThat(response.totalPrice()).isEqualTo(expense.getTotalPrice());
         assertThat(response.expenseList().getFirst().title()).isEqualTo(expense.getTitle());
+    }
+
+    @Test
+    @DisplayName("지출 목록 조회 - 대기 상태")
+    void getExpenses_Pending() {
+        // given
+        Long memberId = 1L;
+        Long teamId = 1L;
+        Status status = Status.PENDING;
+        Boolean isChecked = null;
+        Expense expense = mock(Expense.class);
+        List<Expense> expenses = Collections.singletonList(expense);
+
+        given(expenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
+        given(teamRepository.findById(any(Long.class))).willReturn(Optional.of(mockTeam));
+        given(personalExpenseRepository.findPersonalExpenseSum(anyLong(),
+            anyLong())).willReturn(3000);
+
+        given(expense.getId()).willReturn(1L);
+        given(expense.getTitle()).willReturn("Test Expense");
+        given(expense.getTotalPrice()).willReturn(1000);
+        given(expense.getCreatedAt()).willReturn(LocalDateTime.now());
+        given(expense.getStatus()).willReturn(Status.PENDING);
+        given(expense.getCategory()).willReturn(mock(Category.class));
+
+        // when
+        ExpenseResponse response = expenseService.getExpenses(memberId, teamId, status, isChecked);
+
+        // then
+        assertThat(response.expenseList()).hasSize(1);
+        assertThat(response.totalPrice()).isEqualTo(1000);
+        assertThat(response.expenseList().getFirst().title()).isEqualTo("Test Expense");
+        assertThat(response.expenseList().getFirst().totalPrice()).isEqualTo(1000);
+
+        assertThat(response.expenseList().getFirst().personalExpense()).isEqualTo(3000);
+        assertThat(response.totalPersonalExpense()).isEqualTo(3000);
     }
 
 
