@@ -47,8 +47,8 @@ public class OpenAiApiClient {
         backoff = @Backoff(delay = BACK_OFF_DELAY, multiplier = MULTIPLIER)
     )
     public ChatGptResponse extractDataUsingGPT(String message) {
-        String instruction = gptPromptManager.getInstruction();
-        ChatGptRequest body = new ChatGptRequest(properties.model(), instruction + message);
+        String prompt = gptPromptManager.getInstruction();
+        ChatGptRequest body = new ChatGptRequest(properties.model(), prompt, message);
         return openAiClient.post()
             .uri(properties.url())
             .contentType(MediaType.APPLICATION_JSON)
