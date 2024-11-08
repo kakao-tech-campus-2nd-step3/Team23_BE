@@ -122,6 +122,10 @@ public class ExpenseService {
         return expenseRepository.save(expense).getId();
     }
 
+    private List<Item> convertToItems(List<ItemSummary> items) {
+        return items.stream().map(ItemSummary::toEntity).toList();
+    }
+
     @Transactional
     public void completeExpenses(CompleteExpensesRequest request, Long teamId, Long memberId) {
         List<Expense> expenses = expenseRepository.findAllByIdWithDetails(
@@ -149,34 +153,43 @@ public class ExpenseService {
         Expense expense = expenseRepository.findExpenseByIdWithItem(expenseId)
             .orElseThrow(() -> new JeongsanException(ErrorType.EXPENSE_NOT_FOUND));
 
+        List<PersonalExpense> personalExpenses = findPersonalExpensesByItemIdIfValid(expense,
+            memberId);
+
+        Map<Long, List<PersonalExpense>> groupedPersonalExpenses = groupingPersonalExpensesByItemId(
+            personalExpenses);
+
+        List<ItemDetailWithPersonal> itemDetails = createItemDetails(expense,
+            groupedPersonalExpenses);
+
+        String preSignedUrl = imageStorageService.getImageUrl(expense.getImageUrl());
+        return new ExpenseDetailResponse(expense.getTitle(), preSignedUrl, itemDetails);
+    }
+
+    private List<PersonalExpense> findPersonalExpensesByItemIdIfValid(Expense expense,
+        Long memberId) {
         expense.validateOwnerShip(memberId);
+        return personalExpenseRepository.findAllByItemIds(expense.getItemIds());
+    }
 
-        List<Long> itemIds = expense.getItems().stream().map(Item::getId).toList();
-        List<PersonalExpense> personalExpenses = personalExpenseRepository.findAllByItemIds(
-            itemIds);
+    private Map<Long, List<PersonalExpense>> groupingPersonalExpensesByItemId(
+        List<PersonalExpense> expenses) {
+        return expenses.stream()
+            .collect(Collectors.groupingBy(pe -> pe.getItem().getId()));
+    }
 
-        Map<Long, List<PersonalExpense>> personalExpensesByItemId = personalExpenses.stream()
-            .collect(
-                Collectors.groupingBy(pe -> pe.getItem().getId()));
-
-        List<ItemDetailWithPersonal> itemDetails = expense.getItems().stream()
+    private List<ItemDetailWithPersonal> createItemDetails(Expense expense,
+        Map<Long, List<PersonalExpense>> groupedPersonalExpenses) {
+        return expense.getItems().stream()
             .map(item -> {
-                List<PersonalDetail> personalDetails = personalExpensesByItemId.getOrDefault(
-                        item.getId(), Collections.emptyList())
+                List<PersonalDetail> personalDetails = groupedPersonalExpenses
+                    .getOrDefault(item.getId(), Collections.emptyList())
                     .stream()
                     .map(PersonalDetail::from)
                     .toList();
 
                 return ItemDetailWithPersonal.of(item, personalDetails);
             }).toList();
-
-        String preSignedUrl = imageStorageService.getImageUrl(expense.getImageUrl());
-        return new ExpenseDetailResponse(expense.getTitle(), preSignedUrl, itemDetails);
-    }
-
-
-    private List<Item> convertToItems(List<ItemSummary> items) {
-        return items.stream().map(ItemSummary::toEntity).toList();
     }
 
     private Member findMemberById(Long memberId) {

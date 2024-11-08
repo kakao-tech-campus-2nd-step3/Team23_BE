@@ -123,4 +123,8 @@ public class Expense extends BaseEntity {
         this.status = Status.PENDING;
     }
 
+    public List<Long> getItemIds() {
+        return this.items.stream().map(Item::getId).toList();
+    }
+
 }
