@@ -66,10 +66,10 @@ public class TeamService {
     }
 
     @Transactional
-    public void closeTeam(Long teamId) {
+    public void closeTeam(Long teamId, Long memberId) {
         Team team = teamRepository.findById(teamId)
             .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_NOT_FOUND));
-        team.closeTeam();
+        team.closeTeam(memberId);
     }
 
     public List<InvitationStatusResponse> getInvitationStatus(Long teamId) {

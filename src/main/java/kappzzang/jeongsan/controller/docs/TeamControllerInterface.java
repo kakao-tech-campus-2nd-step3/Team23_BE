@@ -52,7 +52,7 @@ public interface TeamControllerInterface {
     })
     @ApiResponse(responseCode = "204", description = "모임을 `종료` 상태로 변경", content = @Content)
     @ApiErrorTypeExample({ErrorType.TEAM_ALREADY_CLOSED, ErrorType.TEAM_NOT_FOUND})
-    ResponseEntity<JeongsanApiResponse<Void>> closeTeam(Long teamId);
+    ResponseEntity<JeongsanApiResponse<Void>> closeTeam(Long teamId, Long memberId);
 
     @Operation(summary = "모임 멤버 초대 현황 조회 API", description = "모임에 초대한 멤버들의 초대 수락/대기 상태를 조회하는 API")
     @Parameter(name = "teamId", description = "멤버 초대 현황을 조회하려는 모임의 id")
