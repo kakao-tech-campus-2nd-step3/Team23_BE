@@ -66,7 +66,8 @@ public class MemberServiceTest {
     @DisplayName("로그인 성공")
     void login() {
         // given
-        given(memberRepository.findByEmail(anyString())).willReturn(Optional.of(createMember(null)));
+        given(memberRepository.findByEmail(anyString())).willReturn(
+            Optional.of(createMember(null)));
         given(jwtUtil.createAccessToken(any())).willReturn(TEST_ACCESS_TOKEN);
         given(jwtUtil.createRefreshToken()).willReturn(TEST_REFRESH_TOKEN);
 
@@ -86,7 +87,8 @@ public class MemberServiceTest {
         // given
         RegisterRequest registerRequest = new RegisterRequest(TEST_UUID, TEST_NICKNAME, TEST_EMAIL,
             TEST_PROFILE_IMAGE);
-        given(memberRepository.findByEmail(anyString())).willReturn(Optional.of(createMember(null)));
+        given(memberRepository.findByEmail(anyString())).willReturn(
+            Optional.of(createMember(null)));
 
         // when & then
         assertThatThrownBy(() -> memberService.register(registerRequest))
