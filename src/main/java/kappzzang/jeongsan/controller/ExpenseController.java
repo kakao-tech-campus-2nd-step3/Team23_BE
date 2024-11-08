@@ -2,7 +2,7 @@ package kappzzang.jeongsan.controller;
 
 import jakarta.validation.Valid;
 import kappzzang.jeongsan.controller.docs.ExpenseControllerInterface;
-import kappzzang.jeongsan.dto.request.CompleteExpensesRequest;
+import kappzzang.jeongsan.dto.request.ChangeExpensesStateRequest;
 import kappzzang.jeongsan.dto.request.SavePersonalExpenseRequest;
 import kappzzang.jeongsan.dto.response.CategoryListResponse;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
@@ -59,11 +59,11 @@ public class ExpenseController implements ExpenseControllerInterface {
 
     @Override
     @PatchMapping("{teamId}")
-    public ResponseEntity<JeongsanApiResponse<Void>> changeExpensesStatusComplete(
-        @Valid @RequestBody CompleteExpensesRequest request,
+    public ResponseEntity<JeongsanApiResponse<Void>> changeExpensesStatus(
+        @Valid @RequestBody ChangeExpensesStateRequest request,
         @PathVariable("teamId") Long teamId,
         @AuthenticationPrincipal Long memberId) {
-        expenseService.completeExpenses(request, teamId, memberId);
+        expenseService.updateExpensesState(request, teamId, memberId);
         return JeongsanApiResponse.success(SuccessType.EXPENSE_STATUS_CHANGE_SUCCESS);
     }
 
