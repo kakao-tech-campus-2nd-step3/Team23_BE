@@ -8,8 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import kappzzang.jeongsan.global.common.enumeration.ErrorType;
-import kappzzang.jeongsan.global.exception.JeongsanException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
