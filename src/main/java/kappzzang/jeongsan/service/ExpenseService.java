@@ -1,13 +1,16 @@
 package kappzzang.jeongsan.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import kappzzang.jeongsan.domain.Category;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
+import kappzzang.jeongsan.domain.PersonalExpense;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.ExpenseWithPersonalExpense;
 import kappzzang.jeongsan.dto.ItemDetail;
@@ -15,6 +18,9 @@ import kappzzang.jeongsan.dto.ItemSummary;
 import kappzzang.jeongsan.dto.request.ChangeExpensesStateRequest;
 import kappzzang.jeongsan.dto.request.ChangeExpensesStateRequest.ExpenseId;
 import kappzzang.jeongsan.dto.request.SaveExpenseRequest;
+import kappzzang.jeongsan.dto.response.ExpenseDetailResponse;
+import kappzzang.jeongsan.dto.response.ExpenseDetailResponse.ItemDetailWithPersonal;
+import kappzzang.jeongsan.dto.response.ExpenseDetailResponse.ItemDetailWithPersonal.PersonalDetail;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
 import kappzzang.jeongsan.dto.response.PersonalExpenseDetailResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
@@ -141,6 +147,10 @@ public class ExpenseService {
         return expenseRepository.save(expense).getId();
     }
 
+    private List<Item> convertToItems(List<ItemSummary> items) {
+        return items.stream().map(ItemSummary::toEntity).toList();
+    }
+
     @Transactional
     public void updateExpensesState(ChangeExpensesStateRequest request, Long teamId,
         Long memberId) {
@@ -165,9 +175,48 @@ public class ExpenseService {
             expense.getTitle(), imageUrl, personalExpenses);
     }
 
+    @Transactional(readOnly = true)
+    public ExpenseDetailResponse getExpenseDetailResponse(Long expenseId, Long memberId) {
+        Expense expense = expenseRepository.findExpenseByIdWithItem(expenseId)
+            .orElseThrow(() -> new JeongsanException(ErrorType.EXPENSE_NOT_FOUND));
 
-    private List<Item> convertToItems(List<ItemSummary> items) {
-        return items.stream().map(ItemSummary::toEntity).toList();
+        List<PersonalExpense> personalExpenses = findPersonalExpensesByItemIdIfValid(expense,
+            memberId);
+
+        Map<Long, List<PersonalExpense>> groupedPersonalExpenses = groupingPersonalExpensesByItemId(
+            personalExpenses);
+
+        List<ItemDetailWithPersonal> itemDetails = createItemDetails(expense,
+            groupedPersonalExpenses);
+
+        String preSignedUrl = imageStorageService.getImageUrl(expense.getImageUrl());
+        return new ExpenseDetailResponse(expense.getTitle(), preSignedUrl, itemDetails);
+    }
+
+    private List<PersonalExpense> findPersonalExpensesByItemIdIfValid(Expense expense,
+        Long memberId) {
+        expense.validateOwnerShip(memberId);
+        return personalExpenseRepository.findAllByItemIds(expense.getItemIds());
+    }
+
+    private Map<Long, List<PersonalExpense>> groupingPersonalExpensesByItemId(
+        List<PersonalExpense> expenses) {
+        return expenses.stream()
+            .collect(Collectors.groupingBy(pe -> pe.getItem().getId()));
+    }
+
+    private List<ItemDetailWithPersonal> createItemDetails(Expense expense,
+        Map<Long, List<PersonalExpense>> groupedPersonalExpenses) {
+        return expense.getItems().stream()
+            .map(item -> {
+                List<PersonalDetail> personalDetails = groupedPersonalExpenses
+                    .getOrDefault(item.getId(), Collections.emptyList())
+                    .stream()
+                    .map(PersonalDetail::from)
+                    .toList();
+
+                return ItemDetailWithPersonal.of(item, personalDetails);
+            }).toList();
     }
 
     private Member findMemberById(Long memberId) {
