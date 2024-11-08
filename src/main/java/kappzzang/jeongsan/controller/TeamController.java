@@ -58,8 +58,9 @@ public class TeamController implements TeamControllerInterface {
     @Override
     @PatchMapping("/{teamId}")
     public ResponseEntity<JeongsanApiResponse<Void>> closeTeam(
-        @PathVariable("teamId") Long teamId) {
-        teamService.closeTeam(teamId);
+        @PathVariable("teamId") Long teamId,
+        @AuthenticationPrincipal Long memberId) {
+        teamService.closeTeam(teamId, memberId);
         return JeongsanApiResponse.success(SuccessType.TEAM_CLOSED);
     }
 

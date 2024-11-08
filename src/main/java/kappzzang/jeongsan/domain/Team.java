@@ -62,9 +62,18 @@ public class Team extends BaseEntity {
         }
     }
 
-    public void closeTeam() {
+    public void closeTeam(Long memberId) {
+        boolean isOwner = this.teamMemberList.stream()
+            .anyMatch(teamMember -> teamMember.getMember()
+                .getId()
+                .equals(memberId) && teamMember.getIsOwner());
+
         if (this.isClosed) {
             throw new JeongsanException(ErrorType.TEAM_ALREADY_CLOSED);
+        }
+
+        if (!isOwner) {
+            throw new JeongsanException(ErrorType.TEAM_NOT_FOUND);
         }
 
         this.isClosed = true;
