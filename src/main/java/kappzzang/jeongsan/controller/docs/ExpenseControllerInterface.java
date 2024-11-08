@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kappzzang.jeongsan.dto.request.CompleteExpensesRequest;
+import kappzzang.jeongsan.dto.request.ChangeExpensesStateRequest;
 import kappzzang.jeongsan.dto.request.SavePersonalExpenseRequest;
 import kappzzang.jeongsan.dto.response.CategoryListResponse;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
@@ -31,16 +31,17 @@ public interface ExpenseControllerInterface {
     ResponseEntity<JeongsanApiResponse<ExpenseResponse>> getAllExpenses(Long memberId, Long teamId,
         String state, Boolean isChecked);
 
-    @Operation(summary = "지출 상태 변경(송금 대기 -> 완료) 요청 API", description = "송금 메시지를 전송한 지출의 상태를 완료로 변경하는 API")
+    @Operation(summary = "지출 상태 변경 요청 API", description = "지출의 상태를 변경하는 API")
     @Parameters({
         @Parameter(name = "teamId", description = "상태 변경될 지출들의 모임 ID"),
     })
     @ApiResponse(responseCode = "204", description = "지출 상태 변경을 성공")
     @ApiErrorTypeExample({ErrorType.EXPENSE_ALREADY_COMPLETED, ErrorType.EXPENSE_ONGOING,
         ErrorType.EXPENSE_NOT_FOUND_ID, ErrorType.EXPENSE_INVALID_TEAM,
-        ErrorType.EXPENSE_INVALID_PAYER})
-    ResponseEntity<JeongsanApiResponse<Void>> changeExpensesStatusComplete(
-        CompleteExpensesRequest request, Long teamId, Long memberId);
+        ErrorType.EXPENSE_INVALID_PAYER, ErrorType.EXPENSE_INVALID_STATE,
+        ErrorType.EXPENSE_ALREADY_PENDING})
+    ResponseEntity<JeongsanApiResponse<Void>> changeExpensesStatus(
+        ChangeExpensesStateRequest request, Long teamId, Long memberId);
 
     @Operation(summary = "지출 내역 저장(선택 완료) API", description = "개인이 소비한 품목(아이템)을 선택하여 저장하는 API")
     @Parameters({
@@ -64,5 +65,5 @@ public interface ExpenseControllerInterface {
     @Operation(summary = "카테고리 목록 조회 API", description = "지출 카테고리 목록을 조회하는 API")
     @ApiResponse(responseCode = "200", description = "카테고리 목록을 성공적으로 조회", content = @Content(schema = @Schema(implementation = CategoryListResponse.class)))
     @ApiErrorTypeExample(ErrorType.CATEGORY_NOT_FOUND)
-    public ResponseEntity<JeongsanApiResponse<CategoryListResponse>> getCategoryList();
+    ResponseEntity<JeongsanApiResponse<CategoryListResponse>> getCategoryList();
 }
