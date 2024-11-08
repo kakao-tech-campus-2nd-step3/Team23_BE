@@ -43,13 +43,7 @@ public class ApiClientConfig {
     public RestClient.Builder openAiClientBuilder() {
         return getDefaultRestClientBuilder()
             .defaultHeader(AUTHORIZATION_HEADER,
-                openAiProperties.authType() + openAiProperties.key());
-    }
-
-    @Bean
-    @Qualifier(value = "kakaoClientBuilder")
-    public RestClient.Builder kakaoClientBuilder() {
-        return getDefaultRestClientBuilder();
+                openAiProperties.authType() + " " + openAiProperties.key());
     }
 
     private RestClient.Builder getDefaultRestClientBuilder() {

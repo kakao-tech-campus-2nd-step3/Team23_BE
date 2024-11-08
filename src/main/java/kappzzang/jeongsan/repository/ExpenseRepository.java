@@ -1,7 +1,10 @@
 package kappzzang.jeongsan.repository;
 
 import java.util.List;
+import java.util.Optional;
 import kappzzang.jeongsan.domain.Expense;
+import kappzzang.jeongsan.domain.Member;
+import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.ItemDetail;
 import kappzzang.jeongsan.global.common.enumeration.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,9 +15,9 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     @Query("SELECT e FROM Expense e "
         + "JOIN FETCH e.items "
-        + "WHERE e.team.id = :teamId "
+        + "WHERE e.team = :team "
         + "AND e.status = :status")
-    List<Expense> findByTeamIdAndStatus(Long teamId, Status status);
+    List<Expense> findByTeamAndStatus(Team team, Status status);
 
 //    @Query("SELECT e FROM Expense e "
 //        + "WHERE e.team.id = :teamId "
@@ -54,9 +57,14 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     @Query("SELECT e FROM Expense e "
         + "JOIN FETCH e.items "
-        + "WHERE e.team.id = :teamId "
-        + "AND e.payer.id = :memberId "
+        + "WHERE e.team = :team "
+        + "AND e.payer = :payer "
         + "AND e.status = :status")
-    List<Expense> findExpensesIPaid(@Param("memberId") Long memberId, @Param("teamId") Long teamId,
+    List<Expense> findExpensesIPaid(@Param("payer") Member payer, @Param("team") Team team,
         @Param("status") Status status);
+
+    @Query("SELECT e FROM Expense e "
+        + "JOIN FETCH e.items "
+        + "WHERE e.id = :id")
+    Optional<Expense> findExpenseByIdWithItem(@Param("id") Long id);
 }

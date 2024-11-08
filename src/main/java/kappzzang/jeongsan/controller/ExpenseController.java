@@ -2,14 +2,16 @@ package kappzzang.jeongsan.controller;
 
 import jakarta.validation.Valid;
 import kappzzang.jeongsan.controller.docs.ExpenseControllerInterface;
-import kappzzang.jeongsan.dto.request.CompleteExpensesRequest;
+import kappzzang.jeongsan.dto.request.ChangeExpensesStateRequest;
 import kappzzang.jeongsan.dto.request.SavePersonalExpenseRequest;
+import kappzzang.jeongsan.dto.response.CategoryListResponse;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.common.enumeration.Status;
 import kappzzang.jeongsan.global.common.enumeration.SuccessType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
+import kappzzang.jeongsan.service.CategoryService;
 import kappzzang.jeongsan.service.ExpenseService;
 import kappzzang.jeongsan.service.PersonalExpenseService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class ExpenseController implements ExpenseControllerInterface {
 
     private final ExpenseService expenseService;
     private final PersonalExpenseService personalExpenseService;
+    private final CategoryService categoryService;
 
     @Override
     @GetMapping("{teamId}")
@@ -56,11 +59,11 @@ public class ExpenseController implements ExpenseControllerInterface {
 
     @Override
     @PatchMapping("{teamId}")
-    public ResponseEntity<JeongsanApiResponse<Void>> changeExpensesStatusComplete(
-        @Valid @RequestBody CompleteExpensesRequest request,
+    public ResponseEntity<JeongsanApiResponse<Void>> changeExpensesStatus(
+        @Valid @RequestBody ChangeExpensesStateRequest request,
         @PathVariable("teamId") Long teamId,
         @AuthenticationPrincipal Long memberId) {
-        expenseService.completeExpenses(request, teamId, memberId);
+        expenseService.updateExpensesState(request, teamId, memberId);
         return JeongsanApiResponse.success(SuccessType.EXPENSE_STATUS_CHANGE_SUCCESS);
     }
 
@@ -83,4 +86,12 @@ public class ExpenseController implements ExpenseControllerInterface {
         return JeongsanApiResponse.success(SuccessType.EXPENSE_LIST_LOADED,
             expenseService.getExpensesIPaid(memberId, teamId));
     }
+
+    @Override
+    @GetMapping("/categories")
+    public ResponseEntity<JeongsanApiResponse<CategoryListResponse>> getCategoryList() {
+        return JeongsanApiResponse.success(SuccessType.CATEGORY_LIST_LOADED,
+            categoryService.getCategories());
+    }
+
 }
