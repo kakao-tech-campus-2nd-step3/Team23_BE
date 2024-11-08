@@ -15,6 +15,7 @@ public enum ErrorType {
     ALREADY_JOINED_MEMBER(HttpStatus.BAD_REQUEST, "E400005", "이미 모임에 참여한 멤버입니다."),
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "E400006", "요청 입력값이 유효하지 않습니다."),
     EXPENSE_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "E400007", "이미 정산 완료된 지출입니다."),
+    EXPENSE_ALREADY_PENDING(HttpStatus.BAD_REQUEST, "E400007", "이미 송금 대기 중인 지출입니다."),
     EXPENSE_ONGOING(HttpStatus.BAD_REQUEST, "E400008", "아직 진행중인 지출입니다."),
     EXPENSE_NOT_FOUND_ID(HttpStatus.BAD_REQUEST, "E400009", "요청 목록에 존재하지 않는 지출이 포함되어 있습니다."),
     EXPENSE_INVALID_TEAM(HttpStatus.BAD_REQUEST, "E400010", "요청 목록에 타 모임의 지출이 포함되어 있습니다."),
