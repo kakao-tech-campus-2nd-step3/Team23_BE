@@ -191,6 +191,10 @@ public class ExpenseServiceTest {
         given(expenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
         given(teamRepository.findById(any(Long.class))).willReturn(Optional.of(mockTeam));
 
+        given(mockPayer.getKakaoId()).willReturn("kakao uuid");
+
+        given(expense.getPayer()).willReturn(mockPayer);
+
         given(expense.getId()).willReturn(1L);
         given(expense.getTitle()).willReturn("Test Expense");
         given(expense.getTotalPrice()).willReturn(1000);
@@ -220,6 +224,10 @@ public class ExpenseServiceTest {
         Item item = mock(Item.class);
         List<Expense> expenses = Collections.singletonList(expense);
         List<Item> items = Collections.singletonList(item);
+
+        given(mockPayer.getKakaoId()).willReturn("kakao uuid");
+
+        given(expense.getPayer()).willReturn(mockPayer);
 
         given(expense.getId()).willReturn(1L);
         given(expense.getTitle()).willReturn("Test Expense");
@@ -261,6 +269,9 @@ public class ExpenseServiceTest {
         given(personalExpenseRepository.findPersonalExpenseSum(anyLong(),
             anyLong())).willReturn(3000);
 
+        given(mockPayer.getKakaoId()).willReturn("kakao uuid");
+
+        given(expense.getPayer()).willReturn(mockPayer);
         given(expense.getId()).willReturn(1L);
         given(expense.getTitle()).willReturn("Test Expense");
         given(expense.getTotalPrice()).willReturn(1000);
@@ -311,6 +322,11 @@ public class ExpenseServiceTest {
         Long teamId = 1L;
         Expense expense1 = mock(Expense.class);
         Expense expense2 = mock(Expense.class);
+
+        given(mockPayer.getKakaoId()).willReturn("kakao uuid");
+
+        given(expense1.getPayer()).willReturn(mockPayer);
+        given(expense2.getPayer()).willReturn(mockPayer);
 
         given(expense1.getId()).willReturn(1L);
         given(expense1.getTitle()).willReturn("Test Expense1");

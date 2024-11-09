@@ -38,6 +38,7 @@ public record ExpenseResponse(
     public record ExpenseItem(
         Long expenseId,
         String title,
+        String payerId,
         Integer totalPrice,
         LocalDateTime createdAt,
         Status state,
@@ -50,6 +51,7 @@ public record ExpenseResponse(
             return new ExpenseItem(
                 expense.getId(),
                 expense.getTitle(),
+                expense.getPayer().getKakaoId(),
                 expense.getTotalPrice(),
                 expense.getCreatedAt(),
                 expense.getStatus(),
