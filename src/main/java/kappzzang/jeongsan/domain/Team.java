@@ -3,6 +3,7 @@ package kappzzang.jeongsan.domain;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,8 +35,8 @@ public class Team extends BaseEntity {
     @Column(nullable = false)
     private Boolean isClosed;
 
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TeamMember> teamMemberList;
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<TeamMember> teamMemberList = new ArrayList<>();
 
     public Team(String name, String subject) {
         this.name = name;
