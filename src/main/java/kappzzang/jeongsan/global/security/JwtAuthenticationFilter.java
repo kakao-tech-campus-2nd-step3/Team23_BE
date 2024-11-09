@@ -1,14 +1,18 @@
 package kappzzang.jeongsan.global.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import kappzzang.jeongsan.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,10 +41,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (JeongsanException jeongsanException) {
                 log.error(jeongsanException.getMessage());
+                handleJwtException(response, jeongsanException);
                 SecurityContextHolder.clearContext();
+                return;
             }
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void handleJwtException(HttpServletResponse response,
+        JeongsanException jeongsanException) throws IOException {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("status", "failure");
+        errorResponse.put("errorCode", jeongsanException.getErrorType().getErrorCode());
+        errorResponse.put("message", jeongsanException.getMessage());
+
+        response.setStatus(jeongsanException.getErrorType().getHttpStatusCode().value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.writeValue(response.getWriter(), errorResponse);
     }
 }
