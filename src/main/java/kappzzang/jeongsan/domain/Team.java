@@ -79,6 +79,14 @@ public class Team extends BaseEntity {
         this.isClosed = true;
     }
 
+    public String getOwnerKakaoId() {
+        return this.teamMemberList.stream()
+            .filter(TeamMember::getIsOwner)
+            .map(teamMember -> teamMember.getMember().getKakaoId())
+            .findFirst()
+            .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_NOT_FOUND));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
