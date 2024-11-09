@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import kappzzang.jeongsan.global.util.JwtUtil;
@@ -16,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -25,6 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
+    private final List<String> permittedPaths;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -33,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = jwtUtil.resolveToken(request);
 
         // JWT로 인증된 Authentication을 SecurityContextHolder에 저장
-        if (StringUtils.hasText(token)) {
+        if (!isPathPermitted(request.getRequestURI()) && StringUtils.hasText(token)) {
             try {
                 Authentication jwtAuthenticationToken = new JwtAuthenticationToken(token);
                 Authentication authentication = authenticationManager.authenticate(
@@ -48,6 +51,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isPathPermitted(String requestPath) {
+        AntPathMatcher pathMatcher = new AntPathMatcher();
+        return permittedPaths.stream().anyMatch(path -> pathMatcher.match(path, requestPath));
     }
 
     private void handleJwtException(HttpServletResponse response,
