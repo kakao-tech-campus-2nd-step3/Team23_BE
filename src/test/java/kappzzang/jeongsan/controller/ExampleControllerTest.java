@@ -2,7 +2,7 @@ package kappzzang.jeongsan.controller;
 
 import static io.restassured.RestAssured.given;
 import static kappzzang.jeongsan.global.common.enumeration.ErrorType.USER_NOT_FOUND;
-import static kappzzang.jeongsan.global.common.enumeration.SuccessType.TEAM_CREATED;
+import static kappzzang.jeongsan.global.common.enumeration.SuccessType.TEAM_LOADED;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +24,7 @@ class ExampleControllerTest {
             .when()
             .get("/api/test/success")
             .then()
-            .statusCode(TEAM_CREATED.getHttpStatusCode().value());
+            .statusCode(TEAM_LOADED.getHttpStatusCode().value());
     }
 
 
@@ -36,7 +36,7 @@ class ExampleControllerTest {
             .when()
             .post("/api/test/success/data")
             .then()
-            .statusCode(TEAM_CREATED.getHttpStatusCode().value());
+            .statusCode(TEAM_LOADED.getHttpStatusCode().value());
     }
 
     @Test
