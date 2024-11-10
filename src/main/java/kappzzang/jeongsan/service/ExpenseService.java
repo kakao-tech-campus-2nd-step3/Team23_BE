@@ -3,17 +3,24 @@ package kappzzang.jeongsan.service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import kappzzang.jeongsan.domain.Category;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
+import kappzzang.jeongsan.domain.PersonalExpense;
 import kappzzang.jeongsan.domain.Team;
+import kappzzang.jeongsan.dto.ExpenseWithPersonalExpense;
 import kappzzang.jeongsan.dto.ItemDetail;
 import kappzzang.jeongsan.dto.ItemSummary;
-import kappzzang.jeongsan.dto.request.CompleteExpensesRequest;
-import kappzzang.jeongsan.dto.request.CompleteExpensesRequest.ExpenseId;
+import kappzzang.jeongsan.dto.request.ChangeExpensesStateRequest;
+import kappzzang.jeongsan.dto.request.ChangeExpensesStateRequest.ExpenseId;
 import kappzzang.jeongsan.dto.request.SaveExpenseRequest;
+import kappzzang.jeongsan.dto.response.ExpenseDetailResponse;
+import kappzzang.jeongsan.dto.response.ExpenseDetailResponse.ItemDetailWithPersonal;
+import kappzzang.jeongsan.dto.response.ExpenseDetailResponse.ItemDetailWithPersonal.PersonalDetail;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
 import kappzzang.jeongsan.dto.response.PersonalExpenseDetailResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
@@ -45,16 +52,17 @@ public class ExpenseService {
     @Transactional(readOnly = true)
     public ExpenseResponse getExpenses(Long memberId, Long teamId, Status status,
         Boolean isChecked) {
-        List<Expense> expenses = expenseRepository.findByTeamIdAndStatus(teamId, status);
+        Team team = findTeamById(teamId);
+        List<Expense> expenses = expenseRepository.findByTeamAndStatus(team, status);
 
-        Map<Status, Function<List<Expense>, List<Expense>>> filteringStrategies = Map.of(
+        Map<Status, Function<List<Expense>, List<ExpenseWithPersonalExpense>>> filteringStrategies = Map.of(
             Status.ONGOING, expenseList -> filterOngoingExpenses(expenseList, memberId, isChecked),
-            Status.COMPLETED, expenseList -> expenseList,
-            Status.PENDING, expenseList -> Collections.emptyList()
+            Status.COMPLETED, expenseList -> createExpenseWithNullPersonalExpense(expenses),
+            Status.PENDING, expenseList -> createExpenseWithPersonalExpense(expenses, memberId)
         );
 
-        List<Expense> filteredExpenses = filteringStrategies.getOrDefault(status,
-                defaultExpenses -> expenses)
+        List<ExpenseWithPersonalExpense> filteredExpenses = filteringStrategies.getOrDefault(status,
+                defaultExpenses -> createExpenseWithNullPersonalExpense(expenses))
             .apply(expenses);
 
         Integer totalPrice = expenses.stream()
@@ -67,18 +75,24 @@ public class ExpenseService {
 
     @Transactional(readOnly = true)
     public ExpenseResponse getExpensesIPaid(Long memberId, Long teamId) {
-        List<Expense> expenses = expenseRepository.findExpensesIPaid(memberId, teamId, Status.PENDING);
+        Member payer = findMemberById(memberId);
+        Team team = findTeamById(teamId);
+        List<Expense> expenses = expenseRepository.findExpensesIPaid(payer, team, Status.PENDING);
         Integer totalPrice = expenses.stream()
             .mapToInt(Expense::getTotalPrice)
             .reduce(Integer::sum)
             .orElse(0);
-        return ExpenseResponse.of(expenses, true, totalPrice);
+        List<ExpenseWithPersonalExpense> expenseWithPersonalExpenses = expenses.stream()
+            .map(expense -> ExpenseWithPersonalExpense.of(expense, null)).toList();
+        return ExpenseResponse.of(expenseWithPersonalExpenses, true, totalPrice);
     }
 
-    private List<Expense> filterOngoingExpenses(List<Expense> expenses, Long memberId,
+    private List<ExpenseWithPersonalExpense> filterOngoingExpenses(List<Expense> expenses,
+        Long memberId,
         Boolean isChecked) {
         return expenses.stream()
             .filter(expense -> isChecked.equals(isExpenseChecked(expense, memberId)))
+            .map(expense -> ExpenseWithPersonalExpense.of(expense, null))
             .toList();
     }
 
@@ -91,6 +105,25 @@ public class ExpenseService {
             itemIds);
 
         return countOfPersonalExpenses.equals((long) itemIds.size());
+    }
+
+    private List<ExpenseWithPersonalExpense> createExpenseWithPersonalExpense(
+        List<Expense> expenses, Long memberId) {
+        return expenses.stream()
+            .map(expense -> ExpenseWithPersonalExpense.of(expense,
+                findPersonalExpense(expense, memberId))).toList();
+    }
+
+    private Integer findPersonalExpense(Expense expense, Long memberId) {
+        Integer personalExpenseSum = personalExpenseRepository.findPersonalExpenseSum(
+            expense.getId(), memberId);
+        return Objects.requireNonNullElse(personalExpenseSum, 0);
+    }
+
+    private List<ExpenseWithPersonalExpense> createExpenseWithNullPersonalExpense(
+        List<Expense> expenses) {
+        return expenses.stream()
+            .map(expense -> ExpenseWithPersonalExpense.of(expense, null)).toList();
     }
 
     @Transactional
@@ -114,14 +147,20 @@ public class ExpenseService {
         return expenseRepository.save(expense).getId();
     }
 
+    private List<Item> convertToItems(List<ItemSummary> items) {
+        return items.stream().map(ItemSummary::toEntity).toList();
+    }
+
     @Transactional
-    public void completeExpenses(CompleteExpensesRequest request, Long teamId, Long memberId) {
+    public void updateExpensesState(ChangeExpensesStateRequest request, Long teamId,
+        Long memberId) {
         List<Expense> expenses = expenseRepository.findAllByIdWithDetails(
             request.expenses().stream().map(ExpenseId::id).toList());
         if (expenses.size() != request.expenses().size()) {
             throw new JeongsanException(ErrorType.EXPENSE_NOT_FOUND_ID);
         }
-        expenses.forEach(expense -> expense.changeStatusComplete(teamId, memberId));
+        expenses.forEach(
+            expense -> expense.changeStatus(teamId, memberId, request.state()));
     }
 
     @Transactional(readOnly = true)
@@ -136,9 +175,48 @@ public class ExpenseService {
             expense.getTitle(), imageUrl, personalExpenses);
     }
 
+    @Transactional(readOnly = true)
+    public ExpenseDetailResponse getExpenseDetailResponse(Long expenseId, Long memberId) {
+        Expense expense = expenseRepository.findExpenseByIdWithItem(expenseId)
+            .orElseThrow(() -> new JeongsanException(ErrorType.EXPENSE_NOT_FOUND));
 
-    private List<Item> convertToItems(List<ItemSummary> items) {
-        return items.stream().map(ItemSummary::toEntity).toList();
+        List<PersonalExpense> personalExpenses = findPersonalExpensesByItemIdIfValid(expense,
+            memberId);
+
+        Map<Long, List<PersonalExpense>> groupedPersonalExpenses = groupingPersonalExpensesByItemId(
+            personalExpenses);
+
+        List<ItemDetailWithPersonal> itemDetails = createItemDetails(expense,
+            groupedPersonalExpenses);
+
+        String preSignedUrl = imageStorageService.getImageUrl(expense.getImageUrl());
+        return new ExpenseDetailResponse(expense.getTitle(), preSignedUrl, itemDetails);
+    }
+
+    private List<PersonalExpense> findPersonalExpensesByItemIdIfValid(Expense expense,
+        Long memberId) {
+        expense.validateOwnerShip(memberId);
+        return personalExpenseRepository.findAllByItemIds(expense.getItemIds());
+    }
+
+    private Map<Long, List<PersonalExpense>> groupingPersonalExpensesByItemId(
+        List<PersonalExpense> expenses) {
+        return expenses.stream()
+            .collect(Collectors.groupingBy(pe -> pe.getItem().getId()));
+    }
+
+    private List<ItemDetailWithPersonal> createItemDetails(Expense expense,
+        Map<Long, List<PersonalExpense>> groupedPersonalExpenses) {
+        return expense.getItems().stream()
+            .map(item -> {
+                List<PersonalDetail> personalDetails = groupedPersonalExpenses
+                    .getOrDefault(item.getId(), Collections.emptyList())
+                    .stream()
+                    .map(PersonalDetail::from)
+                    .toList();
+
+                return ItemDetailWithPersonal.of(item, personalDetails);
+            }).toList();
     }
 
     private Member findMemberById(Long memberId) {
@@ -155,5 +233,4 @@ public class ExpenseService {
         return categoryRepository.findById(categoryId)
             .orElseThrow(() -> new JeongsanException(ErrorType.CATEGORY_NOT_FOUND));
     }
-
 }

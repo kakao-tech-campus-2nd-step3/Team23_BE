@@ -32,9 +32,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestPropertySource(locations = "classpath:application-test.properties")
 class PersonalExpenseServiceTest {
 
     @Autowired
@@ -61,11 +63,23 @@ class PersonalExpenseServiceTest {
     void setup() {
         team = teamRepository.save(new Team("Test Team", "🍎"));
         member1 = memberRepository.save(
-            new Member("email1@test.com", "User1", null, null, null));
+            Member.builder()
+                .kakaoId("kakaoId1")
+                .email("email1@test.com")
+                .nickname("User1")
+                .build());
         member2 = memberRepository.save(
-            new Member("email2@test.com", "User2", null, null, null));
+            Member.builder()
+                .kakaoId("kakaoId2")
+                .email("email2@test.com")
+                .nickname("User2")
+                .build());
         member3 = memberRepository.save(
-            new Member("email3@test.com", "User3", null, null, null));
+            Member.builder()
+                .kakaoId("kakaoId3")
+                .email("email3@test.com")
+                .nickname("User3")
+                .build());
         item1 = new Item("Test Item", 2, 1000);
         item2 = new Item("Test Item", 1, 1000);
         expense = Expense.builder()

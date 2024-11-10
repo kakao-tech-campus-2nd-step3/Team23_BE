@@ -94,29 +94,47 @@ public class Expense extends BaseEntity {
         this.totalPrice = items.stream().mapToInt(Item::getTotalPrice).sum();
     }
 
-    public void changeStatusComplete(Long teamId, Long memberId) {
+    public void changeStatus(Long teamId, Long memberId, Status status) {
         if (this.status.equals(Status.COMPLETED)) {
             throw new JeongsanException(ErrorType.EXPENSE_ALREADY_COMPLETED);
         }
+        if (status.equals(Status.COMPLETED)) {
+            validateComplete();
+        }
+        if (status.equals(Status.PENDING)) {
+            validatePending();
+        }
+        validateOwnerShip(teamId, memberId);
+        this.status = status;
+    }
+
+    private void validateComplete() {
         if (this.status.equals(Status.ONGOING)) {
             throw new JeongsanException(ErrorType.EXPENSE_ONGOING);
         }
-        validateOwnerShip(teamId, memberId);
-        this.status = Status.COMPLETED;
     }
 
-    //서비스단에서 호출 해야 할 경우가 생길 시 public으로 변경
-    private void validateOwnerShip(Long teamId, Long memberId) {
+    private void validatePending() {
+        if (this.status.equals(Status.PENDING)) {
+            throw new JeongsanException(ErrorType.EXPENSE_ALREADY_PENDING);
+        }
+    }
+
+    public void validateOwnerShip(Long teamId, Long memberId) {
         if (!this.team.getId().equals(teamId)) {
             throw new JeongsanException(ErrorType.EXPENSE_INVALID_TEAM);
         }
+        this.validateOwnerShip(memberId);
+    }
+
+    public void validateOwnerShip(Long memberId) {
         if (!this.payer.getId().equals(memberId)) {
             throw new JeongsanException(ErrorType.EXPENSE_INVALID_PAYER);
         }
     }
 
-    public void changeStatusPending() {
-        this.status = Status.PENDING;
+    public List<Long> getItemIds() {
+        return this.items.stream().map(Item::getId).toList();
     }
 
 }

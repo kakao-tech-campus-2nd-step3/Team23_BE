@@ -2,6 +2,8 @@ package kappzzang.jeongsan.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -18,8 +20,8 @@ import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.ItemDetail;
-import kappzzang.jeongsan.dto.request.CompleteExpensesRequest;
-import kappzzang.jeongsan.dto.request.CompleteExpensesRequest.ExpenseId;
+import kappzzang.jeongsan.dto.request.ChangeExpensesStateRequest;
+import kappzzang.jeongsan.dto.request.ChangeExpensesStateRequest.ExpenseId;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
 import kappzzang.jeongsan.dto.response.PersonalExpenseDetailResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
@@ -27,9 +29,12 @@ import kappzzang.jeongsan.global.common.enumeration.Status;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import kappzzang.jeongsan.repository.ExpenseRepository;
 import kappzzang.jeongsan.repository.ItemRepository;
+import kappzzang.jeongsan.repository.MemberRepository;
 import kappzzang.jeongsan.repository.PersonalExpenseRepository;
+import kappzzang.jeongsan.repository.TeamRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -52,19 +57,26 @@ public class ExpenseServiceTest {
     private final Member mockPayer = mock(Member.class);
     private final Team mockTeam = mock(Team.class);
     private List<Long> expenseIds;
-    private CompleteExpensesRequest completeExpensesRequest;
+    private ChangeExpensesStateRequest completeExpensesRequest;
+    private ChangeExpensesStateRequest pendingExpensesRequest;
 
     @Mock
-    private ImageStorageService mockImageStorageService;
+    private MemberRepository memberRepository;
 
     @Mock
-    private ExpenseRepository mockExpenseRepository;
+    private TeamRepository teamRepository;
 
     @Mock
-    private ItemRepository mockItemRepository;
+    private ImageStorageService imageStorageService;
 
     @Mock
-    private PersonalExpenseRepository mockPersonalExpenseRepository;
+    private ExpenseRepository expenseRepository;
+
+    @Mock
+    private ItemRepository itemRepository;
+
+    @Mock
+    private PersonalExpenseRepository personalExpenseRepository;
 
     @InjectMocks
     private ExpenseService expenseService;
@@ -79,8 +91,9 @@ public class ExpenseServiceTest {
             .items(List.of(new Item("TEST_NAME", 10, 10)))
             .build();
         expenseIds = LongStream.rangeClosed(1, TEST_EXPENSES_SIZE).boxed().toList();
-        completeExpensesRequest = new CompleteExpensesRequest(
-            expenseIds.stream().map(ExpenseId::new).toList());
+        List<ExpenseId> ids = expenseIds.stream().map(ExpenseId::new).toList();
+        completeExpensesRequest = new ChangeExpensesStateRequest(Status.COMPLETED, ids);
+        pendingExpensesRequest = new ChangeExpensesStateRequest(Status.PENDING, ids);
     }
 
     @Test
@@ -94,12 +107,12 @@ public class ExpenseServiceTest {
         PersonalExpenseDetailResponse expected = new PersonalExpenseDetailResponse(
             expense.getTitle(), TEST_PRE_SIGNED_URL, itemDetails);
 
-        given(mockExpenseRepository.findById(TEST_EXPENSE_ID)).willReturn(
+        given(expenseRepository.findById(TEST_EXPENSE_ID)).willReturn(
             Optional.ofNullable(expense));
-        given(mockExpenseRepository.findItemDetailsByExpenseIdAndMemberId(TEST_EXPENSE_ID,
+        given(expenseRepository.findItemDetailsByExpenseIdAndMemberId(TEST_EXPENSE_ID,
             TEST_MEMBER_ID)).willReturn(
             itemDetails);
-        given(mockImageStorageService.getImageUrl(TEST_IMAGE_URL)).willReturn(TEST_PRE_SIGNED_URL);
+        given(imageStorageService.getImageUrl(TEST_IMAGE_URL)).willReturn(TEST_PRE_SIGNED_URL);
 
         //when
         PersonalExpenseDetailResponse actual = expenseService.getPersonalExpenseDetailResponse(
@@ -108,17 +121,17 @@ public class ExpenseServiceTest {
 
         //then
         assertThat(actual).isEqualTo(expected);
-        then(mockExpenseRepository).should().findById(TEST_EXPENSE_ID);
-        then(mockExpenseRepository).should().findItemDetailsByExpenseIdAndMemberId(TEST_EXPENSE_ID,
+        then(expenseRepository).should().findById(TEST_EXPENSE_ID);
+        then(expenseRepository).should().findItemDetailsByExpenseIdAndMemberId(TEST_EXPENSE_ID,
             TEST_MEMBER_ID);
-        then(mockImageStorageService).should().getImageUrl(TEST_IMAGE_URL);
+        then(imageStorageService).should().getImageUrl(TEST_IMAGE_URL);
     }
 
     @Test
     @DisplayName("개인 지출 목록 조회 실패(존재하지 않는 지출 ID)")
     void testGetPersonalExpenseDetailResponseFailWithNotFoundExpense() {
         //given
-        given(mockExpenseRepository.findById(TEST_EXPENSE_ID)).willThrow(new JeongsanException(
+        given(expenseRepository.findById(TEST_EXPENSE_ID)).willThrow(new JeongsanException(
             ErrorType.EXPENSE_NOT_FOUND));
 
         //when //then
@@ -127,7 +140,7 @@ public class ExpenseServiceTest {
         )
             .isInstanceOf(JeongsanException.class)
             .hasMessage(ErrorType.EXPENSE_NOT_FOUND.getMessage());
-        then(mockExpenseRepository).should().findById(TEST_EXPENSE_ID);
+        then(expenseRepository).should().findById(TEST_EXPENSE_ID);
     }
 
 
@@ -144,9 +157,12 @@ public class ExpenseServiceTest {
         List<Expense> expenses = Collections.singletonList(expense);
         List<Item> items = Collections.singletonList(item);
 
-        given(mockExpenseRepository.findByTeamIdAndStatus(teamId, status)).willReturn(expenses);
-        given(mockItemRepository.findAllByExpenseId(expense.getId())).willReturn(items);
-        given(mockPersonalExpenseRepository.countByMemberIdAndItemIds(memberId,
+        given(expenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
+        given(teamRepository.findById(any(Long.class))).willReturn(Optional.of(mockTeam));
+
+        given(expenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
+        given(itemRepository.findAllByExpenseId(expense.getId())).willReturn(items);
+        given(personalExpenseRepository.countByMemberIdAndItemIds(memberId,
             items.stream().map(Item::getId).toList())).willReturn(0L);
 
         // when
@@ -157,8 +173,8 @@ public class ExpenseServiceTest {
         assertThat(response.totalPrice()).isEqualTo(0);
         assertThat(response.checked()).isTrue();
 
-        then(mockExpenseRepository).should().findByTeamIdAndStatus(teamId, status);
-        then(mockItemRepository).should().findAllByExpenseId(expense.getId());
+        then(expenseRepository).should().findByTeamAndStatus(mockTeam, status);
+        then(itemRepository).should().findAllByExpenseId(expense.getId());
     }
 
     @Test
@@ -172,7 +188,9 @@ public class ExpenseServiceTest {
         Expense expense = mock(Expense.class);
         List<Expense> expenses = Collections.singletonList(expense);
 
-        given(mockExpenseRepository.findByTeamIdAndStatus(teamId, status)).willReturn(expenses);
+        given(expenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
+        given(teamRepository.findById(any(Long.class))).willReturn(Optional.of(mockTeam));
+
         given(expense.getId()).willReturn(1L);
         given(expense.getTitle()).willReturn("Test Expense");
         given(expense.getTotalPrice()).willReturn(1000);
@@ -210,9 +228,12 @@ public class ExpenseServiceTest {
         given(expense.getStatus()).willReturn(Status.COMPLETED);
         given(expense.getCategory()).willReturn(mock(Category.class));
 
-        given(mockExpenseRepository.findByTeamIdAndStatus(teamId, status)).willReturn(expenses);
-        given(mockItemRepository.findAllByExpenseId(expense.getId())).willReturn(items);
-        given(mockPersonalExpenseRepository.countByMemberIdAndItemIds(memberId,
+        given(expenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
+        given(teamRepository.findById(any(Long.class))).willReturn(Optional.of(mockTeam));
+
+        given(expenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
+        given(itemRepository.findAllByExpenseId(expense.getId())).willReturn(items);
+        given(personalExpenseRepository.countByMemberIdAndItemIds(memberId,
             items.stream().map(Item::getId).toList())).willReturn(1L);
 
         // when
@@ -224,143 +245,62 @@ public class ExpenseServiceTest {
         assertThat(response.expenseList().getFirst().title()).isEqualTo(expense.getTitle());
     }
 
-
-    @DisplayName("지출 완료 처리 성공")
     @Test
-    void completeExpenses_Success() {
-        //given
-        List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
-        expenses.forEach(Expense::changeStatusPending);
-        given(mockTeam.getId()).willReturn(TEST_TEAM_ID);
-        given(mockPayer.getId()).willReturn(TEST_MEMBER_ID);
-        given(
-            mockExpenseRepository.findAllByIdWithDetails(expenseIds)).willReturn(
-            expenses);
-        //when
-        expenseService.completeExpenses(completeExpensesRequest, TEST_TEAM_ID, TEST_MEMBER_ID);
+    @DisplayName("지출 목록 조회 - 대기 상태")
+    void getExpenses_Pending() {
+        // given
+        Long memberId = 1L;
+        Long teamId = 1L;
+        Status status = Status.PENDING;
+        Boolean isChecked = null;
+        Expense expense = mock(Expense.class);
+        List<Expense> expenses = Collections.singletonList(expense);
 
-        //then
-        assertThat(expenses).extracting(Expense::getStatus).containsOnly(Status.COMPLETED);
-        then(mockExpenseRepository).should()
-            .findAllByIdWithDetails(expenseIds);
+        given(expenseRepository.findByTeamAndStatus(mockTeam, status)).willReturn(expenses);
+        given(teamRepository.findById(any(Long.class))).willReturn(Optional.of(mockTeam));
+        given(personalExpenseRepository.findPersonalExpenseSum(anyLong(),
+            anyLong())).willReturn(3000);
+
+        given(expense.getId()).willReturn(1L);
+        given(expense.getTitle()).willReturn("Test Expense");
+        given(expense.getTotalPrice()).willReturn(1000);
+        given(expense.getCreatedAt()).willReturn(LocalDateTime.now());
+        given(expense.getStatus()).willReturn(Status.PENDING);
+        given(expense.getCategory()).willReturn(mock(Category.class));
+
+        // when
+        ExpenseResponse response = expenseService.getExpenses(memberId, teamId, status, isChecked);
+
+        // then
+        assertThat(response.expenseList()).hasSize(1);
+        assertThat(response.totalPrice()).isEqualTo(1000);
+        assertThat(response.expenseList().getFirst().title()).isEqualTo("Test Expense");
+        assertThat(response.expenseList().getFirst().totalPrice()).isEqualTo(1000);
+
+        assertThat(response.expenseList().getFirst().personalExpense()).isEqualTo(3000);
+        assertThat(response.totalPersonalExpense()).isEqualTo(3000);
     }
 
-
-    @DisplayName("지출 완료 처리 실패(이미 완료된 지출 존재)")
-    @Test
-    void completeExpenses_AlreadyCompleted_Fail() {
-        //given
-        List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
-        expenses.forEach(Expense::changeStatusPending);
-        given(mockTeam.getId()).willReturn(TEST_TEAM_ID);
-        given(mockPayer.getId()).willReturn(TEST_MEMBER_ID);
-        given(
-            mockExpenseRepository.findAllByIdWithDetails(expenseIds)).willReturn(
-            expenses);
-        expenses.getFirst().changeStatusComplete(TEST_TEAM_ID, TEST_MEMBER_ID);
-
-        //when //then
-        assertThatThrownBy(
-            () -> expenseService.completeExpenses(completeExpensesRequest, TEST_TEAM_ID,
-                TEST_MEMBER_ID)).isInstanceOf(
-                JeongsanException.class)
-            .hasMessage(ErrorType.EXPENSE_ALREADY_COMPLETED.getMessage());
-    }
-
-    @DisplayName("지출 완료 처리 실패(존재하지 않는 지출 존재)")
-    @Test
-    void completeExpenses_NotFoundExpense_Fail() {
-        //given
-        List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE - 1);
-        given(
-            mockExpenseRepository.findAllByIdWithDetails(expenseIds)).willReturn(
-            expenses);
-
-        //when //then
-        assertThatThrownBy(
-            () -> expenseService.completeExpenses(completeExpensesRequest, TEST_TEAM_ID,
-                TEST_MEMBER_ID)).isInstanceOf(
-                JeongsanException.class)
-            .hasMessage(ErrorType.EXPENSE_NOT_FOUND_ID.getMessage());
-    }
-
-    @DisplayName("지출 완료 처리 실패(아직 진행중인 지출 존재)")
-    @Test
-    void completeExpenses_StatusIsOngoing_Fail() {
-        //given
-        List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
-        given(
-            mockExpenseRepository.findAllByIdWithDetails(expenseIds)).willReturn(
-            expenses);
-        given(mockTeam.getId()).willReturn(TEST_TEAM_ID);
-        given(mockPayer.getId()).willReturn(TEST_MEMBER_ID);
-
-        //when //then
-        assertThatThrownBy(
-            () -> expenseService.completeExpenses(completeExpensesRequest, TEST_TEAM_ID,
-                TEST_MEMBER_ID)).isInstanceOf(
-                JeongsanException.class)
-            .hasMessage(ErrorType.EXPENSE_ONGOING.getMessage());
-    }
-
-    @DisplayName("지출 완료 처리 실패(타 모임의 지출이 포함된 요청)")
-    @Test
-    void completeExpenses_AnotherTeam_Fail() {
-        //given
-        final Long INVALID_TEAM_ID = 2L;
-        List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
-        expenses.forEach(Expense::changeStatusPending);
-        given(
-            mockExpenseRepository.findAllByIdWithDetails(expenseIds)).willReturn(
-            expenses);
-        given(mockTeam.getId()).willReturn(INVALID_TEAM_ID);
-        //when //then
-        assertThatThrownBy(
-            () -> expenseService.completeExpenses(completeExpensesRequest, TEST_TEAM_ID,
-                TEST_MEMBER_ID)).isInstanceOf(
-                JeongsanException.class)
-            .hasMessage(ErrorType.EXPENSE_INVALID_TEAM.getMessage());
-    }
-
-
-    @DisplayName("지출 완료 처리 실패(자신이 결제하지 않은 지출이 포함된 요청)")
-    @Test
-    void completeExpenses_AnotherPayer_Fail() {
-        //given
-        final Long INVALID_MEMBER_ID = 2L;
-        List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
-        expenses.forEach(Expense::changeStatusPending);
-        given(
-            mockExpenseRepository.findAllByIdWithDetails(expenseIds)).willReturn(
-            expenses);
-        given(mockTeam.getId()).willReturn(TEST_TEAM_ID);
-        given(mockPayer.getId()).willReturn(INVALID_MEMBER_ID);
-
-        //when //then
-        assertThatThrownBy(
-            () -> expenseService.completeExpenses(completeExpensesRequest, TEST_TEAM_ID,
-                TEST_MEMBER_ID)).isInstanceOf(
-                JeongsanException.class)
-            .hasMessage(ErrorType.EXPENSE_INVALID_PAYER.getMessage());
-    }
 
     @Test
     @DisplayName("내가 지불한 지출 내역 - 빈 리스트")
     void getExpensesIPaid_EmptyList() {
         // given
-        Long memberId = 1L;
-        Long teamId = 1L;
-        given(mockExpenseRepository.findExpensesIPaid(memberId, teamId, Status.PENDING))
+        Member member = new Member();
+        Team team = new Team();
+        given(expenseRepository.findExpensesIPaid(member, team, Status.PENDING))
             .willReturn(Collections.emptyList());
+        given(teamRepository.findById(any(Long.class))).willReturn(Optional.of(team));
+        given(memberRepository.findById(any(Long.class))).willReturn(Optional.of(member));
 
         // when
-        ExpenseResponse response = expenseService.getExpensesIPaid(memberId, teamId);
+        ExpenseResponse response = expenseService.getExpensesIPaid(TEST_MEMBER_ID, TEST_TEAM_ID);
 
         // then
         assertThat(response.expenseList()).isEmpty();
         assertThat(response.totalPrice()).isEqualTo(0);
         assertThat(response.checked()).isTrue();
-        then(mockExpenseRepository).should().findExpensesIPaid(memberId, teamId, Status.PENDING);
+        then(expenseRepository).should().findExpensesIPaid(member, team, Status.PENDING);
     }
 
     @Test
@@ -387,7 +327,9 @@ public class ExpenseServiceTest {
         given(expense2.getCategory()).willReturn(mock(Category.class));
 
         List<Expense> expenses = List.of(expense1, expense2);
-        given(mockExpenseRepository.findExpensesIPaid(memberId, teamId, Status.PENDING))
+        given(teamRepository.findById(any(Long.class))).willReturn(Optional.of(mockTeam));
+        given(memberRepository.findById(any(Long.class))).willReturn(Optional.of(mockPayer));
+        given(expenseRepository.findExpensesIPaid(mockPayer, mockTeam, Status.PENDING))
             .willReturn(expenses);
 
         // when
@@ -397,7 +339,174 @@ public class ExpenseServiceTest {
         assertThat(response.expenseList()).hasSize(2);
         assertThat(response.totalPrice()).isEqualTo(3000);
         assertThat(response.checked()).isTrue();
-        then(mockExpenseRepository).should().findExpensesIPaid(memberId, teamId, Status.PENDING);
+        then(expenseRepository).should().findExpensesIPaid(mockPayer, mockTeam, Status.PENDING);
+    }
+
+    @DisplayName("지출 상태 변경(송금 대기 -> 완료)")
+    @Nested
+    class ChangeExpensesStateComplete {
+
+        @DisplayName("지출 상태 변경 성공")
+        @Test
+        void changeExpensesState_Complete_Success() {
+            //given
+            List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
+            given(mockTeam.getId()).willReturn(TEST_TEAM_ID);
+            given(mockPayer.getId()).willReturn(TEST_MEMBER_ID);
+            expenses.forEach(
+                e -> e.changeStatus(mockTeam.getId(), mockPayer.getId(), Status.PENDING));
+            given(expenseRepository.findAllByIdWithDetails(expenseIds))
+                .willReturn(expenses);
+            //when
+            expenseService.updateExpensesState(completeExpensesRequest, TEST_TEAM_ID, TEST_MEMBER_ID);
+
+            //then
+            assertThat(expenses).extracting(Expense::getStatus).containsOnly(Status.COMPLETED);
+            then(expenseRepository).should()
+                .findAllByIdWithDetails(expenseIds);
+        }
+
+        @DisplayName("지출 상태 변경 실패(이미 완료된 지출 존재)")
+        @Test
+        void completeExpenses_AlreadyCompleted_Fail() {
+            //given
+            List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
+            given(mockTeam.getId()).willReturn(TEST_TEAM_ID);
+            given(mockPayer.getId()).willReturn(TEST_MEMBER_ID);
+            expenses.forEach(
+                e -> e.changeStatus(mockTeam.getId(), mockPayer.getId(), Status.PENDING));
+            given(expenseRepository.findAllByIdWithDetails(expenseIds))
+                .willReturn(expenses);
+            expenses.getFirst().changeStatus(TEST_TEAM_ID, TEST_MEMBER_ID, Status.COMPLETED);
+
+            //when //then
+            assertThatThrownBy(
+                () -> expenseService.updateExpensesState(completeExpensesRequest, TEST_TEAM_ID,
+                    TEST_MEMBER_ID)).isInstanceOf(
+                    JeongsanException.class)
+                .hasMessage(ErrorType.EXPENSE_ALREADY_COMPLETED.getMessage());
+        }
+
+        @DisplayName("지출 상태 변경 실패(존재하지 않는 지출 존재)")
+        @Test
+        void completeExpenses_NotFoundExpense_Fail() {
+            //given
+            List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE - 1);
+            given(expenseRepository.findAllByIdWithDetails(expenseIds))
+                .willReturn(expenses);
+            //when //then
+            assertThatThrownBy(
+                () -> expenseService.updateExpensesState(completeExpensesRequest, TEST_TEAM_ID,
+                    TEST_MEMBER_ID)).isInstanceOf(
+                    JeongsanException.class)
+                .hasMessage(ErrorType.EXPENSE_NOT_FOUND_ID.getMessage());
+        }
+
+        @DisplayName("지출 상태 변경 실패(아직 진행중인 지출 존재)")
+        @Test
+        void completeExpenses_StatusIsOngoing_Fail() {
+            //given
+            List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
+            given(expenseRepository.findAllByIdWithDetails(expenseIds)).willReturn(expenses);
+            given(mockTeam.getId()).willReturn(TEST_TEAM_ID);
+            given(mockPayer.getId()).willReturn(TEST_MEMBER_ID);
+
+            //when //then
+            assertThatThrownBy(
+                () -> expenseService.updateExpensesState(completeExpensesRequest, TEST_TEAM_ID,
+                    TEST_MEMBER_ID)).isInstanceOf(
+                    JeongsanException.class)
+                .hasMessage(ErrorType.EXPENSE_ONGOING.getMessage());
+        }
+
+        @DisplayName("지출 상태 변경 실패(타 모임의 지출이 포함된 요청)")
+        @Test
+        void completeExpenses_AnotherTeam_Fail() {
+            //given
+            final Long INVALID_TEAM_ID = 2L;
+            List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
+            given(mockPayer.getId()).willReturn(TEST_MEMBER_ID);
+            given(mockTeam.getId()).willReturn(INVALID_TEAM_ID);
+            expenses.forEach(
+                e -> e.changeStatus(mockTeam.getId(), mockPayer.getId(), Status.PENDING));
+            given(expenseRepository.findAllByIdWithDetails(expenseIds))
+                .willReturn(expenses);
+
+            //when //then
+            assertThatThrownBy(
+                () -> expenseService.updateExpensesState(completeExpensesRequest, TEST_TEAM_ID,
+                    TEST_MEMBER_ID)).isInstanceOf(
+                    JeongsanException.class)
+                .hasMessage(ErrorType.EXPENSE_INVALID_TEAM.getMessage());
+        }
+
+
+        @DisplayName("지출 상태 변경 실패(자신이 결제하지 않은 지출이 포함된 요청)")
+        @Test
+        void completeExpenses_AnotherPayer_Fail() {
+            //given
+            final Long INVALID_MEMBER_ID = 2L;
+            List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
+            given(mockPayer.getId()).willReturn(INVALID_MEMBER_ID);
+            given(mockTeam.getId()).willReturn(TEST_TEAM_ID);
+            expenses.forEach(
+                e -> e.changeStatus(mockTeam.getId(), mockPayer.getId(), Status.PENDING));
+            given(expenseRepository.findAllByIdWithDetails(expenseIds))
+                .willReturn(expenses);
+            given(mockTeam.getId()).willReturn(TEST_TEAM_ID);
+            given(mockPayer.getId()).willReturn(INVALID_MEMBER_ID);
+
+            //when //then
+            assertThatThrownBy(
+                () -> expenseService.updateExpensesState(completeExpensesRequest, TEST_TEAM_ID,
+                    TEST_MEMBER_ID)).isInstanceOf(
+                    JeongsanException.class)
+                .hasMessage(ErrorType.EXPENSE_INVALID_PAYER.getMessage());
+        }
+    }
+
+    @DisplayName("지출 상태 변경(정산 중 -> 송금 대기)")
+    @Nested
+    class changeExpensesStatePending {
+
+        @DisplayName("지출 상태 변경 성공")
+        @Test
+        void changeExpensesState_Pending_Success() {
+            //given
+            List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
+            given(mockTeam.getId()).willReturn(TEST_TEAM_ID);
+            given(mockPayer.getId()).willReturn(TEST_MEMBER_ID);
+            given(expenseRepository.findAllByIdWithDetails(expenseIds))
+                .willReturn(expenses);
+            //when
+            expenseService.updateExpensesState(pendingExpensesRequest, TEST_TEAM_ID, TEST_MEMBER_ID);
+
+            //then
+            assertThat(expenses).extracting(Expense::getStatus).containsOnly(Status.PENDING);
+            then(expenseRepository).should()
+                .findAllByIdWithDetails(expenseIds);
+        }
+
+        @DisplayName("지출 상태 변경 실패(이미 송금대기 상태 지출 존재)")
+        @Test
+        void completeExpenses_AlreadyCompleted_Fail() {
+            //given
+            List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
+            given(mockTeam.getId()).willReturn(TEST_TEAM_ID);
+            given(mockPayer.getId()).willReturn(TEST_MEMBER_ID);
+            expenses
+                .forEach(e -> e.changeStatus(mockTeam.getId(), mockPayer.getId(), Status.PENDING));
+            given(expenseRepository.findAllByIdWithDetails(expenseIds))
+                .willReturn(expenses);
+
+            //when //then
+            assertThatThrownBy(
+                () -> expenseService.updateExpensesState(pendingExpensesRequest, TEST_TEAM_ID,
+                    TEST_MEMBER_ID)).isInstanceOf(
+                    JeongsanException.class)
+                .hasMessage(ErrorType.EXPENSE_ALREADY_PENDING.getMessage());
+        }
+
     }
 
     private List<Expense> createExpenses(int count) {
