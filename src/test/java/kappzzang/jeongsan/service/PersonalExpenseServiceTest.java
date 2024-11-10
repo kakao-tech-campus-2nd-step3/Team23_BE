@@ -6,12 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
@@ -27,9 +25,7 @@ import kappzzang.jeongsan.repository.MemberRepository;
 import kappzzang.jeongsan.repository.PersonalExpenseRepository;
 import kappzzang.jeongsan.repository.TeamMemberRepository;
 import kappzzang.jeongsan.repository.TeamRepository;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -196,7 +192,8 @@ class PersonalExpenseServiceTest {
             request);
 
         // then
-        PersonalExpense savedExpenses = personalExpenseRepository.findByMemberAndItem(member1, item2).get();
+        PersonalExpense savedExpenses = personalExpenseRepository.findByMemberAndItem(member1,
+            item2).get();
 
         assertEquals(2, savedExpenses.getQuantity());
         assertEquals(2000, savedExpenses.getTotalPrice());
@@ -235,7 +232,8 @@ class PersonalExpenseServiceTest {
                 expense.getId(), request);
         });
 
-        PersonalExpense savedExpenses = personalExpenseRepository.findByMemberAndItem(member1, item2).get();
+        PersonalExpense savedExpenses = personalExpenseRepository.findByMemberAndItem(member1,
+            item2).get();
         assertEquals(1, savedExpenses.getQuantity());
         assertEquals(1000, savedExpenses.getTotalPrice());
     }
@@ -274,27 +272,24 @@ class PersonalExpenseServiceTest {
         List<PersonalExpense> savedExpenses = personalExpenseRepository.findAllByItem(item2);
         assertEquals(2, savedExpenses.size());
 
-
         int totalQuantity = savedExpenses.stream()
             .mapToInt(PersonalExpense::getQuantity)
             .sum();
-        assertEquals(4, totalQuantity);  // member1: 2, member4: 4
+        assertEquals(4, totalQuantity);  // member1: 2, member4: 2
 
         int totalPrice = savedExpenses.stream()
             .mapToInt(PersonalExpense::getTotalPrice)
             .sum();
         assertEquals(item2.getTotalPrice(), totalPrice);  // item2의 전체 가격
 
-        Map<Long, Integer> quantityByMember = savedExpenses.stream()
-            .collect(Collectors.toMap(
-                pe -> pe.getMember().getId(),
-                PersonalExpense::getQuantity
-            ));
-        assertEquals(2, quantityByMember.get(member1.getId()));
-        assertEquals(2, quantityByMember.get(member4.getId()));
+        for (PersonalExpense personalExpense : savedExpenses) {
+            assertEquals(2, personalExpense.getQuantity());
+            assertEquals(1500, personalExpense.getTotalPrice());
+        }
     }
 
-    private void executeTestCase(TestCase testCase, CountDownLatch startLatch, CountDownLatch endLatch) {
+    private void executeTestCase(TestCase testCase, CountDownLatch startLatch,
+        CountDownLatch endLatch) {
         try {
             startLatch.await();
             personalExpenseService.savePersonalExpense(
@@ -310,5 +305,7 @@ class PersonalExpenseServiceTest {
         }
     }
 
-    private record TestCase(Long memberId, String operation, SavePersonalExpenseRequest request) {}
+    private record TestCase(Long memberId, String operation, SavePersonalExpenseRequest request) {
+
+    }
 }
