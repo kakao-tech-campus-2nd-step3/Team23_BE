@@ -1,5 +1,6 @@
 package kappzzang.jeongsan.global.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import kappzzang.jeongsan.global.security.JwtAuthenticationFilter;
 import kappzzang.jeongsan.global.util.JwtUtil;
@@ -22,6 +23,7 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final ObjectMapper objectMapper;
 
     @Value("${security.permitted-paths}")
     private List<String> permittedPaths;
@@ -42,7 +44,7 @@ public class SecurityConfig {
             )
             .addFilterAfter(
                 new JwtAuthenticationFilter(jwtUtil, authenticationManagerBuilder.getOrBuild(),
-                    permittedPaths), LogoutFilter.class)
+                    permittedPaths, objectMapper), LogoutFilter.class)
             .build();
     }
 }

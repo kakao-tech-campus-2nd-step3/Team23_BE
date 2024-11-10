@@ -28,6 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
     private final List<String> permittedPaths;
+    private final ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -68,7 +69,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setStatus(jeongsanException.getErrorType().getHttpStatusCode().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(response.getWriter(), errorResponse);
+        objectMapper.writeValue(response.getWriter(), errorResponse);
     }
 }
