@@ -73,6 +73,7 @@ public class TeamController implements TeamControllerInterface {
         return JeongsanApiResponse.success(SuccessType.INVITATION_STATUS_LOADED, data);
     }
 
+    @Override
     @GetMapping("/{teamId}/members/id")
     public ResponseEntity<JeongsanApiResponse<List<MemberIdResponse>>> getMemberId(
         @PathVariable("teamId") Long teamId) {
