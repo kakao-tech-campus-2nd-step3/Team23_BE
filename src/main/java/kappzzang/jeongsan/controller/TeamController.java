@@ -47,13 +47,7 @@ public class TeamController implements TeamControllerInterface {
     public ResponseEntity<JeongsanApiResponse<TeamResponse>> getTeam(@PathVariable Long teamId,
         @AuthenticationPrincipal Long memberId) {
         TeamResponse data = teamService.getTeam(teamId, memberId);
-        return JeongsanApiResponse.success(SuccessType.TEAM_LIST_LOADED, data);
-    }
 
-    @Override
-    @GetMapping("{teamId}")
-    public ResponseEntity<JeongsanApiResponse<TeamResponse>> getTeam(@PathVariable Long teamId) {
-        TeamResponse data = teamService.getTeam(teamId);
         return JeongsanApiResponse.success(SuccessType.TEAM_LIST_LOADED, data);
     }
 

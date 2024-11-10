@@ -95,6 +95,7 @@ public class Team extends BaseEntity {
         return this.teamMemberList.stream()
             .anyMatch(teamMember -> teamMember.getMember()
                 .equals(member) && teamMember.getIsInviteAccepted());
+
     }
 
     @Override
