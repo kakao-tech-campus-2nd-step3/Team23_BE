@@ -35,16 +35,18 @@ public class TeamController implements TeamControllerInterface {
     @Override
     @GetMapping
     public ResponseEntity<JeongsanApiResponse<List<TeamResponse>>> getTeams(
-        @RequestParam("isClosed") Boolean isClosed) {
-        List<TeamResponse> data = teamService.getTeamsByIsClosed(isClosed);
+        @RequestParam("isClosed") Boolean isClosed,
+        @AuthenticationPrincipal Long memberId) {
+        List<TeamResponse> data = teamService.getTeamsByIsClosed(isClosed, memberId);
 
         return JeongsanApiResponse.success(SuccessType.TEAM_LIST_LOADED, data);
     }
 
     @Override
     @GetMapping("{teamId}")
-    public ResponseEntity<JeongsanApiResponse<TeamResponse>> getTeam(@PathVariable Long teamId) {
-        TeamResponse data = teamService.getTeam(teamId);
+    public ResponseEntity<JeongsanApiResponse<TeamResponse>> getTeam(@PathVariable Long teamId,
+        @AuthenticationPrincipal Long memberId) {
+        TeamResponse data = teamService.getTeam(teamId, memberId);
         return JeongsanApiResponse.success(SuccessType.TEAM_LIST_LOADED, data);
     }
 

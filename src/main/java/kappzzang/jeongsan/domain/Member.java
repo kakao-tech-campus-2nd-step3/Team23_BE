@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,5 +54,29 @@ public class Member extends BaseEntity {
 
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Member member = (Member) o;
+        return Objects.equals(teamMemberList, member.teamMemberList)
+            && Objects.equals(id, member.id) && Objects.equals(kakaoId,
+            member.kakaoId) && Objects.equals(email, member.email)
+            && Objects.equals(nickname, member.nickname) && Objects.equals(
+            profileImage, member.profileImage) && Objects.equals(refreshToken,
+            member.refreshToken) && Objects.equals(kakaoPayInfo, member.kakaoPayInfo);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(teamMemberList, id, kakaoId, email, nickname, profileImage,
+            refreshToken,
+            kakaoPayInfo);
     }
 }
