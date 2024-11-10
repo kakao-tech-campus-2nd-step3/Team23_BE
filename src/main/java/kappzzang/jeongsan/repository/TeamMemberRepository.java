@@ -6,6 +6,7 @@ import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.domain.TeamMember;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
+import kappzzang.jeongsan.dto.response.MemberIdResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,4 +21,10 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
         "JOIN tm.member m " +
         "WHERE tm.team.id = :teamId")
     List<InvitationStatusResponse> findInvitationStatusByTeamId(@Param("teamId") Long teamId);
+
+    @Query("SELECT new kappzzang.jeongsan.dto.response.MemberIdResponse(tm.member.id) " +
+        "FROM TeamMember tm " +
+        "JOIN tm.member m " +
+        "WHERE tm.team.id = :teamId")
+    List<MemberIdResponse> findMemberIdByTeamId(@Param("teamId") Long teamId);
 }

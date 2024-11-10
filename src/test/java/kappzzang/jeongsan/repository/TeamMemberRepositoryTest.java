@@ -7,6 +7,7 @@ import kappzzang.jeongsan.domain.KakaoPayInfo;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
+import kappzzang.jeongsan.dto.response.MemberIdResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,5 +63,17 @@ class TeamMemberRepositoryTest {
             assertThat(response.nickname()).isEqualTo("nickname2");
             assertThat(response.isInviteAccepted()).isFalse();
         });
+    }
+
+    @Test
+    @DisplayName("모임 멤버 아이디 조회 - 레포지토리 테스트")
+    void findMemberIdByTeamId() {
+        // when
+        List<MemberIdResponse> result = teamMemberRepository.findMemberIdByTeamId(team.getId());
+
+        // then
+        assertThat(result).hasSize(2)
+            .map(memberIdResponse -> memberIdResponse.id())
+            .contains(member1.getId(), member2.getId());
     }
 }

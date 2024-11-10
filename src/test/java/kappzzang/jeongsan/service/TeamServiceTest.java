@@ -18,6 +18,7 @@ import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.request.CreateTeamRequest;
 import kappzzang.jeongsan.dto.response.CreateTeamResponse;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
+import kappzzang.jeongsan.dto.response.MemberIdResponse;
 import kappzzang.jeongsan.dto.response.TeamResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
@@ -92,6 +93,54 @@ class TeamServiceTest {
                 assertThat(response.nickname()).isEqualTo("nickname");
                 assertThat(response.profileImage()).isEqualTo("profileImage");
                 assertThat(response.isInviteAccepted()).isFalse();
+            });
+    }
+
+    @Test
+    @DisplayName("teamId로 모임을 찾을 수 없어서 모임 멤버 아이디 조회 실패함")
+    void getMemberId_TeamNotFound() {
+        // given
+        given(teamRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> teamService.getMemberId(anyLong()))
+            .isInstanceOf(JeongsanException.class)
+            .hasFieldOrPropertyWithValue("errorType", ErrorType.TEAM_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("해당 모임에 멤버가 없어서 모임 멤버 아이디 조회 실패함")
+    void getMemberId_TeamMemberNotFound() {
+        // given
+        given(teamRepository.findById(anyLong())).willReturn(Optional.of(new Team()));
+        given(teamMemberRepository.findMemberIdByTeamId(anyLong())).willReturn(
+            Collections.emptyList());
+
+        // when & then
+        assertThatThrownBy(() -> teamService.getMemberId(anyLong()))
+            .isInstanceOf(JeongsanException.class)
+            .hasFieldOrPropertyWithValue("errorType", ErrorType.TEAM_MEMBER_NOT_FOUND);
+    }
+
+    // 성공
+    @Test
+    @DisplayName("모임 멤버 아이디 조회 성공")
+    void getMemberId_MemberIdLoaded() {
+        // given
+        given(teamRepository.findById(anyLong())).willReturn(Optional.of(new Team()));
+        given(teamMemberRepository.findMemberIdByTeamId(anyLong())).willReturn(
+            List.of(new MemberIdResponse(1L)));
+
+        // when
+        List<MemberIdResponse> result = teamService.getMemberId(anyLong());
+
+        // then
+        assertThat(result)
+            .isNotNull()
+            .hasSize(1)
+            .first()
+            .satisfies(response -> {
+                assertThat(response.id()).isEqualTo(1L);
             });
     }
 

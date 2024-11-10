@@ -8,6 +8,7 @@ import kappzzang.jeongsan.dto.request.CreateTeamRequest;
 import kappzzang.jeongsan.dto.request.TransferTargetRequest;
 import kappzzang.jeongsan.dto.response.CreateTeamResponse;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
+import kappzzang.jeongsan.dto.response.MemberIdResponse;
 import kappzzang.jeongsan.dto.response.TeamResponse;
 import kappzzang.jeongsan.dto.response.TransferTargetResponse;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
@@ -77,6 +78,14 @@ public class TeamController implements TeamControllerInterface {
         @PathVariable("teamId") Long teamId) {
         List<InvitationStatusResponse> data = teamService.getInvitationStatus(teamId);
         return JeongsanApiResponse.success(SuccessType.INVITATION_STATUS_LOADED, data);
+    }
+
+    @Override
+    @GetMapping("/{teamId}/members/id")
+    public ResponseEntity<JeongsanApiResponse<List<MemberIdResponse>>> getMemberId(
+        @PathVariable("teamId") Long teamId) {
+        List<MemberIdResponse> data = teamService.getMemberId(teamId);
+        return JeongsanApiResponse.success(SuccessType.MEMBER_ID_LOADED, data);
     }
 
     @Override
