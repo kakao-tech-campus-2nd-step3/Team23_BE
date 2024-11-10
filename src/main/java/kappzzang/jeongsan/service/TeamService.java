@@ -35,17 +35,25 @@ public class TeamService {
     private final PersonalExpenseRepository personalExpenseRepository;
 
     @Transactional(readOnly = true)
-    public List<TeamResponse> getTeamsByIsClosed(Boolean isClosed) {
-        return teamRepository.findByIsClosed(isClosed)
+    public List<TeamResponse> getTeamsByIsClosed(Boolean isClosed, Long memberId) {
+        return teamRepository.findByIsClosed(memberId, isClosed)
             .stream()
             .map(TeamResponse::from)
             .toList();
     }
 
     @Transactional(readOnly = true)
-    public TeamResponse getTeam(Long id) {
-        return TeamResponse.from(teamRepository.findById(id)
-            .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_NOT_FOUND)));
+    public TeamResponse getTeam(Long id, Long memberId) {
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new JeongsanException(ErrorType.USER_NOT_FOUND));
+        Team team = teamRepository.findById(id)
+            .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_NOT_FOUND));
+
+        if(!team.isMember(member)) {
+            throw new JeongsanException(ErrorType.USER_NOT_FOUND);
+        }
+
+        return TeamResponse.from(team);
     }
 
     @Transactional

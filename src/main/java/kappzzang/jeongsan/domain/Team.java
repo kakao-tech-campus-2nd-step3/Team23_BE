@@ -87,6 +87,12 @@ public class Team extends BaseEntity {
             .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_NOT_FOUND));
     }
 
+    public Boolean isMember(Member member) {
+        return this.teamMemberList.stream()
+            .anyMatch(teamMember -> teamMember.getMember()
+                .equals(member));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
