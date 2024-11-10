@@ -81,7 +81,7 @@ public class ExpenseController implements ExpenseControllerInterface {
     @GetMapping("ipaid/{teamId}")
     public ResponseEntity<JeongsanApiResponse<ExpenseResponse>> getExpensesIPaid(
         @AuthenticationPrincipal Long memberId,
-        @PathVariable Long teamId
+        @PathVariable("teamId") Long teamId
     ) {
         return JeongsanApiResponse.success(SuccessType.EXPENSE_LIST_LOADED,
             expenseService.getExpensesIPaid(memberId, teamId));
