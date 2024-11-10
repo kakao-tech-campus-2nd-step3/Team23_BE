@@ -12,6 +12,7 @@ import kappzzang.jeongsan.dto.request.CreateTeamRequest;
 import kappzzang.jeongsan.dto.request.TransferTargetRequest;
 import kappzzang.jeongsan.dto.response.CreateTeamResponse;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
+import kappzzang.jeongsan.dto.response.MemberIdResponse;
 import kappzzang.jeongsan.dto.response.TeamResponse;
 import kappzzang.jeongsan.dto.response.TransferTargetResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
@@ -79,6 +80,16 @@ public class TeamService {
         return Optional.ofNullable(teamMemberRepository.findInvitationStatusByTeamId(teamId))
             .filter(list -> !list.isEmpty())
             .orElseThrow(() -> new JeongsanException(ErrorType.INVITATION_STATUS_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public List<MemberIdResponse> getMemberId(Long teamId) {
+        teamRepository.findById(teamId)
+            .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_NOT_FOUND));
+
+        return Optional.ofNullable(teamMemberRepository.findMemberIdByTeamId(teamId))
+            .filter(list -> !list.isEmpty())
+            .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_MEMBER_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)
