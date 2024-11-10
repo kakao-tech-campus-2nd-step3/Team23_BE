@@ -4,7 +4,6 @@ import static kappzzang.jeongsan.global.common.enumeration.SuccessType.JOIN_SUCC
 
 import jakarta.validation.Valid;
 import kappzzang.jeongsan.controller.docs.MemberControllerInterface;
-import kappzzang.jeongsan.dto.request.JoinTeamRequest;
 import kappzzang.jeongsan.dto.request.LoginRequest;
 import kappzzang.jeongsan.dto.request.RefreshRequest;
 import kappzzang.jeongsan.dto.request.RegisterRequest;
@@ -58,8 +57,8 @@ public class MemberController implements MemberControllerInterface {
     @Override
     @PostMapping("/join/{teamId}")
     public ResponseEntity<JeongsanApiResponse<Void>> joinTeam(@PathVariable("teamId") Long teamId,
-        @RequestBody JoinTeamRequest request) {
-        memberService.acceptInvite(teamId, request.memberId());
+        @AuthenticationPrincipal Long memberId) {
+        memberService.acceptInvite(teamId, memberId);
         return JeongsanApiResponse.success(JOIN_SUCCESS);
     }
 
