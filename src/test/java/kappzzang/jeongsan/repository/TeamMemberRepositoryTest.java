@@ -7,7 +7,7 @@ import kappzzang.jeongsan.domain.KakaoPayInfo;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
-import kappzzang.jeongsan.dto.response.MemberIdResponse;
+import kappzzang.jeongsan.dto.response.MemberKakaoIdResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -66,14 +66,14 @@ class TeamMemberRepositoryTest {
     }
 
     @Test
-    @DisplayName("모임 멤버 아이디 조회 - 레포지토리 테스트")
-    void findMemberIdByTeamId() {
+    @DisplayName("모임 멤버 카카오 아이디 조회 - 레포지토리 테스트")
+    void findMemberKakaoIdByTeamId() {
         // when
-        List<MemberIdResponse> result = teamMemberRepository.findMemberIdByTeamId(team.getId());
+        List<MemberKakaoIdResponse> result = teamMemberRepository.findMemberKakaoIdByTeamId(team.getId());
 
         // then
         assertThat(result).hasSize(2)
-            .map(memberIdResponse -> memberIdResponse.id())
-            .contains(member1.getId(), member2.getId());
+            .map(memberKakaoIdResponse -> memberKakaoIdResponse.id())
+            .contains(member1.getKakaoId(), member2.getKakaoId());
     }
 }
