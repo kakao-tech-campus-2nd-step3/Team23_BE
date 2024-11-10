@@ -106,9 +106,8 @@ public class PersonalExpenseService {
     private void updateExistingPersonalExpenses(List<PersonalExpense> personalExpenses,
         int newPersonalUnitPrice) {
 
-        personalExpenses.forEach(pe -> {
-            pe.updateTotalPrice(newPersonalUnitPrice * pe.getQuantity());
-        });
+        personalExpenses.forEach(
+            pe -> pe.updateTotalPrice(newPersonalUnitPrice * pe.getQuantity()));
     }
 
     private void saveNewPersonalExpense(Member member, Item item, int quantity, int totalPrice) {
