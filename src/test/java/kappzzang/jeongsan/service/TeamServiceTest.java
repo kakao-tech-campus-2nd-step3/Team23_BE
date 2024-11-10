@@ -18,7 +18,7 @@ import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.request.CreateTeamRequest;
 import kappzzang.jeongsan.dto.response.CreateTeamResponse;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
-import kappzzang.jeongsan.dto.response.MemberIdResponse;
+import kappzzang.jeongsan.dto.response.MemberKakaoIdResponse;
 import kappzzang.jeongsan.dto.response.TeamResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
@@ -97,42 +97,42 @@ class TeamServiceTest {
     }
 
     @Test
-    @DisplayName("teamId로 모임을 찾을 수 없어서 모임 멤버 아이디 조회 실패함")
-    void getMemberId_TeamNotFound() {
+    @DisplayName("teamId로 모임을 찾을 수 없어서 모임 멤버 카카오 아이디 조회 실패함")
+    void getMemberKakaoId_TeamNotFound() {
         // given
         given(teamRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> teamService.getMemberId(anyLong()))
+        assertThatThrownBy(() -> teamService.getMemberKakaoId(anyLong()))
             .isInstanceOf(JeongsanException.class)
             .hasFieldOrPropertyWithValue("errorType", ErrorType.TEAM_NOT_FOUND);
     }
 
     @Test
-    @DisplayName("해당 모임에 멤버가 없어서 모임 멤버 아이디 조회 실패함")
-    void getMemberId_TeamMemberNotFound() {
+    @DisplayName("해당 모임에 멤버가 없어서 모임 멤버 카카오 아이디 조회 실패함")
+    void getMemberKakaoId_TeamMemberKakaoNotFound() {
         // given
         given(teamRepository.findById(anyLong())).willReturn(Optional.of(new Team()));
-        given(teamMemberRepository.findMemberIdByTeamId(anyLong())).willReturn(
+        given(teamMemberRepository.findMemberKakaoIdByTeamId(anyLong())).willReturn(
             Collections.emptyList());
 
         // when & then
-        assertThatThrownBy(() -> teamService.getMemberId(anyLong()))
+        assertThatThrownBy(() -> teamService.getMemberKakaoId(anyLong()))
             .isInstanceOf(JeongsanException.class)
             .hasFieldOrPropertyWithValue("errorType", ErrorType.TEAM_MEMBER_NOT_FOUND);
     }
 
     // 성공
     @Test
-    @DisplayName("모임 멤버 아이디 조회 성공")
-    void getMemberId_MemberIdLoaded() {
+    @DisplayName("모임 멤버 카카오 아이디 조회 성공")
+    void getMemberKakaoId_MemberKakaoIdLoaded() {
         // given
         given(teamRepository.findById(anyLong())).willReturn(Optional.of(new Team()));
-        given(teamMemberRepository.findMemberIdByTeamId(anyLong())).willReturn(
-            List.of(new MemberIdResponse(1L)));
+        given(teamMemberRepository.findMemberKakaoIdByTeamId(anyLong())).willReturn(
+            List.of(new MemberKakaoIdResponse("kakaoId")));
 
         // when
-        List<MemberIdResponse> result = teamService.getMemberId(anyLong());
+        List<MemberKakaoIdResponse> result = teamService.getMemberKakaoId(anyLong());
 
         // then
         assertThat(result)
@@ -140,7 +140,7 @@ class TeamServiceTest {
             .hasSize(1)
             .first()
             .satisfies(response -> {
-                assertThat(response.id()).isEqualTo(1L);
+                assertThat(response.id()).isEqualTo("kakaoId");
             });
     }
 
