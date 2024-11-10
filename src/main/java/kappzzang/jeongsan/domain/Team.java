@@ -36,13 +36,12 @@ public class Team extends BaseEntity {
     private Boolean isClosed;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<TeamMember> teamMemberList = new ArrayList<>();
+    private final List<TeamMember> teamMemberList = new ArrayList<>();
 
     public Team(String name, String subject) {
         this.name = name;
         this.subject = subject;
         this.isClosed = false;
-        teamMemberList = new ArrayList<>();
     }
 
     public static Team createTeam(Member owner, String name, String subject, List<Member> members) {
