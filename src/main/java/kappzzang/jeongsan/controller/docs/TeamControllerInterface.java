@@ -28,13 +28,13 @@ public interface TeamControllerInterface {
     @Operation(summary = "모임 목록 조회 API", description = "모임 목록을 조회하는 API")
     @Parameter(name = "isClosed", description = "모임의 현재 상태(진행 중, 종료)")
     @ApiResponse(responseCode = "200", description = "모임 목록 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeamResponse.class)))
-    ResponseEntity<JeongsanApiResponse<List<TeamResponse>>> getTeams(Boolean isClosed);
+    ResponseEntity<JeongsanApiResponse<List<TeamResponse>>> getTeams(Boolean isClosed, Long memberId);
 
     @Operation(summary = "모임 조회 API", description = "`teamId`를 이용해 모임을 조회하는 API")
     @Parameter(name = "teamId", description = "조회를 원하는 모임의 ID")
     @ApiResponse(responseCode = "200", description = "모임 목록 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeamResponse.class)))
     @ApiErrorTypeExample(ErrorType.TEAM_NOT_FOUND)
-    ResponseEntity<JeongsanApiResponse<TeamResponse>> getTeam(Long teamId);
+    ResponseEntity<JeongsanApiResponse<TeamResponse>> getTeam(Long teamId, Long memberId);
 
     @Operation(summary = "모임 생성 API", description = "요청한 사용자가 주인으로 모임을 생성하는 API")
     @Parameters({
