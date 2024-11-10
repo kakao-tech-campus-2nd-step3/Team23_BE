@@ -12,7 +12,7 @@ import kappzzang.jeongsan.dto.request.CreateTeamRequest;
 import kappzzang.jeongsan.dto.request.TransferTargetRequest;
 import kappzzang.jeongsan.dto.response.CreateTeamResponse;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
-import kappzzang.jeongsan.dto.response.MemberIdResponse;
+import kappzzang.jeongsan.dto.response.MemberKakaoIdResponse;
 import kappzzang.jeongsan.dto.response.TeamResponse;
 import kappzzang.jeongsan.dto.response.TransferTargetResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
@@ -83,11 +83,11 @@ public class TeamService {
     }
 
     @Transactional(readOnly = true)
-    public List<MemberIdResponse> getMemberId(Long teamId) {
+    public List<MemberKakaoIdResponse> getMemberKakaoId(Long teamId) {
         teamRepository.findById(teamId)
             .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_NOT_FOUND));
 
-        return Optional.ofNullable(teamMemberRepository.findMemberIdByTeamId(teamId))
+        return Optional.ofNullable(teamMemberRepository.findMemberKakaoIdByTeamId(teamId))
             .filter(list -> !list.isEmpty())
             .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_MEMBER_NOT_FOUND));
     }

@@ -8,7 +8,7 @@ import kappzzang.jeongsan.dto.request.CreateTeamRequest;
 import kappzzang.jeongsan.dto.request.TransferTargetRequest;
 import kappzzang.jeongsan.dto.response.CreateTeamResponse;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
-import kappzzang.jeongsan.dto.response.MemberIdResponse;
+import kappzzang.jeongsan.dto.response.MemberKakaoIdResponse;
 import kappzzang.jeongsan.dto.response.TeamResponse;
 import kappzzang.jeongsan.dto.response.TransferTargetResponse;
 import kappzzang.jeongsan.global.common.JeongsanApiResponse;
@@ -82,10 +82,10 @@ public class TeamController implements TeamControllerInterface {
 
     @Override
     @GetMapping("/{teamId}/members/id")
-    public ResponseEntity<JeongsanApiResponse<List<MemberIdResponse>>> getMemberId(
+    public ResponseEntity<JeongsanApiResponse<List<MemberKakaoIdResponse>>> getMemberKakaoId(
         @PathVariable("teamId") Long teamId) {
-        List<MemberIdResponse> data = teamService.getMemberId(teamId);
-        return JeongsanApiResponse.success(SuccessType.MEMBER_ID_LOADED, data);
+        List<MemberKakaoIdResponse> data = teamService.getMemberKakaoId(teamId);
+        return JeongsanApiResponse.success(SuccessType.MEMBER_KAKAO_ID_LOADED, data);
     }
 
     @Override
