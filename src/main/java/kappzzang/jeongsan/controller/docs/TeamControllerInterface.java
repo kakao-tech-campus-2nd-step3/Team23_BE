@@ -14,6 +14,7 @@ import kappzzang.jeongsan.dto.request.CreateTeamRequest;
 import kappzzang.jeongsan.dto.request.TransferTargetRequest;
 import kappzzang.jeongsan.dto.response.CreateTeamResponse;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
+import kappzzang.jeongsan.dto.response.MemberIdResponse;
 import kappzzang.jeongsan.dto.response.TeamResponse;
 import kappzzang.jeongsan.dto.response.TransferTargetResponse;
 import kappzzang.jeongsan.global.common.ApiErrorTypeExample;
@@ -60,6 +61,12 @@ public interface TeamControllerInterface {
     @ApiErrorTypeExample({ErrorType.TEAM_NOT_FOUND, ErrorType.INVITATION_STATUS_NOT_FOUND})
     ResponseEntity<JeongsanApiResponse<List<InvitationStatusResponse>>> getInvitationStatus(
         Long teamId);
+
+    @Operation(summary = "모임 멤버 아이디 조회 API", description = "모임에 있는 멤버들의 서비스 아이디를 조회하는 API")
+    @Parameter(name = "teamId", description = "멤버 아이디를 조회하려는 모임의 id")
+    @ApiResponse(responseCode = "200", description = "모임의 멤버 아이디 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MemberIdResponse.class)))
+    @ApiErrorTypeExample({ErrorType.TEAM_NOT_FOUND, ErrorType.TEAM_MEMBER_NOT_FOUND})
+    ResponseEntity<JeongsanApiResponse<List<MemberIdResponse>>> getMemberId(Long teamId);
 
     @Operation(summary = "송금 요청 대상 및 금액 조회 API", description = "송금을 요청할 멤버와 해당 멤버가 보내야할 금액을 조회하는 API")
     @Parameter(name = "teamId", description = "송금 요청 대상 및 금액 조회하려는 모임의 id")
