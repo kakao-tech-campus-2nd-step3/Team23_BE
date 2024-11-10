@@ -52,13 +52,13 @@ class TeamMemberRepositoryTest {
         assertThat(result).hasSize(2);
 
         assertThat(result).anySatisfy(response -> {
-            assertThat(response.memberId()).isEqualTo(member1.getId());
+            assertThat(response.kakaoId()).isEqualTo(member1.getKakaoId());
             assertThat(response.nickname()).isEqualTo("nickname1");
             assertThat(response.isInviteAccepted()).isTrue();
         });
 
         assertThat(result).anySatisfy(response -> {
-            assertThat(response.memberId()).isEqualTo(member2.getId());
+            assertThat(response.kakaoId()).isEqualTo(member2.getKakaoId());
             assertThat(response.nickname()).isEqualTo("nickname2");
             assertThat(response.isInviteAccepted()).isFalse();
         });
