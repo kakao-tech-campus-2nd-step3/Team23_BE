@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kappzzang.jeongsan.dto.request.JoinTeamRequest;
 import kappzzang.jeongsan.dto.request.LoginRequest;
 import kappzzang.jeongsan.dto.request.RefreshRequest;
 import kappzzang.jeongsan.dto.request.RegisterRequest;
@@ -51,7 +50,7 @@ public interface MemberControllerInterface {
     @ApiResponse(responseCode = "204", description = "모임 초대 수락, 모임 참여 성공")
     @ApiErrorTypeExample({ErrorType.NOT_INVITED_MEMBER, ErrorType.ALREADY_JOINED_MEMBER,
         ErrorType.USER_NOT_FOUND, ErrorType.TEAM_NOT_FOUND})
-    ResponseEntity<JeongsanApiResponse<Void>> joinTeam(Long teamId, JoinTeamRequest request);
+    ResponseEntity<JeongsanApiResponse<Void>> joinTeam(Long teamId, Long memberId);
 
     @Operation(summary = "송금 링크 조회 API", description = "카카오페이 송금 링크를 조회하는 API")
     @ApiResponse(responseCode = "200", description = "카카오 페이 송금 링크 조회 성공")
