@@ -15,7 +15,7 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
     Optional<TeamMember> findTeamMemberByTeamAndMember(Team team, Member member);
 
     @Query("SELECT new kappzzang.jeongsan.dto.response.InvitationStatusResponse( " +
-        "tm.member.id, m.nickname, m.profileImage, tm.isInviteAccepted) " +
+        "tm.member.kakaoId, m.nickname, m.profileImage, tm.isInviteAccepted) " +
         "FROM TeamMember tm " +
         "JOIN tm.member m " +
         "WHERE tm.team.id = :teamId")
