@@ -87,24 +87,24 @@ public class PersonalExpenseService {
     }
 
     private void update(PersonalExpense personalExpense, Item item, int requestQuantity) {
-        if (requestQuantity == 0) {
-            personalExpenseRepository.delete(personalExpense);
-            return;
-        }
-
         if (requestQuantity == personalExpense.getQuantity()) {
             throw new JeongsanException(ErrorType.NO_CHANGES_NEEDED);
         }
+        if (requestQuantity == 0) {
+            personalExpenseRepository.delete(personalExpense);
+        }
 
-        List<PersonalExpense> personalExpenses = personalExpenseRepository.findAllByItem(item)
-            .stream().filter(pe -> !pe.equals(personalExpense)).toList();
+        List<PersonalExpense> personalExpenses = personalExpenseRepository.findAllByItem(item);
         if (personalExpenses.isEmpty()) {
+            return;
+        }
+        if (personalExpenses.size() == 1) {
             personalExpense.update(requestQuantity, requestQuantity * item.getUnitPrice());
             return;
         }
 
+        personalExpenses.remove(personalExpense);
         CalculatedPrice calculatedPrice = calculatedPrice(personalExpenses, item, requestQuantity);
-
         updateExistingPersonalExpenses(personalExpenses, calculatedPrice.newPersonalUnitPrice());
         personalExpense.update(requestQuantity,
             (calculatedPrice.newPersonalUnitPrice() * requestQuantity)
