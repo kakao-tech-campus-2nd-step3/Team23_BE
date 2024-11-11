@@ -1,7 +1,10 @@
 package kappzzang.jeongsan.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
@@ -27,6 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PersonalExpenseService {
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
     private final ExpenseRepository expenseRepository;
@@ -49,11 +55,15 @@ public class PersonalExpenseService {
                 for (ItemInfo itemInfo : request.items()) {
                     int requestQuantity = itemInfo.quantity();
                     Item item = validateAndGetItem(itemInfo);
-                    personalExpenseRepository.findByMemberAndItem(member, item)
-                        .ifPresentOrElse(
-                            personalExpense -> update(personalExpense, item, requestQuantity),
-                            () -> save(member, item, requestQuantity)
-                        );
+                    Optional<PersonalExpense> personalExpenseOpt = personalExpenseRepository.findByMemberAndItem(member, item);
+
+                    if (personalExpenseOpt.isPresent()) {
+                        update(personalExpenseOpt.get(), item, requestQuantity);
+                        entityManager.flush();
+                        entityManager.clear();
+                    } else {
+                        save(member, item, requestQuantity);
+                    }
                 }
             } finally {
                 locks.remove(expenseId);
@@ -98,7 +108,7 @@ public class PersonalExpenseService {
         if (personalExpenses.isEmpty()) {
             return;
         }
-        if (personalExpenses.size() == 1) {
+        if (personalExpenses.size() == 1 && requestQuantity != 0) {
             personalExpense.update(requestQuantity, requestQuantity * item.getUnitPrice());
             return;
         }
