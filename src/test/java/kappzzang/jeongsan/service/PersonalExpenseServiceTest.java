@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -239,6 +240,43 @@ class PersonalExpenseServiceTest {
             item2).get();
         assertEquals(1, savedExpenses.getQuantity());
         assertEquals(1000, savedExpenses.getTotalPrice());
+    }
+
+    @Test
+    @DisplayName("개인 소비 내역 수정 요청 시, 요청 수량이 0이라면 기존 데이터를 삭제한다.")
+    void updatePersonalExpenseWithZeroQuantityTest() {
+        // given
+        SavePersonalExpenseRequest updateRequest = new SavePersonalExpenseRequest(
+            List.of(new SavePersonalExpenseRequest.ItemInfo(item2.getId(), 0))
+        );
+
+        // when
+        personalExpenseService.savePersonalExpense(member1.getId(), team.getId(), expense.getId(),
+            updateRequest);
+
+        // then
+        Optional<PersonalExpense> personalExpense = personalExpenseRepository.findByMemberAndItem(
+            member1, item2);
+        assertTrue(personalExpense.isEmpty());
+    }
+
+    @Test
+    @DisplayName("개인 소비 내역 저장 요청 시, 요청 수량이 0이라면 예외가 발생한다.")
+    void savePersonalExpenseWithZeroQuantityTest() {
+        // given
+        SavePersonalExpenseRequest saveRequest = new SavePersonalExpenseRequest(
+            List.of(new SavePersonalExpenseRequest.ItemInfo(item1.getId(), 0))
+        );
+
+        // when, then
+        assertThrows(JeongsanException.class, () -> {
+            personalExpenseService.savePersonalExpense(member4.getId(), team.getId(),
+                expense.getId(), saveRequest);
+        });
+
+        Optional<PersonalExpense> personalExpense = personalExpenseRepository.findByMemberAndItem(
+            member4, item1);
+        assertTrue(personalExpense.isEmpty());
     }
 
     @Test
