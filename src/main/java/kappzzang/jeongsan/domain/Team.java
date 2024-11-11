@@ -79,6 +79,10 @@ public class Team extends BaseEntity {
         this.isClosed = true;
     }
 
+    public void setClosed(Boolean closed) {
+        this.isClosed = closed;
+    }
+
     public String getOwnerKakaoId() {
         return this.teamMemberList.stream()
             .filter(TeamMember::getIsOwner)
@@ -104,11 +108,11 @@ public class Team extends BaseEntity {
         Team team = (Team) o;
         return Objects.equals(id, team.id) && Objects.equals(name, team.name)
             && Objects.equals(subject, team.subject) && Objects.equals(isClosed,
-            team.isClosed) && Objects.equals(teamMemberList, team.teamMemberList);
+            team.isClosed);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, subject, isClosed, teamMemberList);
+        return Objects.hash(id, name, subject, isClosed);
     }
 }

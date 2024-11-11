@@ -106,4 +106,8 @@ public class TestDataUtil {
         entityManager.flush();
     }
 
+    public void clear() {
+        entityManager.clear();
+    }
+
 }
