@@ -204,7 +204,7 @@ class PersonalExpenseServiceTest {
     }
 
     @Test
-    @DisplayName("아이탬의 수량보다 많은 수량이 포함된 요청은 예외가 발생한다.")
+    @DisplayName("아이템의 수량보다 많은 수량이 포함된 요청은 예외가 발생한다.")
     void savePersonalExpenseExceptionTest() {
 
         // given
