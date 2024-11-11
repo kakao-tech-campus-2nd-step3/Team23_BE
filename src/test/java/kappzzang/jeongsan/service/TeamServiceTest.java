@@ -184,10 +184,11 @@ class TeamServiceTest {
     @DisplayName("잘못된 teamId를 이용한 조회로 notfound 발생")
     void getTeam_NotFound() {
         // given
+        given(memberRepository.findById(any(Long.class))).willReturn(Optional.of(new Member()));
         given(teamRepository.findById(any(Long.class))).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> teamService.getTeam(1L))
+        assertThatThrownBy(() -> teamService.getTeam(1L, 1L))
             .isInstanceOf(JeongsanException.class).hasMessageContaining("찾을 수 없습니다.");
         then(teamRepository).should().findById(any(Long.class));
     }
@@ -198,16 +199,19 @@ class TeamServiceTest {
         // given
         String teamName = "Test Team";
         Team team = mock(Team.class);
+        Member member = new Member();
 
         given(team.getId()).willReturn(1L);
         given(team.getName()).willReturn(teamName);
         given(team.getIsClosed()).willReturn(false);
         given(team.getSubject()).willReturn("subject");
         given(team.getTeamMemberList()).willReturn(Collections.emptyList());
+        given(team.isMember(member)).willReturn(true);
         given(teamRepository.findById(1L)).willReturn(Optional.of(team));
+        given(memberRepository.findById(1L)).willReturn(Optional.of(member));
 
         // when
-        TeamResponse actual = teamService.getTeam(1L);
+        TeamResponse actual = teamService.getTeam(1L, 1L);
 
         // then
         assertThat(actual).isNotNull();
