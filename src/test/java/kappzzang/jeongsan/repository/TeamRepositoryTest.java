@@ -48,7 +48,7 @@ class TeamRepositoryTest {
     }
 
     @Test
-    @DisplayName("모임의 isClosed `true`상태인 데이터를 불러온다")
+    @DisplayName("모임의 isClosed `false`상태인 데이터를 불러온다")
     void testFindByIsClosed_withOpenTeam() {
         // given
         Boolean isClosed = false;
