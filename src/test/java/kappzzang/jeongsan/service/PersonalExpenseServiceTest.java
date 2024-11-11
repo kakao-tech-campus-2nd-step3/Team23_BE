@@ -1,5 +1,6 @@
 package kappzzang.jeongsan.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -59,6 +60,7 @@ class PersonalExpenseServiceTest {
     private Team team;
     private Expense expense;
     private Item item1, item2;
+    private PersonalExpense member1_pe;
 
     @BeforeEach
     void setup() {
@@ -101,7 +103,7 @@ class PersonalExpenseServiceTest {
         expense = expenseRepository.save(expense);
         itemRepository.save(item1);
         itemRepository.save(item2);
-        personalExpenseRepository.save(new PersonalExpense(member1, item2, 1, 1000));
+        member1_pe = personalExpenseRepository.save(new PersonalExpense(member1, item2, 1, 1000));
         teamMemberRepository.save(new TeamMember(member1, team, false, true));
         teamMemberRepository.save(new TeamMember(member2, team, false, true));
         teamMemberRepository.save(new TeamMember(member3, team, false, true));
@@ -243,9 +245,13 @@ class PersonalExpenseServiceTest {
     }
 
     @Test
-    @DisplayName("개인 소비 내역 수정 요청 시, 요청 수량이 0이라면 기존 데이터를 삭제한다.")
+    @DisplayName("개인 소비 내역 수정 요청 시 요청 수량이 0이라면 기존 데이터를 삭제하고,"
+        + " 남은 개인 소비 내역 데이터의 totalPrice 값을 업데이트 한다.")
     void updatePersonalExpenseWithZeroQuantityTest() {
         // given
+        member1_pe.update(2, 1500);
+        personalExpenseRepository.save(new PersonalExpense(member3, item2, 2, 1500));
+
         SavePersonalExpenseRequest updateRequest = new SavePersonalExpenseRequest(
             List.of(new SavePersonalExpenseRequest.ItemInfo(item2.getId(), 0))
         );
@@ -255,9 +261,14 @@ class PersonalExpenseServiceTest {
             updateRequest);
 
         // then
-        Optional<PersonalExpense> personalExpense = personalExpenseRepository.findByMemberAndItem(
+        Optional<PersonalExpense> deletedPersonalExpense = personalExpenseRepository.findByMemberAndItem(
             member1, item2);
-        assertTrue(personalExpense.isEmpty());
+        assertTrue(deletedPersonalExpense.isEmpty());
+        Optional<PersonalExpense> updatedPersonalExpense = personalExpenseRepository.findByMemberAndItem(
+            member3, item2);
+        assertThat(updatedPersonalExpense).isNotEmpty();
+        assertThat(updatedPersonalExpense.get().getQuantity()).isEqualTo(2);
+        assertThat(updatedPersonalExpense.get().getTotalPrice()).isEqualTo(2000);
     }
 
     @Test
