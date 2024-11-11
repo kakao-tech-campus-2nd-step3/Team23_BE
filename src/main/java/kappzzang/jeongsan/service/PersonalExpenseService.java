@@ -156,9 +156,14 @@ public class PersonalExpenseService {
     private CalculatedPrice calculatedPrice(List<PersonalExpense> personalExpenses, Item item,
         int requestQuantity) {
 
+        int newPersonalUnitPrice;
         int totalQuantity = personalExpenses.stream().mapToInt(PersonalExpense::getQuantity).sum()
             + requestQuantity;
-        int newPersonalUnitPrice = item.getTotalPrice() / totalQuantity;
+        if (totalQuantity > item.getQuantity()) {
+            newPersonalUnitPrice = item.getTotalPrice() / totalQuantity;
+        } else {
+            newPersonalUnitPrice = item.getUnitPrice();
+        }
         int remainder = item.getTotalPrice() % totalQuantity;
 
         return new CalculatedPrice(totalQuantity, newPersonalUnitPrice, remainder);
