@@ -65,18 +65,11 @@ public class Member extends BaseEntity {
             return false;
         }
         Member member = (Member) o;
-        return Objects.equals(teamMemberList, member.teamMemberList)
-            && Objects.equals(id, member.id) && Objects.equals(kakaoId,
-            member.kakaoId) && Objects.equals(email, member.email)
-            && Objects.equals(nickname, member.nickname) && Objects.equals(
-            profileImage, member.profileImage) && Objects.equals(refreshToken,
-            member.refreshToken) && Objects.equals(kakaoPayInfo, member.kakaoPayInfo);
+        return Objects.equals(id, member.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(teamMemberList, id, kakaoId, email, nickname, profileImage,
-            refreshToken,
-            kakaoPayInfo);
+        return Objects.hash(id);
     }
 }
