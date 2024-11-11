@@ -62,8 +62,11 @@ public class PersonalExpenseService {
     }
 
     private void save(Member member, Item item, int requestQuantity) {
-        List<PersonalExpense> personalExpenses = personalExpenseRepository.findAllByItem(item);
+        if (requestQuantity == 0) {
+            throw new JeongsanException(ErrorType.INVALID_QUANTITY);
+        }
 
+        List<PersonalExpense> personalExpenses = personalExpenseRepository.findAllByItem(item);
         if (personalExpenses.isEmpty()) {
             saveNewPersonalExpense(member, item, requestQuantity,
                 item.getUnitPrice() * requestQuantity);
@@ -84,6 +87,11 @@ public class PersonalExpenseService {
     }
 
     private void update(PersonalExpense personalExpense, Item item, int requestQuantity) {
+        if (requestQuantity == 0) {
+            personalExpenseRepository.delete(personalExpense);
+            return;
+        }
+
         if (requestQuantity == personalExpense.getQuantity()) {
             throw new JeongsanException(ErrorType.NO_CHANGES_NEEDED);
         }
