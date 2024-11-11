@@ -106,13 +106,11 @@ public class Team extends BaseEntity {
             return false;
         }
         Team team = (Team) o;
-        return Objects.equals(id, team.id) && Objects.equals(name, team.name)
-            && Objects.equals(subject, team.subject) && Objects.equals(isClosed,
-            team.isClosed);
+        return Objects.equals(id, team.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, subject, isClosed);
+        return Objects.hash(id);
     }
 }
