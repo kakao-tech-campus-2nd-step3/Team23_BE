@@ -118,7 +118,9 @@ class PersonalExpenseServiceTest {
     }
 
     @Test
-    @DisplayName("개인 소비 내역 저장 - 동시성 테스트")
+    @DisplayName("3명이 동시에 개인 소비 내역을 저장하면,"
+        + "차례로 처리 되도록 하고, "
+        + "마지막에 처리된 요청이 나머지 금액을 부담한다.")
     void personalExpenseSaveConcurrencyTest() throws InterruptedException {
 
         // given
@@ -180,7 +182,8 @@ class PersonalExpenseServiceTest {
     }
 
     @Test
-    @DisplayName("개인 소비 내역 업데이트 테스트")
+    @DisplayName("기존 개인 소비 내역 데이터와 다른 수량으로 요청 시 "
+        + "개인 소비 내역이 업데이트 된다.")
     void updatePersonalExpenseTest() {
 
         // given
@@ -200,7 +203,7 @@ class PersonalExpenseServiceTest {
     }
 
     @Test
-    @DisplayName("개인 소비 내역 저장 - 예외 발생 테스트")
+    @DisplayName("아이탬의 수량보다 많은 수량이 포함된 요청은 예외가 발생한다.")
     void savePersonalExpenseExceptionTest() {
 
         // given
@@ -219,7 +222,7 @@ class PersonalExpenseServiceTest {
     }
 
     @Test
-    @DisplayName("개인 소비 내역 수정 - 동일한 수량으로 요청 시 예외 발생")
+    @DisplayName("기존 개인 소비 내역 데이터와 동일한 수량이 포함된 요청은 예외가 발생한다.")
     void updatePersonalExpenseWithSameQuantityTest() {
         // given
         SavePersonalExpenseRequest request = new SavePersonalExpenseRequest(
@@ -239,7 +242,7 @@ class PersonalExpenseServiceTest {
     }
 
     @Test
-    @DisplayName("개인 소비 내역 수정과 저장 동시 요청 테스트")
+    @DisplayName("개인 소비 내역 저장, 수정 요청이 동시에 요청된다.")
     void concurrentUpdateAndSaveTest() throws InterruptedException {
         // given
         int threadCount = 2;
