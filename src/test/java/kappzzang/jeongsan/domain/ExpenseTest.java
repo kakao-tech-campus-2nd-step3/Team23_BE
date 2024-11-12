@@ -49,8 +49,10 @@ public class ExpenseTest {
         //given
         given(team.getId()).willReturn(VALID_TEAM_ID);
         given(payer.getId()).willReturn(VALID_MEMBER_ID);
+
         //when
         expense.changeStatus(VALID_TEAM_ID, VALID_MEMBER_ID, Status.PENDING);
+
         //then
         assertThat(expense.getStatus()).isEqualTo(Status.PENDING);
     }
@@ -62,8 +64,10 @@ public class ExpenseTest {
         given(team.getId()).willReturn(VALID_TEAM_ID);
         given(payer.getId()).willReturn(VALID_MEMBER_ID);
         expense.changeStatus(VALID_TEAM_ID, VALID_MEMBER_ID, Status.PENDING);
+
         //when
         expense.changeStatus(VALID_TEAM_ID, VALID_MEMBER_ID, Status.ONGOING);
+
         //then
         assertThat(expense.getStatus()).isEqualTo(Status.ONGOING);
     }
@@ -75,8 +79,10 @@ public class ExpenseTest {
         given(team.getId()).willReturn(VALID_TEAM_ID);
         given(payer.getId()).willReturn(VALID_MEMBER_ID);
         expense.changeStatus(VALID_TEAM_ID, VALID_MEMBER_ID, Status.PENDING);
+
         //when
         expense.changeStatus(VALID_TEAM_ID, VALID_MEMBER_ID, Status.COMPLETED);
+
         //then
         assertThat(expense.getStatus()).isEqualTo(Status.COMPLETED);
     }
@@ -88,6 +94,7 @@ public class ExpenseTest {
         given(team.getId()).willReturn(VALID_TEAM_ID);
         given(payer.getId()).willReturn(VALID_MEMBER_ID);
         expense.changeStatus(VALID_TEAM_ID, VALID_MEMBER_ID, Status.PENDING);
+
         //when //then
         assertThatThrownBy(
             () -> expense.changeStatus(VALID_TEAM_ID, VALID_MEMBER_ID, Status.PENDING))
@@ -113,6 +120,7 @@ public class ExpenseTest {
         given(payer.getId()).willReturn(VALID_MEMBER_ID);
         expense.changeStatus(VALID_TEAM_ID, VALID_MEMBER_ID, Status.PENDING);
         expense.changeStatus(VALID_TEAM_ID, VALID_MEMBER_ID, Status.COMPLETED);
+
         //when //then
         assertThatThrownBy(
             () -> expense.changeStatus(VALID_TEAM_ID, VALID_MEMBER_ID, Status.COMPLETED))
@@ -125,6 +133,7 @@ public class ExpenseTest {
     void changeState_NotMatchTeam_throwExpenseInvalidTeamException() {
         //given
         given(team.getId()).willReturn(VALID_TEAM_ID);
+
         //when //then
         assertThatThrownBy(
             () -> expense.changeStatus(INVALID_TEAM_ID, VALID_MEMBER_ID, Status.PENDING))
@@ -138,6 +147,7 @@ public class ExpenseTest {
         //given
         given(team.getId()).willReturn(VALID_TEAM_ID);
         given(payer.getId()).willReturn(VALID_MEMBER_ID);
+
         //when //then
         assertThatThrownBy(
             () -> expense.changeStatus(VALID_TEAM_ID, INVALID_MEMBER_ID, Status.PENDING))

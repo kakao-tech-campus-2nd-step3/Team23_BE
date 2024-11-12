@@ -55,7 +55,7 @@ public class ImageStorageServiceTest {
     }
 
     @ParameterizedTest
-    @DisplayName("잘못된 형식의 이미지를 저장 시도 시, InvalidInputException을 발생 시킨다.")
+    @DisplayName("잘못된 형식의 이미지를 저장 시도 시, InvalidInputException을 발생 시킨다")
     @ValueSource(strings = {TEST_IMAGE_DATA_INVALID, TEST_IMAGE_DATA_BLANK})
     void saveImage_invalidDataList_throwException(String data) {
         //given

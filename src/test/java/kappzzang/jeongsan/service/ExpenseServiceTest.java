@@ -92,7 +92,7 @@ public class ExpenseServiceTest {
     }
 
     @Test
-    @DisplayName("지출 상태 내역을 조회할 때, 존재하지 않는 지출에 대해 요청 시, NotFoundException을 발생 시킨다.")
+    @DisplayName("지출 상태 내역을 조회할 때, 존재하지 않는 지출에 대해 요청 시, NotFoundException을 발생 시킨다")
     void getPersonalExpenseDetail_NoSuchExpense_ThrowNotFoundException() {
         //given
         given(expenseRepository.findById(TEST_EXPENSE_ID)).willReturn(Optional.empty());
