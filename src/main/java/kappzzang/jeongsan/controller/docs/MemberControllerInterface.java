@@ -43,8 +43,7 @@ public interface MemberControllerInterface {
     })
     @ApiResponse(responseCode = "200", description = "액세스 토큰 재발급 성공")
     @ApiErrorTypeExample({ErrorType.USER_NOT_FOUND, ErrorType.REFRESH_TOKEN_INVALID})
-    ResponseEntity<JeongsanApiResponse<RefreshResponse>> refresh(Long memberId,
-        RefreshRequest refreshRequest);
+    ResponseEntity<JeongsanApiResponse<RefreshResponse>> refresh(RefreshRequest refreshRequest);
 
     @Operation(summary = "모임 초대 수락 API", description = "모임 초대 링크를 받은 사용자가 모임 참여를 수락하여 모임에 참여하도록 하는 API")
     @ApiResponse(responseCode = "204", description = "모임 초대 수락, 모임 참여 성공")
