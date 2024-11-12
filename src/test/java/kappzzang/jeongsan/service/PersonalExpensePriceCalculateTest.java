@@ -92,14 +92,16 @@ public class PersonalExpensePriceCalculateTest {
     void whenExpenseStateChangeToPending_ThenUpdateAllPersonalExpenseTotalPrice(
         List<Scenario> scenarios) {
 
+        //given
         createPersonalExpensesWithScenario(scenarios);
         List<ExpenseId> expenseIds = List.of(new ExpenseId(expense.getId()));
         ChangeExpensesStateRequest request = new ChangeExpensesStateRequest(Status.PENDING,
             expenseIds);
 
+        //when
         expenseService.updateExpensesState(request, teamId, payerId);
 
-        // Then
+        //then
         List<PersonalExpense> updatedExpenses = personalExpenseRepository.findAllByItemIds(
             expense.getItemIds());
 
@@ -170,11 +172,13 @@ public class PersonalExpensePriceCalculateTest {
     void whenExpenseStateChangeToPending_WithNotSelectedItem_ThrowNotSelectedItemException(
         List<Scenario> scenarios, String description) {
 
+        //given
         createPersonalExpensesWithScenario(scenarios);
         List<ExpenseId> expenseIds = List.of(new ExpenseId(expense.getId()));
         ChangeExpensesStateRequest request = new ChangeExpensesStateRequest(Status.PENDING,
             expenseIds);
 
+        //when //then
         assertThatThrownBy(
             () -> expenseService.updateExpensesState(request, teamId, payerId))
             .isInstanceOf(JeongsanException.class)
