@@ -49,7 +49,7 @@ public interface ExpenseControllerInterface {
         @Parameter(name = "expenseId", description = "선택한 아이템이 속한 지출의 ID"),
     })
     @ApiResponse(responseCode = "200", description = "개인 소비 내역 저장 성공", content = @Content)
-    @ApiErrorTypeExample({ErrorType.INVALID_QUANTITY, ErrorType.ALREADY_CHECKED_ITEM,
+    @ApiErrorTypeExample({ErrorType.INVALID_QUANTITY, ErrorType.NO_CHANGES_NEEDED,
         ErrorType.TEAM_NOT_FOUND, ErrorType.EXPENSE_NOT_FOUND, ErrorType.ITEM_NOT_FOUND,
         ErrorType.TEAM_MEMBER_NOT_FOUND})
     ResponseEntity<JeongsanApiResponse<Void>> savePersonalExpense(Long teamId,
