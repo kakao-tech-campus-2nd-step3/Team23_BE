@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.PersonalExpense;
 import kappzzang.jeongsan.domain.Team;
+import kappzzang.jeongsan.domain.TeamMember;
 import kappzzang.jeongsan.dto.request.CreateTeamRequest;
 import kappzzang.jeongsan.dto.request.TransferTargetRequest;
 import kappzzang.jeongsan.dto.response.CreateTeamResponse;
@@ -22,9 +23,11 @@ import kappzzang.jeongsan.repository.PersonalExpenseRepository;
 import kappzzang.jeongsan.repository.TeamMemberRepository;
 import kappzzang.jeongsan.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TeamService {
@@ -36,7 +39,26 @@ public class TeamService {
 
     @Transactional(readOnly = true)
     public List<TeamResponse> getTeamsByIsClosed(Boolean isClosed, Long memberId) {
-        return teamRepository.findByIsClosed(memberId, isClosed)
+        List<Team> teams = teamRepository.findByIsClosed(memberId, isClosed);
+
+        for (Team team : teams) {
+            log.info("Team ID: {}, Name: {}, Subject: {}, isClosed: {}",
+                        team.getId(), team.getName(), team.getSubject(), team.getIsClosed());
+
+            for (TeamMember teamMember : team.getTeamMemberList()) {
+                log.info("  TeamMember ID: {}, isOwner: {}, isInviteAccepted: {}",
+                            teamMember.getId(), teamMember.getIsOwner(), teamMember.getIsInviteAccepted());
+
+                Member member = teamMember.getMember();
+                log.info("    Member ID: {}, KakaoId: {}, Nickname: {}",
+                            member.getId(), member.getKakaoId(), member.getNickname());
+            }
+        }
+
+        log.info("getTeamsByIsClosed teams: {}", teams);
+        log.info("getTeamsByIsClosed teamMembers: {}", teams);
+
+        return teams
             .stream()
             .map(TeamResponse::from)
             .toList();
