@@ -49,9 +49,9 @@ public class MemberController implements MemberControllerInterface {
     @Override
     @PostMapping("/token/refresh")
     public ResponseEntity<JeongsanApiResponse<RefreshResponse>> refresh(
-        @AuthenticationPrincipal Long memberId, @Valid @RequestBody RefreshRequest refreshRequest) {
+        @Valid @RequestBody RefreshRequest refreshRequest) {
         return JeongsanApiResponse.success(SuccessType.ACCESS_TOKEN_REISSUED,
-            memberService.refresh(memberId, refreshRequest));
+            memberService.refresh(refreshRequest));
     }
 
     @Override
