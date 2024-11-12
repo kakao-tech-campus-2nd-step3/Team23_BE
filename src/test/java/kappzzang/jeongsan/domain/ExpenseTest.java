@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 public class ExpenseTest {
@@ -63,7 +64,7 @@ public class ExpenseTest {
         //given
         given(team.getId()).willReturn(VALID_TEAM_ID);
         given(payer.getId()).willReturn(VALID_MEMBER_ID);
-        expense.changeStatus(VALID_TEAM_ID, VALID_MEMBER_ID, Status.PENDING);
+        ReflectionTestUtils.setField(expense, "status", Status.PENDING);
 
         //when
         expense.changeStatus(VALID_TEAM_ID, VALID_MEMBER_ID, Status.ONGOING);
@@ -78,7 +79,7 @@ public class ExpenseTest {
         //given
         given(team.getId()).willReturn(VALID_TEAM_ID);
         given(payer.getId()).willReturn(VALID_MEMBER_ID);
-        expense.changeStatus(VALID_TEAM_ID, VALID_MEMBER_ID, Status.PENDING);
+        ReflectionTestUtils.setField(expense, "status", Status.PENDING);
 
         //when
         expense.changeStatus(VALID_TEAM_ID, VALID_MEMBER_ID, Status.COMPLETED);
@@ -91,9 +92,7 @@ public class ExpenseTest {
     @Test
     void changeState_PendingToPending_throwAlreadyPendingException() {
         //given
-        given(team.getId()).willReturn(VALID_TEAM_ID);
-        given(payer.getId()).willReturn(VALID_MEMBER_ID);
-        expense.changeStatus(VALID_TEAM_ID, VALID_MEMBER_ID, Status.PENDING);
+        ReflectionTestUtils.setField(expense, "status", Status.PENDING);
 
         //when //then
         assertThatThrownBy(
@@ -116,10 +115,7 @@ public class ExpenseTest {
     @Test
     void changeState_CompleteToComplete_throwAlreadyCompleteException() {
         //given
-        given(team.getId()).willReturn(VALID_TEAM_ID);
-        given(payer.getId()).willReturn(VALID_MEMBER_ID);
-        expense.changeStatus(VALID_TEAM_ID, VALID_MEMBER_ID, Status.PENDING);
-        expense.changeStatus(VALID_TEAM_ID, VALID_MEMBER_ID, Status.COMPLETED);
+        ReflectionTestUtils.setField(expense, "status", Status.COMPLETED);
 
         //when //then
         assertThatThrownBy(
