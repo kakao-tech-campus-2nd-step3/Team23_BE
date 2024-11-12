@@ -73,7 +73,7 @@ public class ExpenseController implements ExpenseControllerInterface {
         @PathVariable("teamId") Long teamId, @PathVariable("expenseId") Long expenseId,
         @AuthenticationPrincipal Long memberId,
         @Valid @RequestBody SavePersonalExpenseRequest personalExpense) {
-        personalExpenseService.savePersonalExpense(memberId, teamId, expenseId, personalExpense);
+        personalExpenseService.saveOrUpdatePersonalExpense(memberId, teamId, expenseId, personalExpense);
         return JeongsanApiResponse.success(SuccessType.PERSONAL_EXPENSE_SAVED);
     }
 
