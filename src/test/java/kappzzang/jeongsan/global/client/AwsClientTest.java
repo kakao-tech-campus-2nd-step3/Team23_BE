@@ -8,7 +8,7 @@ import static org.mockito.BDDMockito.then;
 
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.util.stream.Stream;
 import kappzzang.jeongsan.global.client.aws.AwsClient;
 import kappzzang.jeongsan.global.client.aws.AwsS3Properties;
@@ -127,7 +127,8 @@ public class AwsClientTest {
         //given
         given(mockS3Presigner.presignGetObject(any(GetObjectPresignRequest.class))).willReturn(
             mockPresignedGetObjectRequest);
-        given(mockPresignedGetObjectRequest.url()).willReturn(new URL(TEST_PRESIGNED_URL));
+        given(mockPresignedGetObjectRequest.url()).willReturn(
+            URI.create(TEST_PRESIGNED_URL).toURL());
         given(mockProperties.urlExpirationMillis()).willReturn(TEST_EXPIRES_MILLIS);
 
         //when
