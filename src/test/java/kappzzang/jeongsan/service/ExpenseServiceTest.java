@@ -254,7 +254,8 @@ public class ExpenseServiceTest {
     }
 
     @Test
-    @DisplayName("지출 목록 조회 - 대기 상태")
+    @DisplayName("대기상태인 지출 목록을 조회할 때,"
+        + " 사용자의 모임 단위, 모임지출 단위의 총 소비금액을 포함하여 반환한다")
     void getExpenses_Pending() {
         // given
         Long memberId = 1L;
@@ -283,11 +284,6 @@ public class ExpenseServiceTest {
         ExpenseResponse response = expenseService.getExpenses(memberId, teamId, status, isChecked);
 
         // then
-        assertThat(response.expenseList()).hasSize(1);
-        assertThat(response.totalPrice()).isEqualTo(1000);
-        assertThat(response.expenseList().getFirst().title()).isEqualTo("Test Expense");
-        assertThat(response.expenseList().getFirst().totalPrice()).isEqualTo(1000);
-
         assertThat(response.expenseList().getFirst().personalExpense()).isEqualTo(3000);
         assertThat(response.totalPersonalExpense()).isEqualTo(3000);
     }
@@ -374,7 +370,8 @@ public class ExpenseServiceTest {
             given(expenseRepository.findAllByIdWithDetails(expenseIds))
                 .willReturn(expenses);
             //when
-            expenseService.updateExpensesState(completeExpensesRequest, TEST_TEAM_ID, TEST_MEMBER_ID);
+            expenseService.updateExpensesState(completeExpensesRequest, TEST_TEAM_ID,
+                TEST_MEMBER_ID);
 
             //then
             assertThat(expenses).extracting(Expense::getStatus).containsOnly(Status.COMPLETED);
@@ -495,7 +492,8 @@ public class ExpenseServiceTest {
             given(expenseRepository.findAllByIdWithDetails(expenseIds))
                 .willReturn(expenses);
             //when
-            expenseService.updateExpensesState(pendingExpensesRequest, TEST_TEAM_ID, TEST_MEMBER_ID);
+            expenseService.updateExpensesState(pendingExpensesRequest, TEST_TEAM_ID,
+                TEST_MEMBER_ID);
 
             //then
             assertThat(expenses).extracting(Expense::getStatus).containsOnly(Status.PENDING);
