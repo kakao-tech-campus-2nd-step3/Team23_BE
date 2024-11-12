@@ -69,7 +69,7 @@ public class MemberServiceTest {
         given(memberRepository.findByEmail(anyString())).willReturn(
             Optional.of(createMember(null)));
         given(jwtUtil.createAccessToken(any())).willReturn(TEST_ACCESS_TOKEN);
-        given(jwtUtil.createRefreshToken()).willReturn(TEST_REFRESH_TOKEN);
+        given(jwtUtil.createRefreshToken(any())).willReturn(TEST_REFRESH_TOKEN);
 
         // when
         LoginResponse loginResponse = memberService.login(new LoginRequest(anyString()));
@@ -105,7 +105,7 @@ public class MemberServiceTest {
         given(memberRepository.findByEmail(anyString())).willReturn(Optional.empty());
         given(memberRepository.save(any(Member.class))).willReturn(createMember(null));
         given(jwtUtil.createAccessToken(any())).willReturn(TEST_ACCESS_TOKEN);
-        given(jwtUtil.createRefreshToken()).willReturn(TEST_REFRESH_TOKEN);
+        given(jwtUtil.createRefreshToken(any())).willReturn(TEST_REFRESH_TOKEN);
 
         // when
         LoginResponse loginResponse = memberService.register(registerRequest);
