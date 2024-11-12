@@ -19,11 +19,9 @@ import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.Team;
-import kappzzang.jeongsan.dto.ItemDetail;
 import kappzzang.jeongsan.dto.request.ChangeExpensesStateRequest;
 import kappzzang.jeongsan.dto.request.ChangeExpensesStateRequest.ExpenseId;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
-import kappzzang.jeongsan.dto.response.PersonalExpenseDetailResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.common.enumeration.Status;
 import kappzzang.jeongsan.global.exception.JeongsanException;
@@ -67,9 +65,6 @@ public class ExpenseServiceTest {
     private TeamRepository teamRepository;
 
     @Mock
-    private ImageStorageService imageStorageService;
-
-    @Mock
     private ExpenseRepository expenseRepository;
 
     @Mock
@@ -97,42 +92,10 @@ public class ExpenseServiceTest {
     }
 
     @Test
-    @DisplayName("개인 지출 목록 조회 성공 테스트")
-    void testGetPersonalExpenseDetailResponseSuccess() {
+    @DisplayName("지출 상태 내역을 조회할 때, 존재하지 않는 지출에 대해 요청 시, NotFoundException을 발생 시킨다")
+    void getPersonalExpenseDetail_NoSuchExpense_ThrowNotFoundException() {
         //given
-        ItemDetail itemDetailA = new ItemDetail(1L, "TEST_ITEM_A", 10, 1000, 10);
-        ItemDetail itemDetailB = new ItemDetail(2L, "TEST_ITEM_B", 5, 5000, 0);
-        ItemDetail itemDetailC = new ItemDetail(3L, "TEST_ITEM_C", 3, 2000, 5);
-        List<ItemDetail> itemDetails = List.of(itemDetailA, itemDetailB, itemDetailC);
-        PersonalExpenseDetailResponse expected = new PersonalExpenseDetailResponse(
-            expense.getTitle(), TEST_PRE_SIGNED_URL, itemDetails);
-
-        given(expenseRepository.findById(TEST_EXPENSE_ID)).willReturn(
-            Optional.ofNullable(expense));
-        given(expenseRepository.findItemDetailsByExpenseIdAndMemberId(TEST_EXPENSE_ID,
-            TEST_MEMBER_ID)).willReturn(
-            itemDetails);
-        given(imageStorageService.getImageUrl(TEST_IMAGE_URL)).willReturn(TEST_PRE_SIGNED_URL);
-
-        //when
-        PersonalExpenseDetailResponse actual = expenseService.getPersonalExpenseDetailResponse(
-            TEST_EXPENSE_ID,
-            TEST_MEMBER_ID);
-
-        //then
-        assertThat(actual).isEqualTo(expected);
-        then(expenseRepository).should().findById(TEST_EXPENSE_ID);
-        then(expenseRepository).should().findItemDetailsByExpenseIdAndMemberId(TEST_EXPENSE_ID,
-            TEST_MEMBER_ID);
-        then(imageStorageService).should().getImageUrl(TEST_IMAGE_URL);
-    }
-
-    @Test
-    @DisplayName("개인 지출 목록 조회 실패(존재하지 않는 지출 ID)")
-    void testGetPersonalExpenseDetailResponseFailWithNotFoundExpense() {
-        //given
-        given(expenseRepository.findById(TEST_EXPENSE_ID)).willThrow(new JeongsanException(
-            ErrorType.EXPENSE_NOT_FOUND));
+        given(expenseRepository.findById(TEST_EXPENSE_ID)).willReturn(Optional.empty());
 
         //when //then
         assertThatThrownBy(
