@@ -39,7 +39,7 @@ public class ImageStorageServiceTest {
     private ImageStorageService imageStorageService;
 
     @Test
-    @DisplayName("이미지 저장 성공 테스트")
+    @DisplayName("유효한 이미지를 저장 시도 시, 저장 경로를 반환한다.")
     void saveImage_validData_returnSavedFileUrl() {
         //given
         Image imageForSuccess = new Image(TEST_IMAGE_FORMAT, null, TEST_IMAGE_DATA,
@@ -55,7 +55,7 @@ public class ImageStorageServiceTest {
     }
 
     @ParameterizedTest
-    @DisplayName("이미지 저장 성공 실패 테스트(잘못된 입력)")
+    @DisplayName("잘못된 형식의 이미지를 저장 시도 시, InvalidInputException을 발생 시킨다.")
     @ValueSource(strings = {TEST_IMAGE_DATA_INVALID, TEST_IMAGE_DATA_BLANK})
     void saveImage_invalidDataList_throwException(String data) {
         //given
