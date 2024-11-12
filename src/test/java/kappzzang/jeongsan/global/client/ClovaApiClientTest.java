@@ -15,6 +15,7 @@ import kappzzang.jeongsan.global.client.dto.response.GeneralOcrResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -59,6 +60,7 @@ public class ClovaApiClientTest {
         when(clovaOcrProperties.general()).thenReturn(new ClovaOcrProperties.GeneralOcr(TEST_URL));
     }
 
+    @DisplayName("Clova OCR API가 5xx 에러를 반환할 때 재시도 후 외부 API 에러를 반환한다")
     @Test
     void ocrApi_5xxResponse_failsAfterRetries() {
         // Given
@@ -76,6 +78,7 @@ public class ClovaApiClientTest {
         mockRestServiceServer.verify();
     }
 
+    @DisplayName("Clova OCR API가 타임아웃일 때 재시도 후 타임아웃 에러를 반환한다")
     @Test
     void ocrApi_timeout_failsAfterRetries() {
         // Given
@@ -96,6 +99,7 @@ public class ClovaApiClientTest {
         mockRestServiceServer.verify();
     }
 
+    @DisplayName("Clova OCR API가 성공하면 텍스트 인식 결과를 반환한다")
     @Test
     void ocrApi_successfulResponse_returnsGeneralOcrResponse() {
         // Given
