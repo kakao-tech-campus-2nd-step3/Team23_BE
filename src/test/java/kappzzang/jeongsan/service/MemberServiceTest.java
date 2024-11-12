@@ -125,7 +125,7 @@ public class MemberServiceTest {
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(createMember(null)));
 
         // when & then
-        assertThatThrownBy(() -> memberService.refresh(anyLong(), refreshRequest))
+        assertThatThrownBy(() -> memberService.refresh(refreshRequest))
             .isInstanceOf(JeongsanException.class)
             .hasFieldOrPropertyWithValue("errorType", ErrorType.REFRESH_TOKEN_INVALID);
     }
@@ -139,7 +139,7 @@ public class MemberServiceTest {
         given(jwtUtil.validateRefreshToken(TEST_REFRESH_TOKEN)).willReturn(false);
 
         // when & then
-        assertThatThrownBy(() -> memberService.refresh(anyLong(), refreshRequest))
+        assertThatThrownBy(() -> memberService.refresh(refreshRequest))
             .isInstanceOf(JeongsanException.class)
             .hasFieldOrPropertyWithValue("errorType", ErrorType.REFRESH_TOKEN_INVALID);
     }
@@ -154,7 +154,7 @@ public class MemberServiceTest {
         given(jwtUtil.createAccessToken(anyLong())).willReturn(TEST_ACCESS_TOKEN);
 
         // when
-        RefreshResponse refreshResponse = memberService.refresh(anyLong(), refreshRequest);
+        RefreshResponse refreshResponse = memberService.refresh(refreshRequest);
 
         // then
         assertThat(refreshResponse.tokenType()).isEqualTo(BEARER);

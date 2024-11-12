@@ -63,10 +63,11 @@ public class MemberService {
     }
 
     @Transactional
-    public RefreshResponse refresh(Long memberId, RefreshRequest refreshRequest) {
+    public RefreshResponse refresh(RefreshRequest refreshRequest) {
+        String refreshToken = refreshRequest.refreshToken();
+        Long memberId = jwtUtil.getMemberId(refreshToken);
         Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new JeongsanException(USER_NOT_FOUND));
-        String refreshToken = refreshRequest.refreshToken();
         if (!refreshToken.equals(member.getRefreshToken())
             || !jwtUtil.validateRefreshToken(refreshToken)) {
             throw new JeongsanException(REFRESH_TOKEN_INVALID);
