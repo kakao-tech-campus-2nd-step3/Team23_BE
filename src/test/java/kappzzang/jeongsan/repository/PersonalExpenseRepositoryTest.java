@@ -25,6 +25,7 @@ class PersonalExpenseRepositoryTest {
     Member member1, member2;
     Expense expense1, expense2;
     PersonalExpense personalExpense1, personalExpense2, personalExpense3;
+    private List<Long> itemIds;
     @Autowired
     private PersonalExpenseRepository personalExpenseRepository;
     @Autowired
@@ -39,6 +40,7 @@ class PersonalExpenseRepositoryTest {
         Item item2 = testDataUtil.createAndPersistItem("item2", 10, 2000);
         List<Item> items1 = List.of(item1);
         List<Item> items2 = List.of(item2);
+        itemIds = List.of(item1.getId(), item2.getId());
         member1 = testDataUtil.createAndPersistMember("member1", kakaoPayInfo);
         member2 = testDataUtil.createAndPersistMember("member2", kakaoPayInfo);
         expense1 = testDataUtil.createAndPersistExpense(team, member1, category, items1);
@@ -63,4 +65,22 @@ class PersonalExpenseRepositoryTest {
         assertThat(results).containsExactlyInAnyOrder(personalExpense1, personalExpense2,
             personalExpense3);
     }
+
+    @DisplayName("아이템 Id 목록으로 회원과 아이템이 포함된 개인 지출 목록을 조회한다")
+    @Test
+    void findAllByItemIds_WithItemIds_ReturnPersonalExpenses() {
+        //when
+        List<PersonalExpense> actual = personalExpenseRepository.findAllByItemIds(itemIds);
+
+        //then
+        assertThat(actual)
+            .hasSize(3)
+            .allSatisfy(personalExpense -> {
+                assertThat(personalExpense.getId()).isNotNull();
+                assertThat(personalExpense.getMember()).isNotNull();
+                assertThat(personalExpense.getItem()).isNotNull();
+                assertThat(itemIds).contains(personalExpense.getItem().getId());
+            });
+    }
+
 }

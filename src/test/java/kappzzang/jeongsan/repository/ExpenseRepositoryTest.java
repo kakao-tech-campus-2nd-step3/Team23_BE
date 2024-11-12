@@ -12,8 +12,11 @@ import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.PersonalExpense;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.ItemDetail;
+import kappzzang.jeongsan.global.common.enumeration.ErrorType;
+import kappzzang.jeongsan.global.exception.JeongsanException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -34,7 +37,10 @@ public class ExpenseRepositoryTest {
     private TestDataUtil testDataUtil;
 
     private Expense expense;
+    private List<Expense> expenses;
     private List<Member> members;
+    private List<Long> expenseIds;
+    private Long payerId;
 
     @BeforeEach
     void setUp() {
@@ -43,6 +49,7 @@ public class ExpenseRepositoryTest {
         Member memberA = testDataUtil.createAndPersistMember("TEST_USER_A", kakaoPayInfo);
         Member memberB = testDataUtil.createAndPersistMember("TEST_USER_B", kakaoPayInfo);
         Member memberC = testDataUtil.createAndPersistMember("TEST_USER_C", kakaoPayInfo);
+        Member payer = testDataUtil.createAndPersistMember("TEST_PAYER", kakaoPayInfo);
         members = List.of(memberA, memberB, memberC);
 
         Team team = testDataUtil.createAndPersistTeam();
@@ -51,6 +58,7 @@ public class ExpenseRepositoryTest {
         Item itemB = testDataUtil.createAndPersistItem("TEST_ITEM_B", 5, 3000);
         Item itemC = testDataUtil.createAndPersistItem("TEST_ITEM_C", 15, 4000);
         Item itemD = testDataUtil.createAndPersistItem("TEST_ITEM_D", 3, 1000);
+        Item itemE = testDataUtil.createAndPersistItem("TEST_ITEM_E", 1, 1000);
 
         PersonalExpense personalExpenseA = testDataUtil.createAndPersistPersonalExpense(memberA, 5,
             itemA, 0);
@@ -66,6 +74,16 @@ public class ExpenseRepositoryTest {
         Category category = testDataUtil.createAndPersistCategory();
 
         expense = testDataUtil.createAndPersistExpense(team, memberA, category, items);
+
+        Expense expense1 = testDataUtil.createAndPersistExpense(team, payer, category,
+            List.of(itemE));
+        Expense expense2 = testDataUtil.createAndPersistExpense(team, payer, category,
+            List.of(itemE));
+        Expense expense3 = testDataUtil.createAndPersistExpense(team, payer, category,
+            List.of(itemE));
+        expenses = List.of(expense1, expense2, expense3);
+        payerId = payer.getId();
+        expenseIds = List.of(expense1.getId(), expense2.getId(), expense3.getId());
     }
 
     @MethodSource("PersonalExpenseCaseProvider")
@@ -92,6 +110,44 @@ public class ExpenseRepositoryTest {
                 }
             });
     }
+
+
+    @DisplayName("지출 Id 리스트로 지출과 연관정보를 함께 조회할 수 있다")
+    @Test
+    void findAllByIdWithDetails_ValidIds_ReturnsExpenses() {
+        //when
+        List<Expense> actual = expenseRepository.findAllByIdWithDetails(expenseIds);
+
+        //then
+        assertThat(actual).hasSize(expenses.size())
+            .allMatch(e -> e.getPayer().getId().equals(payerId));
+    }
+
+    @DisplayName("존재하지 않는 지출 Id로 조회시 빈 리스트를 반환한다")
+    @Test
+    void findAllByIdWithDetails_NonExistentIds_ShouldReturnEmptyList() {
+        //given
+        List<Long> invalidIds = List.of(100L, 200L, 300L);
+
+        //when
+        List<Expense> actual = expenseRepository.findAllByIdWithDetails(invalidIds);
+
+        //then
+        assertThat(actual).hasSize(0);
+    }
+
+    @DisplayName("지출 ID로 아이템 목록이 포함된 지출을 조회한다")
+    @Test
+    void findExpenseByIdWithItem_ValidId_ReturnsExpense() {
+        //when
+        Expense actual = expenseRepository.findExpenseByIdWithItem(expense.getId())
+            .orElseThrow(() -> new JeongsanException(ErrorType.EXPENSE_NOT_FOUND));
+
+        //then
+        assertThat(actual.getId()).isEqualTo(expense.getId());
+        assertThat(actual.getItems()).hasSize(TEST_ITEM_QUANTITY);
+    }
+
 
     static Stream<Arguments> PersonalExpenseCaseProvider() {
         return Stream.of(
