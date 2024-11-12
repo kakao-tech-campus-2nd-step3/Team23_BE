@@ -30,17 +30,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PersonalExpenseService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
     private final ExpenseRepository expenseRepository;
     private final ItemRepository itemRepository;
     private final PersonalExpenseRepository personalExpenseRepository;
     private final TeamMemberRepository teamMemberRepository;
-
     private final Map<Long, Object> locks = new ConcurrentHashMap<>();
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Transactional
     public void savePersonalExpense(Long memberId, Long teamId, Long expenseId,
@@ -55,7 +53,8 @@ public class PersonalExpenseService {
                 for (ItemInfo itemInfo : request.items()) {
                     int requestQuantity = itemInfo.quantity();
                     Item item = validateAndGetItem(itemInfo);
-                    Optional<PersonalExpense> personalExpenseOpt = personalExpenseRepository.findByMemberAndItem(member, item);
+                    Optional<PersonalExpense> personalExpenseOpt = personalExpenseRepository.findByMemberAndItem(
+                        member, item);
 
                     if (personalExpenseOpt.isPresent()) {
                         update(personalExpenseOpt.get(), item, requestQuantity);
@@ -104,8 +103,10 @@ public class PersonalExpenseService {
         if (requestQuantity == 0) {
             personalExpenseRepository.delete(personalExpense);
             List<PersonalExpense> personalExpenses = personalExpenseRepository.findAllByItem(item);
-            CalculatedPrice calculatedPrice = calculatedPrice(personalExpenses, item, requestQuantity);
-            updateExistingPersonalExpenses(personalExpenses, calculatedPrice.newPersonalUnitPrice());
+            CalculatedPrice calculatedPrice = calculatedPrice(personalExpenses, item,
+                requestQuantity);
+            updateExistingPersonalExpenses(personalExpenses,
+                calculatedPrice.newPersonalUnitPrice());
             return;
         }
 
@@ -119,6 +120,8 @@ public class PersonalExpenseService {
 
         CalculatedPrice calculatedPrice = calculatedPrice(personalExpenses, item, requestQuantity);
         updateExistingPersonalExpenses(personalExpenses, calculatedPrice.newPersonalUnitPrice());
+        personalExpense.update(requestQuantity,
+            requestQuantity * calculatedPrice.newPersonalUnitPrice() + calculatedPrice.remainder());
     }
 
     private void updateExistingPersonalExpenses(List<PersonalExpense> personalExpenses,

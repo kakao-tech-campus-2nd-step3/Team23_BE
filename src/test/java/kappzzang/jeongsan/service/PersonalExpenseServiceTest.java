@@ -186,10 +186,11 @@ class PersonalExpenseServiceTest {
 
     @Test
     @DisplayName("기존 개인 소비 내역 데이터와 다른 수량으로 요청 시 "
-        + "개인 소비 내역이 업데이트 된다.")
+        + "개인 소비 내역이 업데이트 되고, 관련된 다른 데이터를 업데이트 한다")
     void updatePersonalExpenseTest() {
 
         // given
+        personalExpenseRepository.save(new PersonalExpense(member3, item2, 2, 2000));
         SavePersonalExpenseRequest request = new SavePersonalExpenseRequest(
             List.of(new SavePersonalExpenseRequest.ItemInfo(item2.getId(), 2)));
 
@@ -198,11 +199,12 @@ class PersonalExpenseServiceTest {
             request);
 
         // then
-        PersonalExpense savedExpenses = personalExpenseRepository.findByMemberAndItem(member1,
-            item2).get();
+        List<PersonalExpense> savedExpenses = personalExpenseRepository.findAllByItem(item2);
 
-        assertEquals(2, savedExpenses.getQuantity());
-        assertEquals(2000, savedExpenses.getTotalPrice());
+        for (PersonalExpense pe : savedExpenses) {
+            assertThat(pe.getQuantity()).isEqualTo(2);
+            assertThat(pe.getTotalPrice()).isEqualTo(1500);
+        }
     }
 
     @Test
