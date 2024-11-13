@@ -157,7 +157,7 @@ public class PersonalExpensePriceCalculateTest {
                     new Scenario(ITEM_A, MEMBER_C, 1, 668),  // MemberC 1개 선택 -> 668원
 
                     // ItemB 선택
-                    new Scenario(ITEM_B, MEMBER_B, 1, 3000), // MemberB 1개 선택 -> 3000원
+                    new Scenario(ITEM_B, MEMBER_B, 3, 3000), // MemberB 1개 선택 -> 3000원
 
                     // ItemC 선택
                     new Scenario(ITEM_C, MEMBER_B, 2, 6000), // MemberB 2개 선택 -> 6000원

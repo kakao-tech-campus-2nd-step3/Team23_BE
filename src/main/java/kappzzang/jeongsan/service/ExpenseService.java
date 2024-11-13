@@ -194,7 +194,7 @@ public class ExpenseService {
             .mapToInt(PersonalExpense::getQuantity)
             .sum();
 
-        if (totalSelectionCount == 0) {
+        if (totalSelectionCount < item.getQuantity()) {
             throw new JeongsanException(ErrorType.EXPENSE_ITEM_NOT_SELECTED);
         }
 
