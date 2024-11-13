@@ -36,7 +36,8 @@ public class TeamService {
 
     @Transactional(readOnly = true)
     public List<TeamResponse> getTeamsByIsClosed(Boolean isClosed, Long memberId) {
-        return teamRepository.findByIsClosed(memberId, isClosed)
+        List<Team> teams = teamRepository.findByIsClosed(memberId, isClosed);
+        return teams
             .stream()
             .map(TeamResponse::from)
             .toList();
@@ -49,7 +50,7 @@ public class TeamService {
         Team team = teamRepository.findById(id)
             .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_NOT_FOUND));
 
-        if(!team.isMember(member)) {
+        if (!team.isMember(member)) {
             throw new JeongsanException(ErrorType.USER_NOT_FOUND);
         }
 

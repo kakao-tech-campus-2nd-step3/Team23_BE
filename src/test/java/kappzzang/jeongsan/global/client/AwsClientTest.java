@@ -8,7 +8,7 @@ import static org.mockito.BDDMockito.then;
 
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.util.stream.Stream;
 import kappzzang.jeongsan.global.client.aws.AwsClient;
 import kappzzang.jeongsan.global.client.aws.AwsS3Properties;
@@ -85,7 +85,7 @@ public class AwsClientTest {
     }
 
     @Test
-    @DisplayName("이미지 업로드 성공 테스트")
+    @DisplayName("유효한 이미지 요청으로 업로드하면 저장된 파일 경로를 반환한다")
     void uploadImage_successfulRequest_returnSavedFilePath() {
         //given
         given(
@@ -101,7 +101,7 @@ public class AwsClientTest {
         then(mockS3Client).should().putObject(any(PutObjectRequest.class), any(RequestBody.class));
     }
 
-    @DisplayName("이미지 업로드 실패 테스트(발생 가능한 모든 예외)")
+    @DisplayName("AWS S3 업로드 중 예외가 발생하면 외부 API 에러를 반환한다")
     @ParameterizedTest
     @ValueSource(classes = {NoSuchBucketException.class, NoSuchKeyException.class,
         SdkClientException.class,
@@ -122,12 +122,13 @@ public class AwsClientTest {
     }
 
     @Test
-    @DisplayName("이미지 조회 성공 테스트")
+    @DisplayName("유효한 파일 경로로 조회하면 서명된 URL을 반환한다")
     void getSignedUrl_successfulRequest_returnPresignedUrl() throws MalformedURLException {
         //given
         given(mockS3Presigner.presignGetObject(any(GetObjectPresignRequest.class))).willReturn(
             mockPresignedGetObjectRequest);
-        given(mockPresignedGetObjectRequest.url()).willReturn(new URL(TEST_PRESIGNED_URL));
+        given(mockPresignedGetObjectRequest.url()).willReturn(
+            URI.create(TEST_PRESIGNED_URL).toURL());
         given(mockProperties.urlExpirationMillis()).willReturn(TEST_EXPIRES_MILLIS);
 
         //when
@@ -140,7 +141,7 @@ public class AwsClientTest {
         then(mockS3Presigner).should().presignGetObject(any(GetObjectPresignRequest.class));
     }
 
-    @DisplayName("이미지 조회 실패 테스트(발생 가능한 모든 예외)")
+    @DisplayName("URL 생성 중 예외가 발생하면 각 예외에 맞는 에러를 반환한다")
     @ParameterizedTest
     @MethodSource("exceptionProvider")
     void getSignedUrl_invalidRequest_throwExceptions(Class<? extends Exception> exception,
