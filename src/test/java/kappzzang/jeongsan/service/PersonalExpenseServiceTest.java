@@ -3,10 +3,10 @@ package kappzzang.jeongsan.service;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import java.util.List;
 import java.util.Optional;
@@ -90,7 +90,7 @@ class PersonalExpenseServiceTest {
         personalExpenseService.saveOrUpdatePersonalExpense(memberId, teamId, expenseId, request);
 
         // then
-        verify(personalExpenseRepository, times(1)).save(any(PersonalExpense.class));
+        then(personalExpenseRepository).should(times(1)).save(any(PersonalExpense.class));
     }
 
     @Test
@@ -107,7 +107,7 @@ class PersonalExpenseServiceTest {
         personalExpenseService.saveOrUpdatePersonalExpense(memberId, teamId, expenseId, request);
 
         // then
-        verify(personalExpenseRepository, never()).save(any());
+        then(personalExpenseRepository).should(never()).save(any());
     }
 
     @Test
