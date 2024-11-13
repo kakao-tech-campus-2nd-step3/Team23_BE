@@ -151,6 +151,22 @@ class TeamTest {
         assertThat(kakaoId).isEqualTo("ownerKakaoId");
     }
 
+    @Test
+    @DisplayName("팀에 멤버 추가")
+    void addMember() {
+        // given
+        Member owner = createOwnerMember();
+        Member newMember = createMember("newMemberKakaoId");
+        Team team = Team.createTeam(owner, "test team", "🎈", Collections.emptyList());
+
+        // when
+        team.addMember(newMember, false, false);
+
+        // then
+        assertThat(team.getTeamMemberList()).hasSize(2);
+        assertThat(team.getTeamMemberList()).anyMatch(tm -> tm.getMember().equals(newMember));
+    }
+
     private Member createOwnerMember() {
         return createMember("ownerKakaoId");
     }
