@@ -1,11 +1,15 @@
 package kappzzang.jeongsan.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Collections;
 import java.util.List;
+import kappzzang.jeongsan.global.common.enumeration.ErrorType;
+import kappzzang.jeongsan.global.exception.JeongsanException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 class TeamTest {
 
@@ -13,9 +17,7 @@ class TeamTest {
     @DisplayName("모임 생성 시 팀원이 없는 경우 테스트")
     void createTeamWithoutMembers() {
         // given
-        Member owner = Member.builder()
-            .kakaoId("ownerKakaoId")
-            .build();
+        Member owner = createOwnerMember();
 
         // when
         Team team = Team.createTeam(owner, "TeamName", "❤", Collections.emptyList());
@@ -32,9 +34,9 @@ class TeamTest {
     @DisplayName("모임 생성 시 일반적인 경우 테스트")
     void createTeamWithMembers() {
         // given
-        Member owner = Member.builder().kakaoId("ownerKakaoId").build();
-        Member member1 = Member.builder().kakaoId("member1KakaoId").build();
-        Member member2 = Member.builder().kakaoId("member2KakaoId").build();
+        Member owner = createOwnerMember();
+        Member member1 = createMember("member1KakaoId");
+        Member member2 = createMember("member2KakaoId");
 
         // when
         Team team = Team.createTeam(owner, "test team", "⚽", List.of(member1, member2));
@@ -57,4 +59,58 @@ class TeamTest {
             tm -> tm.getMember().getKakaoId().equals("member2KakaoId") && !tm.getIsOwner());
     }
 
+    @Test
+    @DisplayName("팀을 종료할 때 소유자가 아닌 사용자가 종료를 시도할 경우 예외 발생")
+    void closeTeamByNonOwnerThrowsException() {
+        // given
+        Member owner = createOwnerMember();
+        Member nonOwner = createMember("nonOwnerKakaoId");
+        Team team = Team.createTeam(owner, "test team", "🎈", List.of(nonOwner));
+
+        ReflectionTestUtils.setField(owner, "id", 1L);
+        ReflectionTestUtils.setField(nonOwner, "id", 2L);
+
+        // when & then
+        assertThatThrownBy(() -> team.closeTeam(nonOwner.getId()))
+            .isInstanceOf(JeongsanException.class)
+            .hasMessage(ErrorType.TEAM_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    @DisplayName("이미 종료된 팀을 종료 시도할 때 예외 발생")
+    void closeAlreadyClosedTeamThrowsException() {
+        // given
+        Member owner = createOwnerMember();
+        Team team = Team.createTeam(owner, "test team", "😀", Collections.emptyList());
+        ReflectionTestUtils.setField(owner, "id", 1L);
+        ReflectionTestUtils.setField(team, "isClosed", true);
+
+        // when & then
+        assertThatThrownBy(() -> team.closeTeam(owner.getId()))
+            .isInstanceOf(JeongsanException.class)
+            .hasMessage(ErrorType.TEAM_ALREADY_CLOSED.getMessage());
+    }
+
+    @Test
+    @DisplayName("모임 종료 성공")
+    void closeTeamSetsIsClosedToTrue() {
+        // given
+        Member owner = createOwnerMember();
+        Team team = Team.createTeam(owner, "TeamName", "😀", Collections.emptyList());
+        ReflectionTestUtils.setField(owner, "id", 1L);
+
+        // when
+        team.closeTeam(owner.getId());
+
+        // then
+        assertThat(team.getIsClosed()).isTrue();
+    }
+
+    private Member createOwnerMember() {
+        return createMember("ownerKakaoId");
+    }
+
+    private Member createMember(String kakaoId) {
+        return Member.builder().kakaoId(kakaoId).build();
+    }
 }
