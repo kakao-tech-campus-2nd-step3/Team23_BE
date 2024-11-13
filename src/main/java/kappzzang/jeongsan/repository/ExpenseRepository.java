@@ -50,6 +50,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     @Query("SELECT e FROM Expense e " +
         "JOIN FETCH e.payer " +
+        "JOIN FETCH e.items " +
         "JOIN FETCH e.team " +
         "JOIN FETCH e.category " +
         "WHERE e.id IN :ids")
