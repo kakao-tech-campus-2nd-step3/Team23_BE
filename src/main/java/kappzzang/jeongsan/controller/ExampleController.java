@@ -6,7 +6,7 @@ import static kappzzang.jeongsan.global.common.enumeration.SuccessType.TEAM_LOAD
 import io.swagger.v3.oas.annotations.Hidden;
 import java.util.Collections;
 import kappzzang.jeongsan.dto.response.TeamResponse;
-import kappzzang.jeongsan.global.common.JeongsanApiResponse;
+import kappzzang.jeongsan.global.common.dto.JeongsanApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

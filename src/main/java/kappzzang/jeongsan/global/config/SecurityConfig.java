@@ -2,8 +2,8 @@ package kappzzang.jeongsan.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
-import kappzzang.jeongsan.global.security.JwtAuthenticationFilter;
-import kappzzang.jeongsan.global.util.JwtUtil;
+import kappzzang.jeongsan.global.common.security.JwtAuthenticationFilter;
+import kappzzang.jeongsan.global.common.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

@@ -10,7 +10,7 @@ import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
 import kappzzang.jeongsan.dto.response.MemberKakaoIdResponse;
 import kappzzang.jeongsan.dto.response.TeamResponse;
 import kappzzang.jeongsan.dto.response.TransferTargetResponse;
-import kappzzang.jeongsan.global.common.JeongsanApiResponse;
+import kappzzang.jeongsan.global.common.dto.JeongsanApiResponse;
 import kappzzang.jeongsan.global.common.enumeration.SuccessType;
 import kappzzang.jeongsan.service.TeamService;
 import lombok.RequiredArgsConstructor;

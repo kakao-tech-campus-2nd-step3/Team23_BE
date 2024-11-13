@@ -1,4 +1,4 @@
-package kappzzang.jeongsan.global.swagger;
+package kappzzang.jeongsan.global.common.swagger;
 
 import io.swagger.v3.oas.models.examples.Example;
 import lombok.Builder;
