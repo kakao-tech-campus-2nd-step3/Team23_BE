@@ -11,8 +11,8 @@ import kappzzang.jeongsan.dto.request.RegisterRequest;
 import kappzzang.jeongsan.dto.response.GetPayLinkResponse;
 import kappzzang.jeongsan.dto.response.LoginResponse;
 import kappzzang.jeongsan.dto.response.RefreshResponse;
-import kappzzang.jeongsan.global.common.ApiErrorTypeExample;
-import kappzzang.jeongsan.global.common.JeongsanApiResponse;
+import kappzzang.jeongsan.global.common.annotation.ApiErrorTypeExample;
+import kappzzang.jeongsan.global.common.dto.JeongsanApiResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import org.springframework.http.ResponseEntity;
 

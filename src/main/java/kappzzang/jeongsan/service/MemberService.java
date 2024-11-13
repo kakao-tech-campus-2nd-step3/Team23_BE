@@ -17,7 +17,7 @@ import kappzzang.jeongsan.dto.response.GetPayLinkResponse;
 import kappzzang.jeongsan.dto.response.LoginResponse;
 import kappzzang.jeongsan.dto.response.RefreshResponse;
 import kappzzang.jeongsan.global.exception.JeongsanException;
-import kappzzang.jeongsan.global.util.JwtUtil;
+import kappzzang.jeongsan.global.common.util.JwtUtil;
 import kappzzang.jeongsan.repository.MemberRepository;
 import kappzzang.jeongsan.repository.TeamMemberRepository;
 import kappzzang.jeongsan.repository.TeamRepository;

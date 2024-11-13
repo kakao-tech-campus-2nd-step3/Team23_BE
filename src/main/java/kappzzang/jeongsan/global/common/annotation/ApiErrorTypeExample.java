@@ -1,4 +1,4 @@
-package kappzzang.jeongsan.global.common;
+package kappzzang.jeongsan.global.common.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
