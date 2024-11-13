@@ -290,56 +290,6 @@ class PersonalExpenseServiceTest {
         assertTrue(personalExpense.isEmpty());
     }
 
-//    @Test
-//    @DisplayName("개인 소비 내역 저장, 수정 요청이 동시에 요청된다.")
-//    void concurrentUpdateAndSaveTest() throws InterruptedException {
-//        // given
-//        int threadCount = 2;
-//        CountDownLatch startLatch = new CountDownLatch(1);
-//        CountDownLatch endLatch = new CountDownLatch(threadCount);
-//        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
-//
-//        SavePersonalExpenseRequest updateRequest = new SavePersonalExpenseRequest(
-//            List.of(new SavePersonalExpenseRequest.ItemInfo(item2.getId(), 2))
-//        );
-//        SavePersonalExpenseRequest saveRequest = new SavePersonalExpenseRequest(
-//            List.of(new SavePersonalExpenseRequest.ItemInfo(item2.getId(), 2))
-//        );
-//
-//        List<TestCase> testCases = List.of(
-//            new TestCase(member1.getId(), "수정", updateRequest),
-//            new TestCase(member4.getId(), "저장", saveRequest)
-//        );
-//
-//        // when
-//        testCases.forEach(testCase ->
-//            executorService.submit(() -> executeTestCase(testCase, startLatch, endLatch))
-//        );
-//
-//        startLatch.countDown();
-//        endLatch.await();
-//        executorService.shutdown();
-//
-//        // then
-//        List<PersonalExpense> savedExpenses = personalExpenseRepository.findAllByItem(item2);
-//        assertEquals(2, savedExpenses.size());
-//
-//        int totalQuantity = savedExpenses.stream()
-//            .mapToInt(PersonalExpense::getQuantity)
-//            .sum();
-//        assertEquals(4, totalQuantity);  // member1: 2, member4: 2
-//
-//        int totalPrice = savedExpenses.stream()
-//            .mapToInt(PersonalExpense::getTotalPrice)
-//            .sum();
-//        assertEquals(item2.getTotalPrice(), totalPrice);  // item2의 전체 가격
-//
-//        for (PersonalExpense personalExpense : savedExpenses) {
-//            assertEquals(2, personalExpense.getQuantity());
-//            assertEquals(1500, personalExpense.getTotalPrice());
-//        }
-//    }
-
     private void executeTestCase(TestCase testCase, CountDownLatch startLatch,
         CountDownLatch endLatch) {
         try {
