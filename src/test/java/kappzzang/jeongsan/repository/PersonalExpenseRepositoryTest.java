@@ -24,6 +24,7 @@ class PersonalExpenseRepositoryTest {
 
     Member member1, member2;
     Expense expense1, expense2;
+    Item item1, item2;
     PersonalExpense personalExpense1, personalExpense2, personalExpense3;
     private List<Long> itemIds;
     @Autowired
@@ -36,8 +37,8 @@ class PersonalExpenseRepositoryTest {
         KakaoPayInfo kakaoPayInfo = new KakaoPayInfo();
         Team team = testDataUtil.createAndPersistTeam();
         Category category = testDataUtil.createAndPersistCategory();
-        Item item1 = testDataUtil.createAndPersistItem("item1", 10, 2000);
-        Item item2 = testDataUtil.createAndPersistItem("item2", 10, 2000);
+        item1 = testDataUtil.createAndPersistItem("item1", 10, 2000);
+        item2 = testDataUtil.createAndPersistItem("item2", 10, 2000);
         List<Item> items1 = List.of(item1);
         List<Item> items2 = List.of(item2);
         itemIds = List.of(item1.getId(), item2.getId());
@@ -54,14 +55,19 @@ class PersonalExpenseRepositoryTest {
     }
 
     @Test
-    @DisplayName("ExpenseId를 입력받아 해당 지출과 연관된 PersonalExpense를 반환한다.")
+    @DisplayName("지출과 연관된 개인 소비 내역을 반환하되 소비 수량이 0인 소비 내역은 포함하지 않는다.")
     void findAllByExpenseIds() {
         // given
+        PersonalExpense personalExpense4 = testDataUtil.createAndPersistPersonalExpense(member2, 0,
+            item2, 0);
         List<Long> expenseIds = Arrays.asList(expense1.getId(), expense2.getId());
+
         // when
         List<PersonalExpense> results = personalExpenseRepository.findAllByExpenseIds(
             expenseIds);
+
         // then
+        assertThat(results).doesNotContain(personalExpense4);
         assertThat(results).containsExactlyInAnyOrder(personalExpense1, personalExpense2,
             personalExpense3);
     }
