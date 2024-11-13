@@ -119,10 +119,43 @@ class TeamTest {
         ReflectionTestUtils.setField(member, "id", 2L);
         ReflectionTestUtils.setField(nonMember, "id", 3L);
 
+        team.getTeamMemberList().forEach(teamMember -> {
+            if (teamMember.getMember().equals(member)) {
+                ReflectionTestUtils.setField(teamMember, "isInviteAccepted", true);
+            }
+        });
+
         // when & then
         assertThat(team.isMember(owner)).isTrue();
         assertThat(team.isMember(member)).isTrue();
         assertThat(team.isMember(nonMember)).isFalse();
+    }
+
+    @Test
+    @DisplayName("팀에 특정 멤버가 초대를 수락하지 않았을 때 예외 발생")
+    void isMemberNotAccepted() {
+        // given
+        Member owner = createOwnerMember();
+        Member member = createMember("memberKakaoId");
+        Member notAcceptedMember = createMember("notAcceptedMemberKakaoId");
+        Team team = Team.createTeam(owner, "test team", "🎇", List.of(member));
+
+        ReflectionTestUtils.setField(owner, "id", 1L);
+        ReflectionTestUtils.setField(member, "id", 2L);
+        ReflectionTestUtils.setField(notAcceptedMember, "id", 3L);
+
+        team.getTeamMemberList().forEach(teamMember -> {
+            if (teamMember.getMember().equals(notAcceptedMember)) {
+                ReflectionTestUtils.setField(teamMember, "isInviteAccepted", false);
+            } else {
+                ReflectionTestUtils.setField(teamMember, "isInviteAccepted", true);
+            }
+        });
+
+        // when & then
+        assertThat(team.isMember(owner)).isTrue();
+        assertThat(team.isMember(member)).isTrue();
+        assertThat(team.isMember(notAcceptedMember)).isFalse();
     }
 
     @Test
