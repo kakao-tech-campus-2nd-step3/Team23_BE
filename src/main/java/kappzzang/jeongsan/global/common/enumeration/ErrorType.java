@@ -21,9 +21,8 @@ public enum ErrorType {
     EXPENSE_INVALID_TEAM(HttpStatus.BAD_REQUEST, "E400010", "요청 목록에 타 모임의 지출이 포함되어 있습니다."),
     EXPENSE_INVALID_PAYER(HttpStatus.BAD_REQUEST, "E400011", "요청 목록에 본인이 결제하지 않은 지출이 포함되어 있습니다."),
     INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "E400012", "잘못된 quantity 값 요청입니다."),
-    NO_CHANGES_NEEDED(HttpStatus.BAD_REQUEST, "E400013", "기존 quantity 값과 같은 값이 포함된 요청입니다."),
-    EXPENSE_NOT_IN_TEAM(HttpStatus.BAD_REQUEST, "E400014", "팀에 속하지 않은 지출에 대한 요청입니다."),
-    EXPENSE_ITEM_NOT_SELECTED(HttpStatus.BAD_REQUEST, "E400015", "지출에 아무도 선택하지 않은 품목이 존재합니다."),
+    EXPENSE_NOT_IN_TEAM(HttpStatus.BAD_REQUEST, "E400013", "팀에 속하지 않은 지출에 대한 요청입니다."),
+    EXPENSE_ITEM_NOT_SELECTED(HttpStatus.BAD_REQUEST, "E400014", "지출에 아무도 선택하지 않은 품목이 존재합니다."),
 
     // 401 UNAUTHORIZED
     JWT_SIGNATURE_INVALID(HttpStatus.UNAUTHORIZED, "E401001", "토큰 서명이 유효하지 않습니다."),
