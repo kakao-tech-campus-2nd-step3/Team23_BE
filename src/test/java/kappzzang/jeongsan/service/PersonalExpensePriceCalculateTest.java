@@ -22,6 +22,8 @@ import kappzzang.jeongsan.global.exception.JeongsanException;
 import kappzzang.jeongsan.repository.PersonalExpenseRepository;
 import kappzzang.jeongsan.repository.TestDataUtil;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -157,7 +159,7 @@ public class PersonalExpensePriceCalculateTest {
                     new Scenario(ITEM_A, MEMBER_C, 1, 668),  // MemberC 1개 선택 -> 668원
 
                     // ItemB 선택
-                    new Scenario(ITEM_B, MEMBER_B, 3, 3000), // MemberB 1개 선택 -> 3000원
+                    new Scenario(ITEM_B, MEMBER_B, 3, 3000), // MemberB 3개 선택 -> 3000원
 
                     // ItemC 선택
                     new Scenario(ITEM_C, MEMBER_B, 2, 6000), // MemberB 2개 선택 -> 6000원
@@ -221,6 +223,36 @@ public class PersonalExpensePriceCalculateTest {
                 "품목에 대한 모든 선택 수량이 0인 경우"
             )
         );
+    }
+
+    @DisplayName("지출의 상태가 진행 중에서 송금 대기로 변경될 때, 품목 선택 수량이 품목 수량보다 적을 시, ExpenseItemSelectionInsufficient 예외을 발생시킨다")
+    @Test
+    void whenExpenseStateChangeToPending_WithInsufficientSelection_ThrowItemSelectionInsufficientException() {
+
+        List<Scenario> scenarios = List.of(
+            // ItemA 선택
+            new Scenario(ITEM_A, MEMBER_A, 2, 2000), // MemberA 2개 선택 -> 2000원
+
+            // ItemB 선택
+            new Scenario(ITEM_B, MEMBER_B, 2, 2000), // MemberB 2개 선택 -> 2000원
+            new Scenario(ITEM_B, MEMBER_C, 1, 1000), // MemberC 1개 선택 -> 1000원
+
+            // ItemC 선택
+            new Scenario(ITEM_C, MEMBER_A, 1, 0)    // MemberA 1개 선택 -> 0원
+        );
+
+        //given
+        createPersonalExpensesWithScenario(scenarios);
+        List<ExpenseId> expenseIds = List.of(new ExpenseId(expense.getId()));
+        ChangeExpensesStateRequest request = new ChangeExpensesStateRequest(Status.PENDING,
+            expenseIds);
+
+        //when //then
+        assertThatThrownBy(
+            () -> expenseService.updateExpensesState(request, teamId, payerId))
+            .isInstanceOf(JeongsanException.class)
+            .hasMessage(ErrorType.EXPENSE_ITEM_SELECTION_INSUFFICIENT.getMessage());
+
     }
 
 

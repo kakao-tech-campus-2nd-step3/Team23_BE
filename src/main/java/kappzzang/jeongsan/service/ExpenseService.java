@@ -194,8 +194,12 @@ public class ExpenseService {
             .mapToInt(PersonalExpense::getQuantity)
             .sum();
 
-        if (totalSelectionCount < item.getQuantity()) {
+        if (totalSelectionCount == 0) {
             throw new JeongsanException(ErrorType.EXPENSE_ITEM_NOT_SELECTED);
+        }
+
+        if (totalSelectionCount < item.getQuantity()) {
+            throw new JeongsanException(ErrorType.EXPENSE_ITEM_SELECTION_INSUFFICIENT);
         }
 
         int personalUnitPrice = item.getTotalPrice() / totalSelectionCount;

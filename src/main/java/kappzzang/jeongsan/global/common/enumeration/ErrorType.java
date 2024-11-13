@@ -23,6 +23,8 @@ public enum ErrorType {
     INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "E400012", "잘못된 quantity 값 요청입니다."),
     EXPENSE_NOT_IN_TEAM(HttpStatus.BAD_REQUEST, "E400013", "팀에 속하지 않은 지출에 대한 요청입니다."),
     EXPENSE_ITEM_NOT_SELECTED(HttpStatus.BAD_REQUEST, "E400014", "지출에 아무도 선택하지 않은 품목이 존재합니다."),
+    EXPENSE_ITEM_SELECTION_INSUFFICIENT(HttpStatus.BAD_REQUEST, "E400015",
+        "지출에 선택한 인원이 부족한 품목이 존재합니다."),
 
     // 401 UNAUTHORIZED
     JWT_SIGNATURE_INVALID(HttpStatus.UNAUTHORIZED, "E401001", "토큰 서명이 유효하지 않습니다."),
