@@ -96,7 +96,7 @@ class TeamTest {
     void closeTeamSetsIsClosedToTrue() {
         // given
         Member owner = createOwnerMember();
-        Team team = Team.createTeam(owner, "TeamName", "😀", Collections.emptyList());
+        Team team = Team.createTeam(owner, "test team", "😀", Collections.emptyList());
         ReflectionTestUtils.setField(owner, "id", 1L);
 
         // when
@@ -113,7 +113,7 @@ class TeamTest {
         Member owner = createOwnerMember();
         Member member = createMember("memberKakaoId");
         Member nonMember = createMember("notMemberKakaoId");
-        Team team = Team.createTeam(owner, "TeamName", "🎇", List.of(member));
+        Team team = Team.createTeam(owner, "test team", "🎇", List.of(member));
 
         ReflectionTestUtils.setField(owner, "id", 1L);
         ReflectionTestUtils.setField(member, "id", 2L);
@@ -123,6 +123,32 @@ class TeamTest {
         assertThat(team.isMember(owner)).isTrue();
         assertThat(team.isMember(member)).isTrue();
         assertThat(team.isMember(nonMember)).isFalse();
+    }
+
+    @Test
+    @DisplayName("팀 소유자가 없는 경우 getOwnerKakaoId 호출 시 예외 발생")
+    void getOwnerKakaoIdThrowsExceptionWhenNoOwner() {
+        // given
+        Team team = new Team("test team", "😀");
+
+        // when & then
+        assertThatThrownBy(team::getOwnerKakaoId)
+            .isInstanceOf(JeongsanException.class)
+            .hasMessage(ErrorType.TEAM_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    @DisplayName("팀 소유자의 Kakao ID 조회")
+    void getOwnerKakaoId() {
+        // given
+        Member owner = createOwnerMember();
+        Team team = Team.createTeam(owner, "test team", "🎈", Collections.emptyList());
+
+        // when
+        String kakaoId = team.getOwnerKakaoId();
+
+        // then
+        assertThat(kakaoId).isEqualTo("ownerKakaoId");
     }
 
     private Member createOwnerMember() {
