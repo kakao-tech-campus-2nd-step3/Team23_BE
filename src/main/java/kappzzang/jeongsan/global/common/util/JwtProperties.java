@@ -1,4 +1,4 @@
-package kappzzang.jeongsan.global.util;
+package kappzzang.jeongsan.global.common.util;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

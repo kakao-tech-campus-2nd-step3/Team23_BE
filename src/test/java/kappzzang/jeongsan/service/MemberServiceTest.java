@@ -21,7 +21,7 @@ import kappzzang.jeongsan.dto.response.LoginResponse;
 import kappzzang.jeongsan.dto.response.RefreshResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
-import kappzzang.jeongsan.global.util.JwtUtil;
+import kappzzang.jeongsan.global.common.util.JwtUtil;
 import kappzzang.jeongsan.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

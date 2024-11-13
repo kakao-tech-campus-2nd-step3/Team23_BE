@@ -1,6 +1,6 @@
-package kappzzang.jeongsan.global.security;
+package kappzzang.jeongsan.global.common.security;
 
-import kappzzang.jeongsan.global.util.JwtUtil;
+import kappzzang.jeongsan.global.common.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
