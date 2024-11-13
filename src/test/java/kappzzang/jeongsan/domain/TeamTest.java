@@ -106,6 +106,25 @@ class TeamTest {
         assertThat(team.getIsClosed()).isTrue();
     }
 
+    @Test
+    @DisplayName("팀에 특정 멤버가 포함되어 있는지 확인")
+    void isMember() {
+        // given
+        Member owner = createOwnerMember();
+        Member member = createMember("memberKakaoId");
+        Member nonMember = createMember("notMemberKakaoId");
+        Team team = Team.createTeam(owner, "TeamName", "🎇", List.of(member));
+
+        ReflectionTestUtils.setField(owner, "id", 1L);
+        ReflectionTestUtils.setField(member, "id", 2L);
+        ReflectionTestUtils.setField(nonMember, "id", 3L);
+
+        // when & then
+        assertThat(team.isMember(owner)).isTrue();
+        assertThat(team.isMember(member)).isTrue();
+        assertThat(team.isMember(nonMember)).isFalse();
+    }
+
     private Member createOwnerMember() {
         return createMember("ownerKakaoId");
     }
