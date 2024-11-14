@@ -9,7 +9,6 @@ import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.KakaoPayInfo;
 import kappzzang.jeongsan.domain.Member;
-import kappzzang.jeongsan.domain.PersonalExpense;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.ItemDetail;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
@@ -46,6 +45,17 @@ public class ExpenseRepositoryTest {
     private Member payer1;
     private Team team;
 
+    static Stream<Arguments> PersonalExpenseCaseProvider() {
+        return Stream.of(
+            Arguments.of(0, List.of(5, 0, 0, 0)),
+            //0번째 맴버가 선택한 지출(itemA: 5, itemB: 0, itemC: 0, itemD: 0)
+            Arguments.of(1, List.of(0, 3, 9, 10)),
+            //1번째 맴버가 선택한 지출(itemA: 0, itemB: 3, itemC: 9, itemD: 10)
+            Arguments.of(2, List.of(0, 0, 0, 0))
+            //2번째 맴버가 선택한 지출(itemA: 0, itemB: 0, itemC: 0, itemD: 0)
+        );
+    }
+
     @BeforeEach
     void setUp() {
         KakaoPayInfo kakaoPayInfo = new KakaoPayInfo();
@@ -69,15 +79,10 @@ public class ExpenseRepositoryTest {
         Item itemH = testDataUtil.createAndPersistItem("TEST_ITEM_H", 2, 2000);
         Item itemI = testDataUtil.createAndPersistItem("TEST_ITEM_I", 3, 3000);
 
-        PersonalExpense personalExpenseA = testDataUtil.createAndPersistPersonalExpense(memberA, 5,
-            itemA, 0);
-
-        PersonalExpense personalExpenseB = testDataUtil.createAndPersistPersonalExpense(memberB, 3,
-            itemB, 0);
-        PersonalExpense personalExpenseC = testDataUtil.createAndPersistPersonalExpense(memberB, 9,
-            itemC, 0);
-        PersonalExpense personalExpenseD = testDataUtil.createAndPersistPersonalExpense(memberB,
-            10, itemD, 0);
+        testDataUtil.createAndPersistPersonalExpense(memberA, 5, itemA, 0);
+        testDataUtil.createAndPersistPersonalExpense(memberB, 3, itemB, 0);
+        testDataUtil.createAndPersistPersonalExpense(memberB, 9, itemC, 0);
+        testDataUtil.createAndPersistPersonalExpense(memberB, 10, itemD, 0);
 
         List<Item> items = List.of(itemA, itemB, itemC, itemD);
         Category category = testDataUtil.createAndPersistCategory();
@@ -120,7 +125,6 @@ public class ExpenseRepositoryTest {
                 }
             });
     }
-
 
     @DisplayName("지출 Id 리스트로 지출과 연관정보를 함께 조회할 수 있다")
     @Test
@@ -192,17 +196,6 @@ public class ExpenseRepositoryTest {
         assertThat(results.getFirst().getItems())
             .extracting(Item::getName)
             .containsExactlyInAnyOrder("TEST_ITEM_H", "TEST_ITEM_I");
-    }
-
-    static Stream<Arguments> PersonalExpenseCaseProvider() {
-        return Stream.of(
-            Arguments.of(0, List.of(5, 0, 0, 0)),
-            //0번째 맴버가 선택한 지출(itemA: 5, itemB: 0, itemC: 0, itemD: 0)
-            Arguments.of(1, List.of(0, 3, 9, 10)),
-            //1번째 맴버가 선택한 지출(itemA: 0, itemB: 3, itemC: 9, itemD: 10)
-            Arguments.of(2, List.of(0, 0, 0, 0))
-            //2번째 맴버가 선택한 지출(itemA: 0, itemB: 0, itemC: 0, itemD: 0)
-        );
     }
 
 }
