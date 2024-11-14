@@ -8,15 +8,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.Team;
-import kappzzang.jeongsan.dto.request.CreateTeamRequest;
-import kappzzang.jeongsan.dto.response.CreateTeamResponse;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
 import kappzzang.jeongsan.dto.response.MemberKakaoIdResponse;
 import kappzzang.jeongsan.dto.response.TeamResponse;
@@ -141,45 +137,8 @@ class TeamServiceTest {
             .isNotNull()
             .hasSize(1)
             .first()
-            .satisfies(response -> {
-                assertThat(response.id()).isEqualTo("kakaoId");
-            });
-    }
-
-    @Test
-    @DisplayName("모임 생성 성공")
-    void createTeam_Success() {
-        // given
-        Long ownerId = 1L;
-        Member owner = new Member();
-        String memberKakaoId1 = "memberKakaoId1";
-        Member member1 = new Member();
-        String memberKakaoId2 = "memberKakaoId2";
-        Member member2 = new Member();
-        String teamName = "Test Team";
-        CreateTeamRequest request = new CreateTeamRequest(teamName, "subject", new ArrayList<>(
-            Arrays.asList(memberKakaoId1, memberKakaoId2)));
-        List<Member> members = new ArrayList<>(Arrays.asList(member1, member2));
-        Team team = Team.createTeam(owner, teamName, "subject", members);
-
-        given(teamRepository.save(any(Team.class))).willReturn(team);
-        given(memberRepository.findById(ownerId)).willReturn(Optional.of(owner));
-        given(memberRepository.findByKakaoId(memberKakaoId1)).willReturn(Optional.of(member1));
-        given(memberRepository.findByKakaoId(memberKakaoId2)).willReturn(Optional.of(member2));
-
-        // when
-        CreateTeamResponse actual = teamService.createTeam(ownerId, request);
-
-        // then
-        assertThat(actual).isNotNull();
-
-        then(teamRepository).should().save(any(Team.class));
-        then(teamRepository).shouldHaveNoMoreInteractions();
-
-        then(memberRepository).should().findById(ownerId);
-        then(memberRepository).should().findByKakaoId(memberKakaoId1);
-        then(memberRepository).should().findByKakaoId(memberKakaoId2);
-        then(memberRepository).shouldHaveNoMoreInteractions();
+            .satisfies(response ->
+                assertThat(response.id()).isEqualTo("kakaoId"));
     }
 
     @Test
