@@ -13,6 +13,7 @@ import kappzzang.jeongsan.domain.PersonalExpense;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.ItemDetail;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
+import kappzzang.jeongsan.global.common.enumeration.Status;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,6 +42,7 @@ public class ExpenseRepositoryTest {
     private List<Member> members;
     private List<Long> expenseIds;
     private Long payerId;
+    private Team team;
 
     @BeforeEach
     void setUp() {
@@ -52,7 +54,7 @@ public class ExpenseRepositoryTest {
         Member payer = testDataUtil.createAndPersistMember("TEST_PAYER", kakaoPayInfo);
         members = List.of(memberA, memberB, memberC);
 
-        Team team = testDataUtil.createAndPersistTeam();
+        team = testDataUtil.createAndPersistTeam();
 
         Item itemA = testDataUtil.createAndPersistItem("TEST_ITEM_A", 10, 2000);
         Item itemB = testDataUtil.createAndPersistItem("TEST_ITEM_B", 5, 3000);
@@ -148,6 +150,21 @@ public class ExpenseRepositoryTest {
         //then
         assertThat(actual.getId()).isEqualTo(expense.getId());
         assertThat(actual.getItems()).hasSize(TEST_ITEM_QUANTITY);
+    }
+
+    @Test
+    @DisplayName("특정 모임과 상태로 지출 목록을 조회했을 때, 해당하는 지출 조회")
+    void testFindByTeamAndStatus() {
+        // Given
+        Status status = Status.ONGOING;
+
+        // When
+        List<Expense> results = expenseRepository.findByTeamAndStatus(team, status);
+
+        // Then
+        assertThat(results).isNotEmpty();
+        assertThat(results).allMatch(
+            expense -> expense.getTeam().equals(team) && expense.getStatus().equals(status));
     }
 
 
