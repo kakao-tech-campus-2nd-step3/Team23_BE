@@ -103,6 +103,6 @@ class PersonalExpenseRepositoryTest {
 
         // then
         assertThat(actual).isEqualTo(
-            personalExpense1.getTotalPrice() + personalExpense4.getTotalPrice());
+            personalExpense3.getTotalPrice() + personalExpense4.getTotalPrice());
     }
 }
