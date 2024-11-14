@@ -66,7 +66,6 @@ class PersonalExpenseServiceTest {
 
     @BeforeEach
     void setUp() {
-
         given(teamRepository.findById(teamId)).willReturn(Optional.of(mockTeam));
         given(itemRepository.findById(itemId)).willReturn(Optional.of(mockItem));
         given(expenseRepository.findById(expenseId)).willReturn(Optional.of(mockExpense));
