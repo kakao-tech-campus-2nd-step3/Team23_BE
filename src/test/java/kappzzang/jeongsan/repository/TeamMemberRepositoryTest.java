@@ -43,7 +43,7 @@ class TeamMemberRepositoryTest {
     }
 
     @Test
-    @DisplayName("모임의 멤버 초대 현황 조회 - 레포지토리 테스트")
+    @DisplayName("모임 Id로 모임 멤버의 모임 초대 수락 여부를 조회한다")
     void findInvitationStatusByTeamId() {
         // when
         List<InvitationStatusResponse> result = teamMemberRepository.findInvitationStatusByTeamId(
@@ -66,7 +66,7 @@ class TeamMemberRepositoryTest {
     }
 
     @Test
-    @DisplayName("모임 멤버 카카오 아이디 조회 - 레포지토리 테스트")
+    @DisplayName("모임 Id로 멤버의 카카오 서비스 아이디를 조회한다")
     void findMemberKakaoIdByTeamId() {
         // when
         List<MemberKakaoIdResponse> result = teamMemberRepository.findMemberKakaoIdByTeamId(team.getId());
