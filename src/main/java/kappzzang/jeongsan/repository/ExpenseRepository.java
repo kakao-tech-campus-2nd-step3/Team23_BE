@@ -19,22 +19,6 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
         + "AND e.status = :status")
     List<Expense> findByTeamAndStatus(Team team, Status status);
 
-//    @Query("SELECT e FROM Expense e "
-//        + "WHERE e.team.id = :teamId "
-//        + "AND e.status = :status "
-//        + "AND ("
-//        + "    EXISTS ("
-//        + "        SELECT 1 FROM PersonalExpense pe "
-//        + "        WHERE pe.member.id = :memberId "
-//        + "        AND pe.item.id IN ("
-//        + "            SELECT i.id FROM Item i "
-//        + "            WHERE i.expense.id = e.id"
-//        + "        )"
-//        + "    ) = :isChecked"
-//        + ")")
-//    List<Expense> findByTeamIdStatusAndIsChecked(Long teamId, Status status, Long memberId,
-//        Boolean isChecked);
-
     @Query(
         "SELECT new kappzzang.jeongsan.dto.ItemDetail("
             + "i.id,i.name,i.quantity,i.unitPrice, "
