@@ -14,7 +14,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 class TeamTest {
 
     @Test
-    @DisplayName("모임 생성 시 팀원이 없는 경우 테스트")
+    @DisplayName("모임원 없이 모임 생성 요청을 할 때 TeamMember로 owner만 저장되고 모임 생성 성공")
     void createTeamWithoutMembers() {
         // given
         Member owner = createOwnerMember();
@@ -31,7 +31,7 @@ class TeamTest {
     }
 
     @Test
-    @DisplayName("모임 생성 시 일반적인 경우 테스트")
+    @DisplayName("모임원과 함께 모임 생성 요청 시 모임원에 요청 member와 owner가 함께 저장되고 모임 생성 성공")
     void createTeamWithMembers() {
         // given
         Member owner = createOwnerMember();
