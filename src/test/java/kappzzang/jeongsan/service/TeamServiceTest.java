@@ -45,7 +45,8 @@ class TeamServiceTest {
     private TeamService teamService;
 
     @Test
-    @DisplayName("모임의 멤버 초대 현황 조회 - 모임을 찾을 수 없음")
+    @DisplayName("모임의 멤버 초대 현황 조회에서 모임이 존재하지 않을 때 "
+        + "TEAM_NOT_FOUND 예외가 발생한다")
     void getInvitationStatus_TeamNotFound() {
         // given
         given(teamRepository.findById(anyLong())).willReturn(Optional.empty());
@@ -57,7 +58,8 @@ class TeamServiceTest {
     }
 
     @Test
-    @DisplayName("모임의 멤버 초대 현황 조회 - 멤버 초대 기록을 찾을 수 없음")
+    @DisplayName("모임의 멤버 초대 현황 조회에서 멤버 초대 기록이 없을 때 "
+        + "INVITATION_STATUS_NOT_FOUND 예외가 발생한다")
     void getInvitationStatus_EmptyInvitationStatus() {
         // given
         Long teamId = 1L;
@@ -72,7 +74,7 @@ class TeamServiceTest {
     }
 
     @Test
-    @DisplayName("모임의 멤버 초대 현황 조회 - 초대 현황 조회 성공")
+    @DisplayName("모임의 멤버 조대 현황을 조회할 수 있다")
     void getInvitationStatus_InvitationStatusLoaded() {
         // given
         Long teamId = 1L;
