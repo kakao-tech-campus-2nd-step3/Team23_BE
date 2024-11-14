@@ -48,7 +48,7 @@ public class GetExpenseIPaidTest {
     private ExpenseService expenseService;
 
     @Test
-    @DisplayName("내가 지불한 지출 내역 - 빈 리스트")
+    @DisplayName("내가 지불한 지출 내역이 없는 경우 빈 리스트 반환")
     void getExpensesIPaid_EmptyList() {
         // given
         Member member = new Member();
@@ -69,7 +69,7 @@ public class GetExpenseIPaidTest {
     }
 
     @Test
-    @DisplayName("내가 지불한 지출 내역 - 성공")
+    @DisplayName("내가 지불한 지출 내역이 있는 경우 해당 데이터를 가진 리스트 반환")
     void getExpensesIPaid_Success() {
         // given
         Long memberId = 1L;
