@@ -24,7 +24,7 @@ class PersonalExpenseRepositoryTest {
 
     Member member1, member2;
     Expense expense1, expense2;
-    Item item1, item2;
+    Item item1, item2, item3;
     PersonalExpense personalExpense1, personalExpense2, personalExpense3;
     private List<Long> itemIds;
     @Autowired
@@ -37,21 +37,22 @@ class PersonalExpenseRepositoryTest {
         KakaoPayInfo kakaoPayInfo = new KakaoPayInfo();
         Team team = testDataUtil.createAndPersistTeam();
         Category category = testDataUtil.createAndPersistCategory();
-        item1 = testDataUtil.createAndPersistItem("item1", 10, 2000);
-        item2 = testDataUtil.createAndPersistItem("item2", 10, 2000);
+        item1 = testDataUtil.createAndPersistItem("item1", 100, 5);
+        item2 = testDataUtil.createAndPersistItem("item2", 1000, 7);
+        item3 = testDataUtil.createAndPersistItem("item3", 2000, 10);
         List<Item> items1 = List.of(item1);
-        List<Item> items2 = List.of(item2);
+        List<Item> items2 = List.of(item2, item3);
         itemIds = List.of(item1.getId(), item2.getId());
         member1 = testDataUtil.createAndPersistMember("member1", kakaoPayInfo);
         member2 = testDataUtil.createAndPersistMember("member2", kakaoPayInfo);
         expense1 = testDataUtil.createAndPersistExpense(team, member1, category, items1);
         expense2 = testDataUtil.createAndPersistExpense(team, member2, category, items2);
         personalExpense1 = testDataUtil.createAndPersistPersonalExpense(member1, 1,
-            item1, 1);
+            item1, 100);
         personalExpense2 = testDataUtil.createAndPersistPersonalExpense(member2, 1,
-            item1, 1);
+            item1, 100);
         personalExpense3 = testDataUtil.createAndPersistPersonalExpense(member1, 1,
-            item2, 1);
+            item2, 1000);
     }
 
     @Test
@@ -89,4 +90,19 @@ class PersonalExpenseRepositoryTest {
             });
     }
 
+    @Test
+    @DisplayName("지출 Id와 멤버 Id로 사용자의 개인 소비 총 금액의 합을 조회한다")
+    void findPersonalExpenseSum() {
+        // given
+        PersonalExpense personalExpense4 = testDataUtil.createAndPersistPersonalExpense(member1, 2,
+            item3, 4000);
+
+        // when
+        int actual = personalExpenseRepository.findPersonalExpenseSum(expense2.getId(),
+            member1.getId());
+
+        // then
+        assertThat(actual).isEqualTo(
+            personalExpense1.getTotalPrice() + personalExpense4.getTotalPrice());
+    }
 }
