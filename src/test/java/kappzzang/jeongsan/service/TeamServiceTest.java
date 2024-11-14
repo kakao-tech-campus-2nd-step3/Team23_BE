@@ -74,7 +74,7 @@ class TeamServiceTest {
     }
 
     @Test
-    @DisplayName("모임의 멤버 조대 현황을 조회할 수 있다")
+    @DisplayName("모임의 멤버 초대 현황을 조회할 수 있다")
     void getInvitationStatus_InvitationStatusLoaded() {
         // given
         Long teamId = 1L;
