@@ -73,7 +73,7 @@ public class GetExpensesTest {
 
 
     @Test
-    @DisplayName("지출 목록 조회 - 진행중 상태 빈 경우")
+    @DisplayName("진행 중 상태의 지출 목록이 없을 때 조회를 요청한 경우 빈 리스트 반환")
     void getExpenses_givenNoExpenses_Ongoing_ReturnEmptyResponse() {
         // given
         Long memberId = 1L;
@@ -106,7 +106,7 @@ public class GetExpensesTest {
     }
 
     @Test
-    @DisplayName("지출 목록 조회 - 완료 상태")
+    @DisplayName("완료 상태인 지출 목록 조회할 때 해당 데이터 반환")
     void getExpenses_Completed() {
         // given
         Long memberId = 1L;
@@ -141,7 +141,7 @@ public class GetExpensesTest {
     }
 
     @Test
-    @DisplayName("지출 목록 반환 - 진행중 상태")
+    @DisplayName("진행 중 상태의 지출 목록 조회 요청 시 해당 데이터 반환")
     void getExpenses_Ongoing() {
         // given
         Long memberId = 1L;
