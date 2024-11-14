@@ -82,7 +82,7 @@ public class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("회원가입 후 다시 회원가입하면 에외가 발생한다.")
+    @DisplayName("회원가입 후 다시 회원가입하면 예외가 발생한다.")
     void registerAfterRegistration() {
         // given
         RegisterRequest registerRequest = new RegisterRequest(TEST_UUID, TEST_NICKNAME, TEST_EMAIL,
