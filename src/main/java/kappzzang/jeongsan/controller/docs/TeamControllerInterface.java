@@ -17,8 +17,8 @@ import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
 import kappzzang.jeongsan.dto.response.MemberKakaoIdResponse;
 import kappzzang.jeongsan.dto.response.TeamResponse;
 import kappzzang.jeongsan.dto.response.TransferTargetResponse;
-import kappzzang.jeongsan.global.common.ApiErrorTypeExample;
-import kappzzang.jeongsan.global.common.JeongsanApiResponse;
+import kappzzang.jeongsan.global.common.annotation.ApiErrorTypeExample;
+import kappzzang.jeongsan.global.common.dto.JeongsanApiResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import org.springframework.http.ResponseEntity;
 

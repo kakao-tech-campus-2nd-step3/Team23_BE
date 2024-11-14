@@ -59,6 +59,8 @@ public class ExpenseRepositoryTest {
         Item itemC = testDataUtil.createAndPersistItem("TEST_ITEM_C", 15, 4000);
         Item itemD = testDataUtil.createAndPersistItem("TEST_ITEM_D", 3, 1000);
         Item itemE = testDataUtil.createAndPersistItem("TEST_ITEM_E", 1, 1000);
+        Item itemF = testDataUtil.createAndPersistItem("TEST_ITEM_F", 1, 1000);
+        Item itemG = testDataUtil.createAndPersistItem("TEST_ITEM_G", 1, 1000);
 
         PersonalExpense personalExpenseA = testDataUtil.createAndPersistPersonalExpense(memberA, 5,
             itemA, 0);
@@ -78,9 +80,9 @@ public class ExpenseRepositoryTest {
         Expense expense1 = testDataUtil.createAndPersistExpense(team, payer, category,
             List.of(itemE));
         Expense expense2 = testDataUtil.createAndPersistExpense(team, payer, category,
-            List.of(itemE));
+            List.of(itemF));
         Expense expense3 = testDataUtil.createAndPersistExpense(team, payer, category,
-            List.of(itemE));
+            List.of(itemG));
         expenses = List.of(expense1, expense2, expense3);
         payerId = payer.getId();
         expenseIds = List.of(expense1.getId(), expense2.getId(), expense3.getId());

@@ -38,6 +38,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 public class ExpenseServiceTest {
@@ -56,7 +57,6 @@ public class ExpenseServiceTest {
     private final Team mockTeam = mock(Team.class);
     private List<Long> expenseIds;
     private ChangeExpensesStateRequest completeExpensesRequest;
-    private ChangeExpensesStateRequest pendingExpensesRequest;
 
     @Mock
     private MemberRepository memberRepository;
@@ -88,7 +88,6 @@ public class ExpenseServiceTest {
         expenseIds = LongStream.rangeClosed(1, TEST_EXPENSES_SIZE).boxed().toList();
         List<ExpenseId> ids = expenseIds.stream().map(ExpenseId::new).toList();
         completeExpensesRequest = new ChangeExpensesStateRequest(Status.COMPLETED, ids);
-        pendingExpensesRequest = new ChangeExpensesStateRequest(Status.PENDING, ids);
     }
 
     @Test
@@ -333,8 +332,7 @@ public class ExpenseServiceTest {
             given(expenseRepository.findAllByIdWithDetails(expenseIds))
                 .willReturn(expenses);
             //when
-            expenseService.updateExpensesState(completeExpensesRequest, TEST_TEAM_ID,
-                TEST_MEMBER_ID);
+            expenseService.updateExpensesState(completeExpensesRequest, TEST_TEAM_ID, TEST_MEMBER_ID);
 
             //then
             assertThat(expenses).extracting(Expense::getStatus).containsOnly(Status.COMPLETED);
@@ -441,49 +439,26 @@ public class ExpenseServiceTest {
         }
     }
 
-    @DisplayName("지출 상태 변경(정산 중 -> 송금 대기)")
-    @Nested
-    class changeExpensesStatePending {
 
-        @DisplayName("지출 상태 변경 성공")
-        @Test
-        void changeExpensesState_Pending_Success() {
-            //given
-            List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
-            given(mockTeam.getId()).willReturn(TEST_TEAM_ID);
-            given(mockPayer.getId()).willReturn(TEST_MEMBER_ID);
-            given(expenseRepository.findAllByIdWithDetails(expenseIds))
-                .willReturn(expenses);
-            //when
-            expenseService.updateExpensesState(pendingExpensesRequest, TEST_TEAM_ID,
-                TEST_MEMBER_ID);
+    @DisplayName("사용자는 지출 상태를 송금 대기에서 완료로 변경할 수 있다")
+    @Test
+    void changeStateToComplete_ThenStateIsChanged() {
+        //given
+        List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
+        given(mockTeam.getId()).willReturn(TEST_TEAM_ID);
+        given(mockPayer.getId()).willReturn(TEST_MEMBER_ID);
+        given(expenseRepository.findAllByIdWithDetails(expenseIds))
+            .willReturn(expenses);
+        expenses.forEach(e -> ReflectionTestUtils.setField(e, "status", Status.PENDING));
 
-            //then
-            assertThat(expenses).extracting(Expense::getStatus).containsOnly(Status.PENDING);
-            then(expenseRepository).should()
-                .findAllByIdWithDetails(expenseIds);
-        }
+        //when
+        expenseService.updateExpensesState(completeExpensesRequest, TEST_TEAM_ID,
+            TEST_MEMBER_ID);
 
-        @DisplayName("지출 상태 변경 실패(이미 송금대기 상태 지출 존재)")
-        @Test
-        void completeExpenses_AlreadyCompleted_Fail() {
-            //given
-            List<Expense> expenses = createExpenses(TEST_EXPENSES_SIZE);
-            given(mockTeam.getId()).willReturn(TEST_TEAM_ID);
-            given(mockPayer.getId()).willReturn(TEST_MEMBER_ID);
-            expenses
-                .forEach(e -> e.changeStatus(mockTeam.getId(), mockPayer.getId(), Status.PENDING));
-            given(expenseRepository.findAllByIdWithDetails(expenseIds))
-                .willReturn(expenses);
-
-            //when //then
-            assertThatThrownBy(
-                () -> expenseService.updateExpensesState(pendingExpensesRequest, TEST_TEAM_ID,
-                    TEST_MEMBER_ID)).isInstanceOf(
-                    JeongsanException.class)
-                .hasMessage(ErrorType.EXPENSE_ALREADY_PENDING.getMessage());
-        }
-
+        //then
+        assertThat(expenses).extracting(Expense::getStatus).containsOnly(Status.COMPLETED);
+        then(expenseRepository).should()
+            .findAllByIdWithDetails(expenseIds);
     }
 
     private List<Expense> createExpenses(int count) {

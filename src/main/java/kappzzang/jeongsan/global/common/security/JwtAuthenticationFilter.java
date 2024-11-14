@@ -1,4 +1,4 @@
-package kappzzang.jeongsan.global.security;
+package kappzzang.jeongsan.global.common.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import kappzzang.jeongsan.global.exception.JeongsanException;
-import kappzzang.jeongsan.global.util.JwtUtil;
+import kappzzang.jeongsan.global.common.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;

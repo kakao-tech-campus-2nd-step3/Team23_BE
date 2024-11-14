@@ -8,7 +8,7 @@ import kappzzang.jeongsan.dto.response.ExpenseDetailResponse;
 import kappzzang.jeongsan.dto.response.ParsedReceiptResponse;
 import kappzzang.jeongsan.dto.response.PersonalExpenseDetailResponse;
 import kappzzang.jeongsan.dto.response.SaveExpenseResponse;
-import kappzzang.jeongsan.global.common.JeongsanApiResponse;
+import kappzzang.jeongsan.global.common.dto.JeongsanApiResponse;
 import kappzzang.jeongsan.global.common.enumeration.SuccessType;
 import kappzzang.jeongsan.service.ExpenseService;
 import kappzzang.jeongsan.service.ReceiptService;

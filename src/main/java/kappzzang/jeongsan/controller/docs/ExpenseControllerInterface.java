@@ -11,8 +11,8 @@ import kappzzang.jeongsan.dto.request.ChangeExpensesStateRequest;
 import kappzzang.jeongsan.dto.request.SavePersonalExpenseRequest;
 import kappzzang.jeongsan.dto.response.CategoryListResponse;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
-import kappzzang.jeongsan.global.common.ApiErrorTypeExample;
-import kappzzang.jeongsan.global.common.JeongsanApiResponse;
+import kappzzang.jeongsan.global.common.annotation.ApiErrorTypeExample;
+import kappzzang.jeongsan.global.common.dto.JeongsanApiResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import org.springframework.http.ResponseEntity;
 
@@ -39,7 +39,7 @@ public interface ExpenseControllerInterface {
     @ApiErrorTypeExample({ErrorType.EXPENSE_ALREADY_COMPLETED, ErrorType.EXPENSE_ONGOING,
         ErrorType.EXPENSE_NOT_FOUND_ID, ErrorType.EXPENSE_INVALID_TEAM,
         ErrorType.EXPENSE_INVALID_PAYER, ErrorType.EXPENSE_INVALID_STATE,
-        ErrorType.EXPENSE_ALREADY_PENDING})
+        ErrorType.EXPENSE_ALREADY_PENDING, ErrorType.EXPENSE_ITEM_NOT_SELECTED})
     ResponseEntity<JeongsanApiResponse<Void>> changeExpensesStatus(
         ChangeExpensesStateRequest request, Long teamId, Long memberId);
 
