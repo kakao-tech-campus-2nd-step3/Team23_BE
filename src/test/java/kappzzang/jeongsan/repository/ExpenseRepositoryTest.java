@@ -66,6 +66,8 @@ public class ExpenseRepositoryTest {
         Item itemE = testDataUtil.createAndPersistItem("TEST_ITEM_E", 1, 1000);
         Item itemF = testDataUtil.createAndPersistItem("TEST_ITEM_F", 1, 1000);
         Item itemG = testDataUtil.createAndPersistItem("TEST_ITEM_G", 1, 1000);
+        Item itemH = testDataUtil.createAndPersistItem("TEST_ITEM_H", 2, 2000);
+        Item itemI = testDataUtil.createAndPersistItem("TEST_ITEM_I", 3, 3000);
 
         PersonalExpense personalExpenseA = testDataUtil.createAndPersistPersonalExpense(memberA, 5,
             itemA, 0);
@@ -82,7 +84,7 @@ public class ExpenseRepositoryTest {
 
         expense = testDataUtil.createAndPersistExpense(team, memberA, category, items);
         targetExpense = testDataUtil.createAndPersistExpense(team, payer1, category,
-            List.of(itemA, itemB));
+            List.of(itemH, itemI));
 
         Expense expense1 = testDataUtil.createAndPersistExpense(team, payer, category,
             List.of(itemE));
@@ -189,7 +191,7 @@ public class ExpenseRepositoryTest {
         assertThat(results.getFirst().getItems()).hasSize(2);
         assertThat(results.getFirst().getItems())
             .extracting(Item::getName)
-            .containsExactlyInAnyOrder("TEST_ITEM_A", "TEST_ITEM_B");
+            .containsExactlyInAnyOrder("TEST_ITEM_H", "TEST_ITEM_I");
     }
 
     static Stream<Arguments> PersonalExpenseCaseProvider() {
