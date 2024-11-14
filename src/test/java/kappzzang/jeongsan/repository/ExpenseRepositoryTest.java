@@ -41,7 +41,9 @@ public class ExpenseRepositoryTest {
     private List<Expense> expenses;
     private List<Member> members;
     private List<Long> expenseIds;
-    private Long payerId;
+    private Expense targetExpense;
+    private Member payer;
+    private Member payer1;
     private Team team;
 
     @BeforeEach
@@ -51,7 +53,8 @@ public class ExpenseRepositoryTest {
         Member memberA = testDataUtil.createAndPersistMember("TEST_USER_A", kakaoPayInfo);
         Member memberB = testDataUtil.createAndPersistMember("TEST_USER_B", kakaoPayInfo);
         Member memberC = testDataUtil.createAndPersistMember("TEST_USER_C", kakaoPayInfo);
-        Member payer = testDataUtil.createAndPersistMember("TEST_PAYER", kakaoPayInfo);
+        payer = testDataUtil.createAndPersistMember("TEST_PAYER", kakaoPayInfo);
+        payer1 = testDataUtil.createAndPersistMember("TEST_PAYER1", kakaoPayInfo);
         members = List.of(memberA, memberB, memberC);
 
         team = testDataUtil.createAndPersistTeam();
@@ -78,6 +81,8 @@ public class ExpenseRepositoryTest {
         Category category = testDataUtil.createAndPersistCategory();
 
         expense = testDataUtil.createAndPersistExpense(team, memberA, category, items);
+        targetExpense = testDataUtil.createAndPersistExpense(team, payer1, category,
+            List.of(itemA, itemB));
 
         Expense expense1 = testDataUtil.createAndPersistExpense(team, payer, category,
             List.of(itemE));
@@ -86,7 +91,6 @@ public class ExpenseRepositoryTest {
         Expense expense3 = testDataUtil.createAndPersistExpense(team, payer, category,
             List.of(itemG));
         expenses = List.of(expense1, expense2, expense3);
-        payerId = payer.getId();
         expenseIds = List.of(expense1.getId(), expense2.getId(), expense3.getId());
     }
 
@@ -124,7 +128,7 @@ public class ExpenseRepositoryTest {
 
         //then
         assertThat(actual).hasSize(expenses.size())
-            .allMatch(e -> e.getPayer().getId().equals(payerId));
+            .allMatch(e -> e.getPayer().getId().equals(payer.getId()));
     }
 
     @DisplayName("존재하지 않는 지출 Id로 조회시 빈 리스트를 반환한다")
@@ -167,6 +171,26 @@ public class ExpenseRepositoryTest {
             expense -> expense.getTeam().equals(team) && expense.getStatus().equals(status));
     }
 
+    @Test
+    @DisplayName("지정된 payer, team, status 조건을 만족하는 지출을 조회")
+    void testFindExpensesIPaid() {
+        // when
+        List<Expense> results = expenseRepository.findExpensesIPaid(payer1, team, Status.ONGOING);
+
+        // then
+        assertThat(results).isNotEmpty();
+        assertThat(results).contains(targetExpense);
+        assertThat(results).allMatch(expense ->
+            expense.getPayer().equals(payer1) &&
+                expense.getTeam().equals(team) &&
+                expense.getStatus().equals(Status.ONGOING)
+        );
+
+        assertThat(results.getFirst().getItems()).hasSize(2);
+        assertThat(results.getFirst().getItems())
+            .extracting(Item::getName)
+            .containsExactlyInAnyOrder("TEST_ITEM_A", "TEST_ITEM_B");
+    }
 
     static Stream<Arguments> PersonalExpenseCaseProvider() {
         return Stream.of(

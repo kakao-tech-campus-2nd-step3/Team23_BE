@@ -16,6 +16,7 @@ import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.common.enumeration.Status;
 import kappzzang.jeongsan.global.exception.JeongsanException;
@@ -137,4 +138,20 @@ public class Expense extends BaseEntity {
         return this.items.stream().map(Item::getId).toList();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Expense expense = (Expense) o;
+        return Objects.equals(id, expense.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }
