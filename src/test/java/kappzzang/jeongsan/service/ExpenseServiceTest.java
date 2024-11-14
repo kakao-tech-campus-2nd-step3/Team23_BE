@@ -332,7 +332,8 @@ public class ExpenseServiceTest {
             given(expenseRepository.findAllByIdWithDetails(expenseIds))
                 .willReturn(expenses);
             //when
-            expenseService.updateExpensesState(completeExpensesRequest, TEST_TEAM_ID, TEST_MEMBER_ID);
+            expenseService.updateExpensesState(completeExpensesRequest, TEST_TEAM_ID,
+                TEST_MEMBER_ID);
 
             //then
             assertThat(expenses).extracting(Expense::getStatus).containsOnly(Status.COMPLETED);
