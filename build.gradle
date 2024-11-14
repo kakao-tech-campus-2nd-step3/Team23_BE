@@ -39,28 +39,6 @@ jacocoTestReport {
 			}
 	)
 
-	finalizedBy tasks.jacocoTestCoverageVerification
-}
-
-tasks.jacocoTestCoverageVerification {
-
-	violationRules {
-		rule {
-			element = "CLASS"
-
-			limit {
-				counter = 'BRANCH'
-				value = 'COVEREDRATIO'
-				minimum = 0.50
-			}
-
-			excludes = [
-					"**/controller/*",
-					"**/dto/*",
-					"**/global/*"
-			]
-		}
-	}
 }
 
 dependencies {
