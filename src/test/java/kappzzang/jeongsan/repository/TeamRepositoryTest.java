@@ -102,7 +102,6 @@ class TeamRepositoryTest {
         assertThat(result).hasSize(1);
         Team retrievedTeam = result.getFirst();
 
-        
         assertThat(retrievedTeam.getTeamMemberList()).isNotEmpty();
 
         TeamMember teamMember = retrievedTeam.getTeamMemberList().getFirst();
