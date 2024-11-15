@@ -6,7 +6,7 @@ import kappzzang.jeongsan.dto.request.ChangeExpensesStateRequest;
 import kappzzang.jeongsan.dto.request.SavePersonalExpenseRequest;
 import kappzzang.jeongsan.dto.response.CategoryListResponse;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
-import kappzzang.jeongsan.global.common.JeongsanApiResponse;
+import kappzzang.jeongsan.global.common.dto.JeongsanApiResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.common.enumeration.Status;
 import kappzzang.jeongsan.global.common.enumeration.SuccessType;
@@ -73,7 +73,8 @@ public class ExpenseController implements ExpenseControllerInterface {
         @PathVariable("teamId") Long teamId, @PathVariable("expenseId") Long expenseId,
         @AuthenticationPrincipal Long memberId,
         @Valid @RequestBody SavePersonalExpenseRequest personalExpense) {
-        personalExpenseService.savePersonalExpense(memberId, teamId, expenseId, personalExpense);
+        personalExpenseService.saveOrUpdatePersonalExpense(memberId, teamId, expenseId,
+            personalExpense);
         return JeongsanApiResponse.success(SuccessType.PERSONAL_EXPENSE_SAVED);
     }
 
@@ -81,7 +82,7 @@ public class ExpenseController implements ExpenseControllerInterface {
     @GetMapping("ipaid/{teamId}")
     public ResponseEntity<JeongsanApiResponse<ExpenseResponse>> getExpensesIPaid(
         @AuthenticationPrincipal Long memberId,
-        @PathVariable Long teamId
+        @PathVariable("teamId") Long teamId
     ) {
         return JeongsanApiResponse.success(SuccessType.EXPENSE_LIST_LOADED,
             expenseService.getExpensesIPaid(memberId, teamId));

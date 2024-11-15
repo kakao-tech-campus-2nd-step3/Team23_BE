@@ -12,6 +12,7 @@ import kappzzang.jeongsan.dto.request.CreateTeamRequest;
 import kappzzang.jeongsan.dto.request.TransferTargetRequest;
 import kappzzang.jeongsan.dto.response.CreateTeamResponse;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
+import kappzzang.jeongsan.dto.response.MemberKakaoIdResponse;
 import kappzzang.jeongsan.dto.response.TeamResponse;
 import kappzzang.jeongsan.dto.response.TransferTargetResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
@@ -34,17 +35,25 @@ public class TeamService {
     private final PersonalExpenseRepository personalExpenseRepository;
 
     @Transactional(readOnly = true)
-    public List<TeamResponse> getTeamsByIsClosed(Boolean isClosed) {
-        return teamRepository.findByIsClosed(isClosed)
+    public List<TeamResponse> getTeamsByIsClosed(Boolean isClosed, Long memberId) {
+        return teamRepository.findByIsClosed(memberId, isClosed)
             .stream()
             .map(TeamResponse::from)
             .toList();
     }
 
     @Transactional(readOnly = true)
-    public TeamResponse getTeam(Long id) {
-        return TeamResponse.from(teamRepository.findById(id)
-            .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_NOT_FOUND)));
+    public TeamResponse getTeam(Long id, Long memberId) {
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new JeongsanException(ErrorType.USER_NOT_FOUND));
+        Team team = teamRepository.findById(id)
+            .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_NOT_FOUND));
+
+        if(!team.isMember(member)) {
+            throw new JeongsanException(ErrorType.USER_NOT_FOUND);
+        }
+
+        return TeamResponse.from(team);
     }
 
     @Transactional
@@ -79,6 +88,16 @@ public class TeamService {
         return Optional.ofNullable(teamMemberRepository.findInvitationStatusByTeamId(teamId))
             .filter(list -> !list.isEmpty())
             .orElseThrow(() -> new JeongsanException(ErrorType.INVITATION_STATUS_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public List<MemberKakaoIdResponse> getMemberKakaoId(Long teamId) {
+        teamRepository.findById(teamId)
+            .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_NOT_FOUND));
+
+        return Optional.ofNullable(teamMemberRepository.findMemberKakaoIdByTeamId(teamId))
+            .filter(list -> !list.isEmpty())
+            .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_MEMBER_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)

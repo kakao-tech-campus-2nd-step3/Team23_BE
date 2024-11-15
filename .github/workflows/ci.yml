@@ -2,7 +2,7 @@ name: CI on PR
 
 on:
   pull_request:
-    branches: [ 'Master', 'Develop', 'Weekly/*' ]
+    branches: [ 'Master', 'Develop', 'Weekly/*', 'Evaluation' ]
 
 jobs:
   test:
@@ -44,7 +44,7 @@ jobs:
         id: gradle-test
         run: |
           chmod +x ./gradlew
-          ./gradlew clean test
+          ./gradlew clean jacocoTestReport
 
       # Show test result
       - name: Show test result
@@ -60,4 +60,12 @@ jobs:
         if: failure()
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Add coverage
+      - name: Add coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.1
+        with:
+          paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
           token: ${{ secrets.GITHUB_TOKEN }}

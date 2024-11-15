@@ -1,6 +1,6 @@
 package kappzzang.jeongsan.dto.response;
 
-public record InvitationStatusResponse(Long memberId, String nickname, String profileImage,
+public record InvitationStatusResponse(String kakaoId, String nickname, String profileImage,
                                        Boolean isInviteAccepted) {
 
 }

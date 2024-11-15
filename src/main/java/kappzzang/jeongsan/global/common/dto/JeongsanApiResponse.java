@@ -1,4 +1,4 @@
-package kappzzang.jeongsan.global.common;
+package kappzzang.jeongsan.global.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;

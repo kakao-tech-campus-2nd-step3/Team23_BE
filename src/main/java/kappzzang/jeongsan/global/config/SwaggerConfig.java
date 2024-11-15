@@ -17,10 +17,10 @@ import io.swagger.v3.oas.models.servers.Server;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import kappzzang.jeongsan.global.common.ApiErrorTypeExample;
+import kappzzang.jeongsan.global.common.annotation.ApiErrorTypeExample;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
-import kappzzang.jeongsan.global.swagger.ErrorResponse;
-import kappzzang.jeongsan.global.swagger.ExampleHolder;
+import kappzzang.jeongsan.global.common.swagger.ErrorResponse;
+import kappzzang.jeongsan.global.common.swagger.ExampleHolder;
 import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -129,6 +129,7 @@ public class SwaggerConfig {
             examples.forEach(exampleHolder -> mediaType.addExamples(exampleHolder.getErrorCode(),
                 exampleHolder.getHolder()));
             content.addMediaType("application/json", mediaType);
+            apiResponse.setDescription("Error response for status code: " + status.toString());
             apiResponse.setContent(content);
             responses.addApiResponse(status.toString(), apiResponse);
         });

@@ -4,14 +4,13 @@ import static kappzzang.jeongsan.global.common.enumeration.SuccessType.JOIN_SUCC
 
 import jakarta.validation.Valid;
 import kappzzang.jeongsan.controller.docs.MemberControllerInterface;
-import kappzzang.jeongsan.dto.request.JoinTeamRequest;
 import kappzzang.jeongsan.dto.request.LoginRequest;
 import kappzzang.jeongsan.dto.request.RefreshRequest;
 import kappzzang.jeongsan.dto.request.RegisterRequest;
 import kappzzang.jeongsan.dto.response.GetPayLinkResponse;
 import kappzzang.jeongsan.dto.response.LoginResponse;
 import kappzzang.jeongsan.dto.response.RefreshResponse;
-import kappzzang.jeongsan.global.common.JeongsanApiResponse;
+import kappzzang.jeongsan.global.common.dto.JeongsanApiResponse;
 import kappzzang.jeongsan.global.common.enumeration.SuccessType;
 import kappzzang.jeongsan.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -50,16 +49,16 @@ public class MemberController implements MemberControllerInterface {
     @Override
     @PostMapping("/token/refresh")
     public ResponseEntity<JeongsanApiResponse<RefreshResponse>> refresh(
-        @AuthenticationPrincipal Long memberId, @Valid @RequestBody RefreshRequest refreshRequest) {
+        @Valid @RequestBody RefreshRequest refreshRequest) {
         return JeongsanApiResponse.success(SuccessType.ACCESS_TOKEN_REISSUED,
-            memberService.refresh(memberId, refreshRequest));
+            memberService.refresh(refreshRequest));
     }
 
     @Override
     @PostMapping("/join/{teamId}")
     public ResponseEntity<JeongsanApiResponse<Void>> joinTeam(@PathVariable("teamId") Long teamId,
-        @RequestBody JoinTeamRequest request) {
-        memberService.acceptInvite(teamId, request.memberId());
+        @AuthenticationPrincipal Long memberId) {
+        memberService.acceptInvite(teamId, memberId);
         return JeongsanApiResponse.success(JOIN_SUCCESS);
     }
 

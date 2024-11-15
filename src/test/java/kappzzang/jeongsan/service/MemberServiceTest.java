@@ -20,8 +20,8 @@ import kappzzang.jeongsan.dto.response.GetPayLinkResponse;
 import kappzzang.jeongsan.dto.response.LoginResponse;
 import kappzzang.jeongsan.dto.response.RefreshResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
+import kappzzang.jeongsan.global.common.util.JwtUtil;
 import kappzzang.jeongsan.global.exception.JeongsanException;
-import kappzzang.jeongsan.global.util.JwtUtil;
 import kappzzang.jeongsan.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,7 +51,7 @@ public class MemberServiceTest {
     private MemberService memberService;
 
     @Test
-    @DisplayName("로그인 실패 - 회원가입 필요")
+    @DisplayName("회원가입을 하지 않고 로그인하면 예외가 발생한다.")
     void loginWithoutRegistration() {
         // given
         given(memberRepository.findByEmail(anyString())).willReturn(Optional.empty());
@@ -63,13 +63,13 @@ public class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("로그인 성공")
+    @DisplayName("로그인하면 서비스 토큰을 반환한다.")
     void login() {
         // given
         given(memberRepository.findByEmail(anyString())).willReturn(
             Optional.of(createMember(null)));
         given(jwtUtil.createAccessToken(any())).willReturn(TEST_ACCESS_TOKEN);
-        given(jwtUtil.createRefreshToken()).willReturn(TEST_REFRESH_TOKEN);
+        given(jwtUtil.createRefreshToken(any())).willReturn(TEST_REFRESH_TOKEN);
 
         // when
         LoginResponse loginResponse = memberService.login(new LoginRequest(anyString()));
@@ -82,7 +82,7 @@ public class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("회원가입 실패 - 이미 회원가입됨")
+    @DisplayName("회원가입 후 다시 회원가입하면 예외가 발생한다.")
     void registerAfterRegistration() {
         // given
         RegisterRequest registerRequest = new RegisterRequest(TEST_UUID, TEST_NICKNAME, TEST_EMAIL,
@@ -97,7 +97,7 @@ public class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("회원가입 성공")
+    @DisplayName("회원가입하면 서비스 토큰을 반환한다.")
     void register() {
         // given
         RegisterRequest registerRequest = new RegisterRequest(TEST_UUID, TEST_NICKNAME, TEST_EMAIL,
@@ -105,7 +105,7 @@ public class MemberServiceTest {
         given(memberRepository.findByEmail(anyString())).willReturn(Optional.empty());
         given(memberRepository.save(any(Member.class))).willReturn(createMember(null));
         given(jwtUtil.createAccessToken(any())).willReturn(TEST_ACCESS_TOKEN);
-        given(jwtUtil.createRefreshToken()).willReturn(TEST_REFRESH_TOKEN);
+        given(jwtUtil.createRefreshToken(any())).willReturn(TEST_REFRESH_TOKEN);
 
         // when
         LoginResponse loginResponse = memberService.register(registerRequest);
@@ -118,20 +118,20 @@ public class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("액세스 토큰 재발급 실패 - 일치하지 않은 리프레시 토큰")
+    @DisplayName("발급받은 리프레시 토큰과 다른 리프레시 토큰으로 액세스 토큰을 요청하면 예외가 발생한다.")
     void refreshWithMismatchedRefreshToken() {
         // given
         RefreshRequest refreshRequest = new RefreshRequest("RefreshToken");
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(createMember(null)));
 
         // when & then
-        assertThatThrownBy(() -> memberService.refresh(anyLong(), refreshRequest))
+        assertThatThrownBy(() -> memberService.refresh(refreshRequest))
             .isInstanceOf(JeongsanException.class)
             .hasFieldOrPropertyWithValue("errorType", ErrorType.REFRESH_TOKEN_INVALID);
     }
 
     @Test
-    @DisplayName("액세스 토큰 재발급 실패 - 유효하지 않은 리프레시 토큰")
+    @DisplayName("유효하지 않은 리프레시 토큰으로 액세스 토큰을 요청하면 예외가 발생한다.")
     void refreshWithInvalidRefreshToken() {
         // given
         RefreshRequest refreshRequest = new RefreshRequest(TEST_REFRESH_TOKEN);
@@ -139,13 +139,13 @@ public class MemberServiceTest {
         given(jwtUtil.validateRefreshToken(TEST_REFRESH_TOKEN)).willReturn(false);
 
         // when & then
-        assertThatThrownBy(() -> memberService.refresh(anyLong(), refreshRequest))
+        assertThatThrownBy(() -> memberService.refresh(refreshRequest))
             .isInstanceOf(JeongsanException.class)
             .hasFieldOrPropertyWithValue("errorType", ErrorType.REFRESH_TOKEN_INVALID);
     }
 
     @Test
-    @DisplayName("액세스 토큰 재발급 성공")
+    @DisplayName("유효한 리프레시 토큰으로 액세스 토큰을 요청하면 재발급된 액세스 토큰을 반환한다.")
     void refresh() {
         // given
         RefreshRequest refreshRequest = new RefreshRequest(TEST_REFRESH_TOKEN);
@@ -154,7 +154,7 @@ public class MemberServiceTest {
         given(jwtUtil.createAccessToken(anyLong())).willReturn(TEST_ACCESS_TOKEN);
 
         // when
-        RefreshResponse refreshResponse = memberService.refresh(anyLong(), refreshRequest);
+        RefreshResponse refreshResponse = memberService.refresh(refreshRequest);
 
         // then
         assertThat(refreshResponse.tokenType()).isEqualTo(BEARER);
@@ -162,7 +162,7 @@ public class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("카카오 페이 송금 링크 조회 테스트")
+    @DisplayName("카카오 페이 송금 링크가 등록되어 있을 때 조회하면 카카오 페이 송금 링크를 반환한다.")
     void getPayLink() {
         // given
         KakaoPayInfo kakaoPayInfo = new KakaoPayInfo("payLink");
@@ -177,7 +177,7 @@ public class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("카카오 페이 송금 링크 조회 테스트 - 페이 링크가 null인 경우")
+    @DisplayName("카카오 페이 송금 링크를 등록하지 않고 조회하면 예외가 발생한다.")
     void getPayLinkException() {
         // given
         KakaoPayInfo kakaoPayInfo = new KakaoPayInfo(null);

@@ -1,4 +1,4 @@
-package kappzzang.jeongsan.global.util;
+package kappzzang.jeongsan.global.common.util;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -77,9 +77,10 @@ public class JwtUtil {
             .compact();
     }
 
-    public String createRefreshToken() {
+    public String createRefreshToken(Long id) {
         LocalDateTime now = LocalDateTime.now();
         return Jwts.builder()
+            .subject(Long.toString(id))
             .claim("iat", createIssueAt(now))
             .claim("exp", createExpiration(now, jwtProperties.refreshExpirationTime()))
             .signWith(secretKey)

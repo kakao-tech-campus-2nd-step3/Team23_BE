@@ -1,5 +1,6 @@
 package kappzzang.jeongsan.repository;
 
+import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 import kappzzang.jeongsan.domain.Category;
@@ -11,10 +12,11 @@ import kappzzang.jeongsan.domain.PersonalExpense;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.domain.TeamMember;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.TestComponent;
+import org.springframework.transaction.annotation.Transactional;
 
 @TestComponent
+@Transactional
 public class TestDataUtil {
 
     private static final String DEFAULT_NAME = "DEFAULT_NAME";
@@ -24,10 +26,10 @@ public class TestDataUtil {
     private static final String DEFAULT_EMAIL = "DEFAULT_EMAIL";
     private static final String DEFAULT_URL = "DEFAULT_URL";
 
-    private final TestEntityManager entityManager;
+    private final EntityManager entityManager;
 
     @Autowired
-    public TestDataUtil(TestEntityManager entityManager) {
+    public TestDataUtil(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
@@ -104,6 +106,10 @@ public class TestDataUtil {
 
     public void commit() {
         entityManager.flush();
+    }
+
+    public void clear() {
+        entityManager.clear();
     }
 
 }

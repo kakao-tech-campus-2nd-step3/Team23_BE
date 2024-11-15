@@ -7,6 +7,7 @@ import kappzzang.jeongsan.domain.KakaoPayInfo;
 import kappzzang.jeongsan.domain.Member;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
+import kappzzang.jeongsan.dto.response.MemberKakaoIdResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,7 @@ class TeamMemberRepositoryTest {
     }
 
     @Test
-    @DisplayName("모임의 멤버 초대 현황 조회 - 레포지토리 테스트")
+    @DisplayName("모임 Id로 모임 멤버의 모임 초대 수락 여부를 조회한다")
     void findInvitationStatusByTeamId() {
         // when
         List<InvitationStatusResponse> result = teamMemberRepository.findInvitationStatusByTeamId(
@@ -52,15 +53,28 @@ class TeamMemberRepositoryTest {
         assertThat(result).hasSize(2);
 
         assertThat(result).anySatisfy(response -> {
-            assertThat(response.memberId()).isEqualTo(member1.getId());
+            assertThat(response.kakaoId()).isEqualTo(member1.getKakaoId());
             assertThat(response.nickname()).isEqualTo("nickname1");
             assertThat(response.isInviteAccepted()).isTrue();
         });
 
         assertThat(result).anySatisfy(response -> {
-            assertThat(response.memberId()).isEqualTo(member2.getId());
+            assertThat(response.kakaoId()).isEqualTo(member2.getKakaoId());
             assertThat(response.nickname()).isEqualTo("nickname2");
             assertThat(response.isInviteAccepted()).isFalse();
         });
+    }
+
+    @Test
+    @DisplayName("모임 Id로 멤버의 카카오 서비스 아이디를 조회한다")
+    void findMemberKakaoIdByTeamId() {
+        // when
+        List<MemberKakaoIdResponse> result = teamMemberRepository.findMemberKakaoIdByTeamId(
+            team.getId());
+
+        // then
+        assertThat(result).hasSize(2)
+            .map(memberKakaoIdResponse -> memberKakaoIdResponse.id())
+            .contains(member1.getKakaoId(), member2.getKakaoId());
     }
 }

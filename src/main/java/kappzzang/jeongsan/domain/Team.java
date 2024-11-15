@@ -3,6 +3,7 @@ package kappzzang.jeongsan.domain;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,14 +35,13 @@ public class Team extends BaseEntity {
     @Column(nullable = false)
     private Boolean isClosed;
 
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TeamMember> teamMemberList;
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private final List<TeamMember> teamMemberList = new ArrayList<>();
 
     public Team(String name, String subject) {
         this.name = name;
         this.subject = subject;
         this.isClosed = false;
-        teamMemberList = new ArrayList<>();
     }
 
     public static Team createTeam(Member owner, String name, String subject, List<Member> members) {
@@ -79,6 +79,25 @@ public class Team extends BaseEntity {
         this.isClosed = true;
     }
 
+    public void setClosed(Boolean closed) {
+        this.isClosed = closed;
+    }
+
+    public String getOwnerKakaoId() {
+        return this.teamMemberList.stream()
+            .filter(TeamMember::getIsOwner)
+            .map(teamMember -> teamMember.getMember().getKakaoId())
+            .findFirst()
+            .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_NOT_FOUND));
+    }
+
+    public Boolean isMember(Member member) {
+        return this.teamMemberList.stream()
+            .anyMatch(teamMember -> teamMember.getMember()
+                .equals(member) && teamMember.getIsInviteAccepted());
+
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -88,13 +107,11 @@ public class Team extends BaseEntity {
             return false;
         }
         Team team = (Team) o;
-        return Objects.equals(id, team.id) && Objects.equals(name, team.name)
-            && Objects.equals(subject, team.subject) && Objects.equals(isClosed,
-            team.isClosed) && Objects.equals(teamMemberList, team.teamMemberList);
+        return Objects.equals(id, team.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, subject, isClosed, teamMemberList);
+        return Objects.hash(id);
     }
 }

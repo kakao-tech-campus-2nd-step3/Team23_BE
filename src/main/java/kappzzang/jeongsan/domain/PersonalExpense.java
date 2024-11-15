@@ -43,7 +43,11 @@ public class PersonalExpense extends BaseEntity {
         this.totalPrice = totalPrice;
     }
 
-    public void updateTotalPrice(int newTotalPrice) {
-        this.totalPrice = newTotalPrice;
+    public void updateQuantity(int newQuantity) {
+        this.quantity = newQuantity;
+    }
+
+    public void updateTotalPrice(int newPrice) {
+        this.totalPrice = newPrice;
     }
 }

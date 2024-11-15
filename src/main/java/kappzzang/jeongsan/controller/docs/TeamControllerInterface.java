@@ -14,10 +14,11 @@ import kappzzang.jeongsan.dto.request.CreateTeamRequest;
 import kappzzang.jeongsan.dto.request.TransferTargetRequest;
 import kappzzang.jeongsan.dto.response.CreateTeamResponse;
 import kappzzang.jeongsan.dto.response.InvitationStatusResponse;
+import kappzzang.jeongsan.dto.response.MemberKakaoIdResponse;
 import kappzzang.jeongsan.dto.response.TeamResponse;
 import kappzzang.jeongsan.dto.response.TransferTargetResponse;
-import kappzzang.jeongsan.global.common.ApiErrorTypeExample;
-import kappzzang.jeongsan.global.common.JeongsanApiResponse;
+import kappzzang.jeongsan.global.common.annotation.ApiErrorTypeExample;
+import kappzzang.jeongsan.global.common.dto.JeongsanApiResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import org.springframework.http.ResponseEntity;
 
@@ -27,19 +28,20 @@ public interface TeamControllerInterface {
     @Operation(summary = "모임 목록 조회 API", description = "모임 목록을 조회하는 API")
     @Parameter(name = "isClosed", description = "모임의 현재 상태(진행 중, 종료)")
     @ApiResponse(responseCode = "200", description = "모임 목록 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeamResponse.class)))
-    ResponseEntity<JeongsanApiResponse<List<TeamResponse>>> getTeams(Boolean isClosed);
+    ResponseEntity<JeongsanApiResponse<List<TeamResponse>>> getTeams(Boolean isClosed,
+        Long memberId);
 
     @Operation(summary = "모임 조회 API", description = "`teamId`를 이용해 모임을 조회하는 API")
     @Parameter(name = "teamId", description = "조회를 원하는 모임의 ID")
     @ApiResponse(responseCode = "200", description = "모임 목록 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeamResponse.class)))
     @ApiErrorTypeExample(ErrorType.TEAM_NOT_FOUND)
-    ResponseEntity<JeongsanApiResponse<TeamResponse>> getTeam(Long teamId);
+    ResponseEntity<JeongsanApiResponse<TeamResponse>> getTeam(Long teamId, Long memberId);
 
     @Operation(summary = "모임 생성 API", description = "요청한 사용자가 주인으로 모임을 생성하는 API")
     @Parameters({
-        @Parameter(name = "name", description = "15글자 이내의 모임 이름. 모임의 owner 기준 동일한 모임 이름을 사용할 수 없음"),
-        @Parameter(name = "subject", description = "모임의 목적. 이모지 사용"),
-        @Parameter(name = "members", description = "모임에 초대할 사용자들 ID")
+        @Parameter(name = "name", description = "15글자 이내의 모임 이름. 모임의 owner 기준 동일한 모임 이름을 사용할 수 없음", content = @Content(schema = @Schema(implementation = String.class))),
+        @Parameter(name = "subject", description = "모임의 목적. 이모지 사용", content = @Content(schema = @Schema(implementation = String.class))),
+        @Parameter(name = "members", description = "모임에 초대할 사용자들 ID", content = @Content(schema = @Schema(implementation = List.class)))
     })
     @ApiResponse(responseCode = "201", description = "모임 생성 성공")
     @ApiErrorTypeExample({ErrorType.USER_NOT_FOUND, ErrorType.TEAM_NAME_DUPLICATED})
@@ -60,6 +62,12 @@ public interface TeamControllerInterface {
     @ApiErrorTypeExample({ErrorType.TEAM_NOT_FOUND, ErrorType.INVITATION_STATUS_NOT_FOUND})
     ResponseEntity<JeongsanApiResponse<List<InvitationStatusResponse>>> getInvitationStatus(
         Long teamId);
+
+    @Operation(summary = "모임 멤버 카카오 아이디 조회 API", description = "모임에 있는 멤버들의 카카오 아이디를 조회하는 API")
+    @Parameter(name = "teamId", description = "멤버 카카오 아이디를 조회하려는 모임의 id")
+    @ApiResponse(responseCode = "200", description = "모임의 멤버 카카오 아이디 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MemberKakaoIdResponse.class)))
+    @ApiErrorTypeExample({ErrorType.TEAM_NOT_FOUND, ErrorType.TEAM_MEMBER_NOT_FOUND})
+    ResponseEntity<JeongsanApiResponse<List<MemberKakaoIdResponse>>> getMemberKakaoId(Long teamId);
 
     @Operation(summary = "송금 요청 대상 및 금액 조회 API", description = "송금을 요청할 멤버와 해당 멤버가 보내야할 금액을 조회하는 API")
     @Parameter(name = "teamId", description = "송금 요청 대상 및 금액 조회하려는 모임의 id")

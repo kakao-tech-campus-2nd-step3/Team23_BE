@@ -1,8 +1,11 @@
 package kappzzang.jeongsan.global.config;
 
-import kappzzang.jeongsan.global.security.JwtAuthenticationFilter;
-import kappzzang.jeongsan.global.util.JwtUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import kappzzang.jeongsan.global.common.security.JwtAuthenticationFilter;
+import kappzzang.jeongsan.global.common.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -20,6 +23,10 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final ObjectMapper objectMapper;
+
+    @Value("${security.permitted-paths}")
+    private List<String> permittedPaths;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -30,13 +37,14 @@ public class SecurityConfig {
             .sessionManagement(
                 (config) -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests((registry) -> registry
-                // 개발할 땐 모든 경로 접근 허용
-                .anyRequest()
+                .requestMatchers(permittedPaths.toArray(new String[0]))
                 .permitAll()
+                .anyRequest()
+                .authenticated()
             )
             .addFilterAfter(
-                new JwtAuthenticationFilter(jwtUtil, authenticationManagerBuilder.getOrBuild()),
-                LogoutFilter.class)
+                new JwtAuthenticationFilter(jwtUtil, authenticationManagerBuilder.getOrBuild(),
+                    permittedPaths, objectMapper), LogoutFilter.class)
             .build();
     }
 }

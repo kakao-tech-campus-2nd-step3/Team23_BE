@@ -1,11 +1,12 @@
 package kappzzang.jeongsan.controller;
 
 import static kappzzang.jeongsan.global.common.enumeration.ErrorType.USER_NOT_FOUND;
-import static kappzzang.jeongsan.global.common.enumeration.SuccessType.TEAM_CREATED;
+import static kappzzang.jeongsan.global.common.enumeration.SuccessType.TEAM_LOADED;
 
 import io.swagger.v3.oas.annotations.Hidden;
-import kappzzang.jeongsan.domain.Team;
-import kappzzang.jeongsan.global.common.JeongsanApiResponse;
+import java.util.Collections;
+import kappzzang.jeongsan.dto.response.TeamResponse;
+import kappzzang.jeongsan.global.common.dto.JeongsanApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,12 +20,15 @@ public class ExampleController {
 
     @GetMapping("/success")
     public ResponseEntity<JeongsanApiResponse<Void>> successWithNoData() {
-        return JeongsanApiResponse.success(TEAM_CREATED);
+        return JeongsanApiResponse.success(TEAM_LOADED);
     }
 
     @PostMapping("/success/data")
-    public ResponseEntity<JeongsanApiResponse<Team>> successWithData() {
-        return JeongsanApiResponse.success(TEAM_CREATED, new Team());
+    public ResponseEntity<JeongsanApiResponse<TeamResponse>> successWithData() {
+        var testData = new TeamResponse(
+            1L, "test", "test kakao id", true, "❤", Collections.emptyList()
+        );
+        return JeongsanApiResponse.success(TEAM_LOADED, testData);
     }
 
     @GetMapping("/failure")

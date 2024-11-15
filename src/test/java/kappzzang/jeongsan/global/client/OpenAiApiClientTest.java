@@ -18,6 +18,7 @@ import kappzzang.jeongsan.global.client.openai.OpenAiProperties;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -67,6 +68,7 @@ public class OpenAiApiClientTest {
         when(gptPromptManager.getInstruction()).thenReturn(TEST_INSTRUCTION);
     }
 
+    @DisplayName("OpenAI API가 서버 에러를 반환할 때 최대 재시도 후 외부 API 에러를 반환한다")
     @Test
     void openApi_5xxResponse_failsAfterRetries() {
         // Given
@@ -83,6 +85,7 @@ public class OpenAiApiClientTest {
         mockRestServiceServer.verify();
     }
 
+    @DisplayName("OpenAI API가 응답하지 않을 때 최대 재시도 후 타임아웃 에러를 반환한다")
     @Test
     void openApi_timeout_failsAfterRetries() {
         // Given
@@ -102,6 +105,7 @@ public class OpenAiApiClientTest {
         mockRestServiceServer.verify();
     }
 
+    @DisplayName("OpenAI API가 성공하면 텍스트 분석 결과를 반환한다")
     @Test
     void openApi_successfulResponse_returnChatGptResponse() {
         // Given

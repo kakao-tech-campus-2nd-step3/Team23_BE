@@ -9,11 +9,14 @@ import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.KakaoPayInfo;
 import kappzzang.jeongsan.domain.Member;
-import kappzzang.jeongsan.domain.PersonalExpense;
 import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.dto.ItemDetail;
+import kappzzang.jeongsan.global.common.enumeration.ErrorType;
+import kappzzang.jeongsan.global.common.enumeration.Status;
+import kappzzang.jeongsan.global.exception.JeongsanException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -34,7 +37,24 @@ public class ExpenseRepositoryTest {
     private TestDataUtil testDataUtil;
 
     private Expense expense;
+    private List<Expense> expenses;
     private List<Member> members;
+    private List<Long> expenseIds;
+    private Expense targetExpense;
+    private Member payer;
+    private Member payer1;
+    private Team team;
+
+    static Stream<Arguments> PersonalExpenseCaseProvider() {
+        return Stream.of(
+            Arguments.of(0, List.of(5, 0, 0, 0)),
+            //0번째 맴버가 선택한 지출(itemA: 5, itemB: 0, itemC: 0, itemD: 0)
+            Arguments.of(1, List.of(0, 3, 9, 10)),
+            //1번째 맴버가 선택한 지출(itemA: 0, itemB: 3, itemC: 9, itemD: 10)
+            Arguments.of(2, List.of(0, 0, 0, 0))
+            //2번째 맴버가 선택한 지출(itemA: 0, itemB: 0, itemC: 0, itemD: 0)
+        );
+    }
 
     @BeforeEach
     void setUp() {
@@ -43,29 +63,42 @@ public class ExpenseRepositoryTest {
         Member memberA = testDataUtil.createAndPersistMember("TEST_USER_A", kakaoPayInfo);
         Member memberB = testDataUtil.createAndPersistMember("TEST_USER_B", kakaoPayInfo);
         Member memberC = testDataUtil.createAndPersistMember("TEST_USER_C", kakaoPayInfo);
+        payer = testDataUtil.createAndPersistMember("TEST_PAYER", kakaoPayInfo);
+        payer1 = testDataUtil.createAndPersistMember("TEST_PAYER1", kakaoPayInfo);
         members = List.of(memberA, memberB, memberC);
 
-        Team team = testDataUtil.createAndPersistTeam();
+        team = testDataUtil.createAndPersistTeam();
 
         Item itemA = testDataUtil.createAndPersistItem("TEST_ITEM_A", 10, 2000);
         Item itemB = testDataUtil.createAndPersistItem("TEST_ITEM_B", 5, 3000);
         Item itemC = testDataUtil.createAndPersistItem("TEST_ITEM_C", 15, 4000);
         Item itemD = testDataUtil.createAndPersistItem("TEST_ITEM_D", 3, 1000);
+        Item itemE = testDataUtil.createAndPersistItem("TEST_ITEM_E", 1, 1000);
+        Item itemF = testDataUtil.createAndPersistItem("TEST_ITEM_F", 1, 1000);
+        Item itemG = testDataUtil.createAndPersistItem("TEST_ITEM_G", 1, 1000);
+        Item itemH = testDataUtil.createAndPersistItem("TEST_ITEM_H", 2, 2000);
+        Item itemI = testDataUtil.createAndPersistItem("TEST_ITEM_I", 3, 3000);
 
-        PersonalExpense personalExpenseA = testDataUtil.createAndPersistPersonalExpense(memberA, 5,
-            itemA, 0);
-
-        PersonalExpense personalExpenseB = testDataUtil.createAndPersistPersonalExpense(memberB, 3,
-            itemB, 0);
-        PersonalExpense personalExpenseC = testDataUtil.createAndPersistPersonalExpense(memberB, 9,
-            itemC, 0);
-        PersonalExpense personalExpenseD = testDataUtil.createAndPersistPersonalExpense(memberB,
-            10, itemD, 0);
+        testDataUtil.createAndPersistPersonalExpense(memberA, 5, itemA, 0);
+        testDataUtil.createAndPersistPersonalExpense(memberB, 3, itemB, 0);
+        testDataUtil.createAndPersistPersonalExpense(memberB, 9, itemC, 0);
+        testDataUtil.createAndPersistPersonalExpense(memberB, 10, itemD, 0);
 
         List<Item> items = List.of(itemA, itemB, itemC, itemD);
         Category category = testDataUtil.createAndPersistCategory();
 
         expense = testDataUtil.createAndPersistExpense(team, memberA, category, items);
+        targetExpense = testDataUtil.createAndPersistExpense(team, payer1, category,
+            List.of(itemH, itemI));
+
+        Expense expense1 = testDataUtil.createAndPersistExpense(team, payer, category,
+            List.of(itemE));
+        Expense expense2 = testDataUtil.createAndPersistExpense(team, payer, category,
+            List.of(itemF));
+        Expense expense3 = testDataUtil.createAndPersistExpense(team, payer, category,
+            List.of(itemG));
+        expenses = List.of(expense1, expense2, expense3);
+        expenseIds = List.of(expense1.getId(), expense2.getId(), expense3.getId());
     }
 
     @MethodSource("PersonalExpenseCaseProvider")
@@ -93,15 +126,76 @@ public class ExpenseRepositoryTest {
             });
     }
 
-    static Stream<Arguments> PersonalExpenseCaseProvider() {
-        return Stream.of(
-            Arguments.of(0, List.of(5, 0, 0, 0)),
-            //0번째 맴버가 선택한 지출(itemA: 5, itemB: 0, itemC: 0, itemD: 0)
-            Arguments.of(1, List.of(0, 3, 9, 10)),
-            //1번째 맴버가 선택한 지출(itemA: 0, itemB: 3, itemC: 9, itemD: 10)
-            Arguments.of(2, List.of(0, 0, 0, 0))
-            //2번째 맴버가 선택한 지출(itemA: 0, itemB: 0, itemC: 0, itemD: 0)
+    @DisplayName("지출 Id 리스트로 지출과 연관정보를 함께 조회할 수 있다")
+    @Test
+    void findAllByIdWithDetails_ValidIds_ReturnsExpenses() {
+        //when
+        List<Expense> actual = expenseRepository.findAllByIdWithDetails(expenseIds);
+
+        //then
+        assertThat(actual).hasSize(expenses.size())
+            .allMatch(e -> e.getPayer().getId().equals(payer.getId()));
+    }
+
+    @DisplayName("존재하지 않는 지출 Id로 조회시 빈 리스트를 반환한다")
+    @Test
+    void findAllByIdWithDetails_NonExistentIds_ShouldReturnEmptyList() {
+        //given
+        List<Long> invalidIds = List.of(100L, 200L, 300L);
+
+        //when
+        List<Expense> actual = expenseRepository.findAllByIdWithDetails(invalidIds);
+
+        //then
+        assertThat(actual).hasSize(0);
+    }
+
+    @DisplayName("지출 ID로 아이템 목록이 포함된 지출을 조회한다")
+    @Test
+    void findExpenseByIdWithItem_ValidId_ReturnsExpense() {
+        //when
+        Expense actual = expenseRepository.findExpenseByIdWithItem(expense.getId())
+            .orElseThrow(() -> new JeongsanException(ErrorType.EXPENSE_NOT_FOUND));
+
+        //then
+        assertThat(actual.getId()).isEqualTo(expense.getId());
+        assertThat(actual.getItems()).hasSize(TEST_ITEM_QUANTITY);
+    }
+
+    @Test
+    @DisplayName("특정 모임과 상태로 지출 목록을 조회했을 때, 해당하는 지출 조회")
+    void testFindByTeamAndStatus() {
+        // Given
+        Status status = Status.ONGOING;
+
+        // When
+        List<Expense> results = expenseRepository.findByTeamAndStatus(team, status);
+
+        // Then
+        assertThat(results).isNotEmpty();
+        assertThat(results).allMatch(
+            expense -> expense.getTeam().equals(team) && expense.getStatus().equals(status));
+    }
+
+    @Test
+    @DisplayName("지정된 payer, team, status 조건을 만족하는 지출을 조회")
+    void testFindExpensesIPaid() {
+        // when
+        List<Expense> results = expenseRepository.findExpensesIPaid(payer1, team, Status.ONGOING);
+
+        // then
+        assertThat(results).isNotEmpty();
+        assertThat(results).contains(targetExpense);
+        assertThat(results).allMatch(expense ->
+            expense.getPayer().equals(payer1) &&
+                expense.getTeam().equals(team) &&
+                expense.getStatus().equals(Status.ONGOING)
         );
+
+        assertThat(results.getFirst().getItems()).hasSize(2);
+        assertThat(results.getFirst().getItems())
+            .extracting(Item::getName)
+            .containsExactlyInAnyOrder("TEST_ITEM_H", "TEST_ITEM_I");
     }
 
 }

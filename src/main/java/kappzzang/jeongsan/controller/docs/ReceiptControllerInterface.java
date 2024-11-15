@@ -12,8 +12,8 @@ import kappzzang.jeongsan.dto.response.ExpenseDetailResponse;
 import kappzzang.jeongsan.dto.response.ParsedReceiptResponse;
 import kappzzang.jeongsan.dto.response.PersonalExpenseDetailResponse;
 import kappzzang.jeongsan.dto.response.SaveExpenseResponse;
-import kappzzang.jeongsan.global.common.ApiErrorTypeExample;
-import kappzzang.jeongsan.global.common.JeongsanApiResponse;
+import kappzzang.jeongsan.global.common.annotation.ApiErrorTypeExample;
+import kappzzang.jeongsan.global.common.dto.JeongsanApiResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import org.springframework.http.ResponseEntity;
 

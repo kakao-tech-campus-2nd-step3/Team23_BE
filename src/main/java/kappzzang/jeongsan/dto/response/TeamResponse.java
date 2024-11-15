@@ -7,6 +7,7 @@ import kappzzang.jeongsan.dto.MemberPreview;
 public record TeamResponse(
     Long teamId,
     String name,
+    String ownerKakaoId,
     Boolean isCompleted,
     String subject,
     List<MemberPreview> memberPreviews
@@ -18,6 +19,7 @@ public record TeamResponse(
         return new TeamResponse(
             team.getId(),
             team.getName(),
+            team.getOwnerKakaoId(),
             team.getIsClosed(),
             team.getSubject(),
             team.getTeamMemberList()

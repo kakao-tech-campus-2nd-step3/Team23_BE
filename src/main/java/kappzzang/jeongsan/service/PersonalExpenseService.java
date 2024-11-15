@@ -1,8 +1,6 @@
 package kappzzang.jeongsan.service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Optional;
 import kappzzang.jeongsan.domain.Expense;
 import kappzzang.jeongsan.domain.Item;
 import kappzzang.jeongsan.domain.Member;
@@ -33,36 +31,37 @@ public class PersonalExpenseService {
     private final PersonalExpenseRepository personalExpenseRepository;
     private final TeamMemberRepository teamMemberRepository;
 
-    private final Map<Long, Object> locks = new ConcurrentHashMap<>();
-
     @Transactional
-    public void savePersonalExpense(Long memberId, Long teamId, Long expenseId,
-        SavePersonalExpenseRequest personalExpense) {
+    public void saveOrUpdatePersonalExpense(Long memberId, Long teamId, Long expenseId,
+        SavePersonalExpenseRequest request) {
 
-        locks.computeIfAbsent(expenseId, id -> new Object());
-
-        synchronized (locks.get(expenseId)) {
-            try {
-                Member member = getMemberIfTeamAndExpenseValid(memberId, teamId, expenseId);
-
-                for (ItemInfo itemInfo : personalExpense.items()) {
-                    Item item = getItemIfItemInfoValid(itemInfo, member);
-                    List<PersonalExpense> personalExpenses = personalExpenseRepository.findAllByItem(
-                        item);
-                    if (personalExpenses.isEmpty()) {
-                        saveNewPersonalExpense(member, item, itemInfo.quantity(),
-                            item.getUnitPrice() * itemInfo.quantity());
-                    } else {
-                        updateAndSaveRecords(personalExpenses, item, itemInfo, member);
-                    }
-                }
-            } finally {
-                locks.remove(expenseId);
+        Member member = validateAndGetMember(memberId, teamId, expenseId);
+        for (ItemInfo itemInfo : request.items()) {
+            int requestQuantity = itemInfo.quantity();
+            Item item = validateAndGetItem(itemInfo);
+            Optional<PersonalExpense> personalExpenseOpt = personalExpenseRepository.findByMemberAndItem(
+                member, item);
+            if (personalExpenseOpt.isPresent()) {
+                update(personalExpenseOpt.get(), requestQuantity);
+            } else {
+                save(member, item, requestQuantity);
             }
         }
     }
 
-    private Member getMemberIfTeamAndExpenseValid(Long memberId, Long teamId, Long expenseId) {
+    private void save(Member member, Item item, int requestQuantity) {
+        PersonalExpense newPersonalExpense = PersonalExpense.builder().member(member).item(item)
+            .quantity(requestQuantity).totalPrice(0).build();
+        personalExpenseRepository.save(newPersonalExpense);
+    }
+
+    private void update(PersonalExpense personalExpense, int requestQuantity) {
+        if (!personalExpense.getQuantity().equals(requestQuantity)) {
+            personalExpense.updateQuantity(requestQuantity);
+        }
+    }
+
+    private Member validateAndGetMember(Long memberId, Long teamId, Long expenseId) {
         Team team = teamRepository.findById(teamId)
             .orElseThrow(() -> new JeongsanException(ErrorType.TEAM_NOT_FOUND));
         Expense expense = expenseRepository.findById(expenseId)
@@ -78,12 +77,9 @@ public class PersonalExpenseService {
         return member;
     }
 
-    private Item getItemIfItemInfoValid(ItemInfo itemInfo, Member member) {
+    private Item validateAndGetItem(ItemInfo itemInfo) {
         Item item = itemRepository.findById(itemInfo.itemId())
             .orElseThrow(() -> new JeongsanException(ErrorType.ITEM_NOT_FOUND));
-        personalExpenseRepository.findByMemberAndItem(member, item).ifPresent(data -> {
-            throw new JeongsanException(ErrorType.ALREADY_CHECKED_ITEM);
-        });
         checkRequestQuantityValidity(itemInfo, item);
         return item;
     }
@@ -92,39 +88,5 @@ public class PersonalExpenseService {
         if (item.getQuantity() < itemInfo.quantity()) {
             throw new JeongsanException(ErrorType.INVALID_QUANTITY);
         }
-    }
-
-    private void updateAndSaveRecords(List<PersonalExpense> personalExpenses, Item item,
-        ItemInfo itemInfo, Member member) {
-
-        int totalQuantity = personalExpenses.stream().mapToInt(PersonalExpense::getQuantity).sum()
-            + itemInfo.quantity();
-        int requestedMemberPrice = calculateRequestMemberPrice(item.getTotalPrice(), totalQuantity,
-            itemInfo.quantity());
-        int newPersonalUnitPrice = item.getTotalPrice() / totalQuantity;
-
-        updateExistingPersonalExpenses(personalExpenses, newPersonalUnitPrice);
-        saveNewPersonalExpense(member, item, itemInfo.quantity(), requestedMemberPrice);
-    }
-
-    private void updateExistingPersonalExpenses(List<PersonalExpense> personalExpenses,
-        int newPersonalUnitPrice) {
-
-        personalExpenses.forEach(personalExpense -> {
-            personalExpense.updateTotalPrice(newPersonalUnitPrice * personalExpense.getQuantity());
-        });
-    }
-
-    private void saveNewPersonalExpense(Member member, Item item, int quantity, int totalPrice) {
-        PersonalExpense newPersonalExpense = PersonalExpense.builder().member(member).item(item)
-            .quantity(quantity).totalPrice(totalPrice).build();
-        personalExpenseRepository.save(newPersonalExpense);
-    }
-
-    private int calculateRequestMemberPrice(int totalPrice, int totalQuantity,
-        int requestQuantity) {
-        int newTotalPrice = (totalPrice / totalQuantity) * requestQuantity;
-        int remainder = totalPrice % totalQuantity;
-        return newTotalPrice + remainder;
     }
 }

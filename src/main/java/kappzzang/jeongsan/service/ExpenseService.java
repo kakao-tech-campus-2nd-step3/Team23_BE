@@ -160,8 +160,58 @@ public class ExpenseService {
             throw new JeongsanException(ErrorType.EXPENSE_NOT_FOUND_ID);
         }
         expenses.forEach(
-            expense -> expense.changeStatus(teamId, memberId, request.state()));
+            expense -> {
+                expense.changeStatus(teamId, memberId, request.state());
+                if (request.state().equals(Status.PENDING)) {
+                    updatePersonalExpenseTotalPrice(expense);
+                }
+            });
     }
+
+    private void updatePersonalExpenseTotalPrice(Expense expense) {
+
+        List<Long> itemIds = expense.getItemIds();
+
+        List<PersonalExpense> personalExpenses = personalExpenseRepository
+            .findAllByItemIds(itemIds);
+
+        Map<Long, List<PersonalExpense>> groupedPersonalExpenses = groupingPersonalExpensesByItemId(
+            personalExpenses);
+
+        List<Item> items = expense.getItems();
+        items.forEach(item -> distributeItemPrice(item, groupedPersonalExpenses));
+    }
+
+    private void distributeItemPrice(Item item,
+        Map<Long, List<PersonalExpense>> groupedPersonalExpenses) {
+        List<PersonalExpense> targetPersonalExpenses = groupedPersonalExpenses.get(item.getId());
+
+        if (targetPersonalExpenses == null) {
+            throw new JeongsanException(ErrorType.EXPENSE_ITEM_NOT_SELECTED);
+        }
+
+        int totalSelectionCount = targetPersonalExpenses.stream()
+            .mapToInt(PersonalExpense::getQuantity)
+            .sum();
+
+        if (totalSelectionCount == 0) {
+            throw new JeongsanException(ErrorType.EXPENSE_ITEM_NOT_SELECTED);
+        }
+
+        if (totalSelectionCount < item.getQuantity()) {
+            throw new JeongsanException(ErrorType.EXPENSE_ITEM_SELECTION_INSUFFICIENT);
+        }
+
+        int personalUnitPrice = item.getTotalPrice() / totalSelectionCount;
+        targetPersonalExpenses.forEach(personalExpense -> personalExpense.updateTotalPrice(
+            personalUnitPrice * personalExpense.getQuantity()));
+
+        PersonalExpense lastSelectedPersonalExpense = targetPersonalExpenses.getLast();
+        lastSelectedPersonalExpense.updateTotalPrice(
+            (item.getTotalPrice() - personalUnitPrice * totalSelectionCount)
+                + lastSelectedPersonalExpense.getTotalPrice());
+    }
+
 
     @Transactional(readOnly = true)
     public PersonalExpenseDetailResponse getPersonalExpenseDetailResponse(Long expenseId,

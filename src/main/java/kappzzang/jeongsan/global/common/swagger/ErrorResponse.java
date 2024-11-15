@@ -1,4 +1,4 @@
-package kappzzang.jeongsan.global.swagger;
+package kappzzang.jeongsan.global.common.swagger;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

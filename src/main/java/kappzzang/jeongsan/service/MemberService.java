@@ -16,8 +16,8 @@ import kappzzang.jeongsan.dto.request.RegisterRequest;
 import kappzzang.jeongsan.dto.response.GetPayLinkResponse;
 import kappzzang.jeongsan.dto.response.LoginResponse;
 import kappzzang.jeongsan.dto.response.RefreshResponse;
+import kappzzang.jeongsan.global.common.util.JwtUtil;
 import kappzzang.jeongsan.global.exception.JeongsanException;
-import kappzzang.jeongsan.global.util.JwtUtil;
 import kappzzang.jeongsan.repository.MemberRepository;
 import kappzzang.jeongsan.repository.TeamMemberRepository;
 import kappzzang.jeongsan.repository.TeamRepository;
@@ -55,7 +55,7 @@ public class MemberService {
 
     private LoginResponse createToken(Member member) {
         String accessToken = jwtUtil.createAccessToken(member.getId());
-        String refreshToken = jwtUtil.createRefreshToken();
+        String refreshToken = jwtUtil.createRefreshToken(member.getId());
         member.updateRefreshToken(refreshToken);
         memberRepository.save(member);
 
@@ -63,10 +63,11 @@ public class MemberService {
     }
 
     @Transactional
-    public RefreshResponse refresh(Long memberId, RefreshRequest refreshRequest) {
+    public RefreshResponse refresh(RefreshRequest refreshRequest) {
+        String refreshToken = refreshRequest.refreshToken();
+        Long memberId = jwtUtil.getMemberId(refreshToken);
         Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new JeongsanException(USER_NOT_FOUND));
-        String refreshToken = refreshRequest.refreshToken();
         if (!refreshToken.equals(member.getRefreshToken())
             || !jwtUtil.validateRefreshToken(refreshToken)) {
             throw new JeongsanException(REFRESH_TOKEN_INVALID);

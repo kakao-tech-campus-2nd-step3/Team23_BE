@@ -11,8 +11,8 @@ import kappzzang.jeongsan.dto.request.ChangeExpensesStateRequest;
 import kappzzang.jeongsan.dto.request.SavePersonalExpenseRequest;
 import kappzzang.jeongsan.dto.response.CategoryListResponse;
 import kappzzang.jeongsan.dto.response.ExpenseResponse;
-import kappzzang.jeongsan.global.common.ApiErrorTypeExample;
-import kappzzang.jeongsan.global.common.JeongsanApiResponse;
+import kappzzang.jeongsan.global.common.annotation.ApiErrorTypeExample;
+import kappzzang.jeongsan.global.common.dto.JeongsanApiResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import org.springframework.http.ResponseEntity;
 
@@ -39,7 +39,7 @@ public interface ExpenseControllerInterface {
     @ApiErrorTypeExample({ErrorType.EXPENSE_ALREADY_COMPLETED, ErrorType.EXPENSE_ONGOING,
         ErrorType.EXPENSE_NOT_FOUND_ID, ErrorType.EXPENSE_INVALID_TEAM,
         ErrorType.EXPENSE_INVALID_PAYER, ErrorType.EXPENSE_INVALID_STATE,
-        ErrorType.EXPENSE_ALREADY_PENDING})
+        ErrorType.EXPENSE_ALREADY_PENDING, ErrorType.EXPENSE_ITEM_NOT_SELECTED})
     ResponseEntity<JeongsanApiResponse<Void>> changeExpensesStatus(
         ChangeExpensesStateRequest request, Long teamId, Long memberId);
 
@@ -48,10 +48,9 @@ public interface ExpenseControllerInterface {
         @Parameter(name = "teamId", description = "요청 멤버가 속한 모임의 ID"),
         @Parameter(name = "expenseId", description = "선택한 아이템이 속한 지출의 ID"),
     })
-    @ApiResponse(responseCode = "200", description = "개인 소비 내역 저장 성공", content = @Content)
-    @ApiErrorTypeExample({ErrorType.INVALID_QUANTITY, ErrorType.ALREADY_CHECKED_ITEM,
-        ErrorType.TEAM_NOT_FOUND, ErrorType.EXPENSE_NOT_FOUND, ErrorType.ITEM_NOT_FOUND,
-        ErrorType.TEAM_MEMBER_NOT_FOUND})
+    @ApiResponse(responseCode = "200", description = "개인 소비 내역 저장/수정 성공", content = @Content)
+    @ApiErrorTypeExample({ErrorType.INVALID_QUANTITY, ErrorType.TEAM_NOT_FOUND,
+        ErrorType.EXPENSE_NOT_FOUND, ErrorType.ITEM_NOT_FOUND, ErrorType.TEAM_MEMBER_NOT_FOUND})
     ResponseEntity<JeongsanApiResponse<Void>> savePersonalExpense(Long teamId,
         Long expenseId, Long memberId, SavePersonalExpenseRequest personalExpense);
 
