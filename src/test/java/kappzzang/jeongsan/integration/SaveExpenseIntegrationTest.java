@@ -29,7 +29,6 @@ import kappzzang.jeongsan.global.common.enumeration.SuccessType;
 import kappzzang.jeongsan.global.common.util.JwtUtil;
 import kappzzang.jeongsan.global.exception.JeongsanException;
 import kappzzang.jeongsan.repository.ExpenseRepository;
-import kappzzang.jeongsan.repository.MemberRepository;
 import kappzzang.jeongsan.repository.TestDataUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -72,9 +71,6 @@ public class SaveExpenseIntegrationTest {
     private ExpenseRepository expenseRepository;
 
     @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
     private AwsClient awsClient;
 
     @Autowired
@@ -102,16 +98,13 @@ public class SaveExpenseIntegrationTest {
 
         testDataUtil.commit();
         testDataUtil.clear();
+
+        token = jwtUtil.createAccessToken(member.getId());
     }
 
     @DisplayName("사용자가 지출을 저장할 때, 입력값이 유효하다면, 지출이 성공적으로 저장된다")
     @Test
     void saveExpense_WithValidItemsAndImage_ShouldSaveSuccessfully() {
-
-        token = jwtUtil.createAccessToken(member.getId());
-
-        memberRepository.findById(member.getId()) //디버깅 용
-            .orElseThrow(() -> new JeongsanException(ErrorType.USER_NOT_FOUND));
 
         //given
         SaveExpenseRequest request = new SaveExpenseRequest(
