@@ -69,7 +69,8 @@ class TeamMemberRepositoryTest {
     @DisplayName("모임 Id로 멤버의 카카오 서비스 아이디를 조회한다")
     void findMemberKakaoIdByTeamId() {
         // when
-        List<MemberKakaoIdResponse> result = teamMemberRepository.findMemberKakaoIdByTeamId(team.getId());
+        List<MemberKakaoIdResponse> result = teamMemberRepository.findMemberKakaoIdByTeamId(
+            team.getId());
 
         // then
         assertThat(result).hasSize(2)
