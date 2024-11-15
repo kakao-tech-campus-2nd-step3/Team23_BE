@@ -22,6 +22,7 @@ import kappzzang.jeongsan.dto.Image;
 import kappzzang.jeongsan.dto.ItemSummary;
 import kappzzang.jeongsan.dto.request.SaveExpenseRequest;
 import kappzzang.jeongsan.dto.response.SaveExpenseResponse;
+import kappzzang.jeongsan.global.client.aws.AwsClient;
 import kappzzang.jeongsan.global.common.dto.JeongsanApiResponse;
 import kappzzang.jeongsan.global.common.enumeration.ErrorType;
 import kappzzang.jeongsan.global.common.enumeration.SuccessType;
@@ -40,10 +41,9 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.TestPropertySource;
-import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -71,7 +71,7 @@ public class SaveExpenseIntegrationTest {
     private ExpenseRepository expenseRepository;
 
     @Autowired
-    private S3Client s3Client;
+    private AwsClient awsClient;
 
     @Autowired
     private TestDataUtil testDataUtil;
@@ -113,8 +113,7 @@ public class SaveExpenseIntegrationTest {
                 new ItemSummary(TEST_ITEM_NAME_C, TEST_ITEM_QUANTITY_C, TEST_ITEM_PRICE_C)
             )
         );
-        given(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class))).willReturn(
-            null);
+        given(awsClient.uploadImage(any())).willReturn("TEST_URL");
 
         //when
         JeongsanApiResponse<SaveExpenseResponse> response = RestAssured
@@ -184,8 +183,8 @@ public class SaveExpenseIntegrationTest {
 
         @Bean
         @Primary
-        public S3Client s3Client() {
-            return mock(S3Client.class);
+        public AwsClient awsClient() {
+            return mock(AwsClient.class);
         }
 
         @Bean
