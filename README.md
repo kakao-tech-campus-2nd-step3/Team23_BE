@@ -95,30 +95,6 @@
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 ## 주요 기능
-### Code Coverage
-
-|Overall Project|84.34%|
-|:-|:-|
-
-
-| Element     | Missed | Covered | Coverage (%) |
-|-------------|--------|---------|--------------|
-| kappzzang/jeongsan/service/MemberService | 8 | 26 | 76.47% |
-| kappzzang/jeongsan/service/TeamService | 20 | 35 | 63.64% |
-| kappzzang/jeongsan/service/ExpenseService | 5 | 120 | 96.00% |
-| kappzzang/jeongsan/service/ReceiptService | 2 | 7 | 77.78% |
-| kappzzang/jeongsan/service/CategoryService | 0 | 4 | 100.00% |
-| kappzzang/jeongsan/service/ImageStorageService | 3 | 11 | 78.57% |
-| kappzzang/jeongsan/service/PersonalExpenseService | 2 | 33 | 94.29% |
-| kappzzang/jeongsan/domain/PersonalExpense | 2 | 8 | 80.00% |
-| kappzzang/jeongsan/domain/Item | 0 | 10 | 100.00% |
-| kappzzang/jeongsan/domain/KakaoPayInfo | 0 | 3 | 100.00% |
-| kappzzang/jeongsan/domain/Expense | 5 | 46 | 90.20% |
-| kappzzang/jeongsan/domain/Member | 1 | 17 | 94.44% |
-| kappzzang/jeongsan/domain/Category | 0 | 4 | 100.00% |
-| kappzzang/jeongsan/domain/Team | 1 | 43 | 97.73% |
-| kappzzang/jeongsan/domain/TeamMember | 0 | 10 | 100.00% |
-
 ### [User]
 #### 회원가입
 - 서비스 이용에 필요한 카카오 정보를 저장하고 토큰을 발급받는 기능
@@ -208,6 +184,30 @@
 #### _송금 링크 조회_
 - _모임 지출 결제자의 카카오 페이 송금 링크를 조회하는 기능_
 - _링크 생성을 위해 카카오 페이 디벨로퍼 사업자 등록이 필요하므로 사용하지 않음_
+
+
+### Code Coverage
+
+|Overall Project|84.34%|
+|:-|:-|
+
+| Element     | Missed | Covered | Coverage (%) |
+|-------------|--------|---------|--------------|
+| kappzzang/jeongsan/service/MemberService | 8 | 26 | 76.47% |
+| kappzzang/jeongsan/service/TeamService | 20 | 35 | 63.64% |
+| kappzzang/jeongsan/service/ExpenseService | 5 | 120 | 96.00% |
+| kappzzang/jeongsan/service/ReceiptService | 2 | 7 | 77.78% |
+| kappzzang/jeongsan/service/CategoryService | 0 | 4 | 100.00% |
+| kappzzang/jeongsan/service/ImageStorageService | 3 | 11 | 78.57% |
+| kappzzang/jeongsan/service/PersonalExpenseService | 2 | 33 | 94.29% |
+| kappzzang/jeongsan/domain/PersonalExpense | 2 | 8 | 80.00% |
+| kappzzang/jeongsan/domain/Item | 0 | 10 | 100.00% |
+| kappzzang/jeongsan/domain/KakaoPayInfo | 0 | 3 | 100.00% |
+| kappzzang/jeongsan/domain/Expense | 5 | 46 | 90.20% |
+| kappzzang/jeongsan/domain/Member | 1 | 17 | 94.44% |
+| kappzzang/jeongsan/domain/Category | 0 | 4 | 100.00% |
+| kappzzang/jeongsan/domain/Team | 1 | 43 | 97.73% |
+| kappzzang/jeongsan/domain/TeamMember | 0 | 10 | 100.00% |
 
 ---
 ## Project Architecture
