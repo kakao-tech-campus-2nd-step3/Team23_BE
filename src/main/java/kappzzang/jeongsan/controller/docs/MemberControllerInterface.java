@@ -3,6 +3,8 @@ package kappzzang.jeongsan.controller.docs;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kappzzang.jeongsan.dto.request.LoginRequest;
@@ -21,7 +23,7 @@ public interface MemberControllerInterface {
 
     @Operation(summary = "로그인 API", description = "카카오 로그인으로 토큰을 받는 API")
     @Parameters({
-        @Parameter(name = "email", description = "카카오 회원 정보의 이메일")
+        @Parameter(name = "email", description = "카카오 회원 정보의 이메일", content = @Content(schema = @Schema(implementation = String.class))),
     })
     @ApiResponse(responseCode = "200", description = "로그인 성공")
     @ApiErrorTypeExample(ErrorType.USER_NOT_FOUND)
@@ -29,9 +31,9 @@ public interface MemberControllerInterface {
 
     @Operation(summary = "회원가입 API", description = "카카오 로그인으로 회원가입 후 토큰을 받는 API")
     @Parameters({
-        @Parameter(name = "nickname", description = "카카오 회원 정보의 닉네임"),
-        @Parameter(name = "email", description = "카카오 회원 정보의 이메일"),
-        @Parameter(name = "profileImage", description = "카카오 회원 정보의 프로필 URL")
+        @Parameter(name = "nickname", description = "카카오 회원 정보의 닉네임", content = @Content(schema = @Schema(implementation = String.class))),
+        @Parameter(name = "email", description = "카카오 회원 정보의 이메일", content = @Content(schema = @Schema(implementation = String.class))),
+        @Parameter(name = "profileImage", description = "카카오 회원 정보의 프로필 URL", content = @Content(schema = @Schema(implementation = String.class))),
     })
     @ApiResponse(responseCode = "201", description = "회원가입 성공")
     @ApiErrorTypeExample(ErrorType.USER_ALREADY_EXISTED)
@@ -39,7 +41,7 @@ public interface MemberControllerInterface {
 
     @Operation(summary = "액세스 토큰 재발급 API", description = "리프레시 토큰으로 액세스 토큰을 받는 API")
     @Parameters({
-        @Parameter(name = "refreshToken", description = "서비스 서버 리프레시 토큰")
+        @Parameter(name = "refreshToken", description = "서비스 서버 리프레시 토큰", content = @Content(schema = @Schema(implementation = String.class))),
     })
     @ApiResponse(responseCode = "200", description = "액세스 토큰 재발급 성공")
     @ApiErrorTypeExample({ErrorType.USER_NOT_FOUND, ErrorType.REFRESH_TOKEN_INVALID})
