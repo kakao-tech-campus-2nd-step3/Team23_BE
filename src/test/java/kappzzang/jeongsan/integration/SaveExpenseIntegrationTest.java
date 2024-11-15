@@ -96,10 +96,10 @@ public class SaveExpenseIntegrationTest {
         RestAssured.basePath = "/api";
         RestAssured.defaultParser = Parser.JSON;
 
-        token = jwtUtil.createAccessToken(member.getId());
-
         testDataUtil.commit();
         testDataUtil.clear();
+
+        token = jwtUtil.createAccessToken(member.getId());
     }
 
     @DisplayName("사용자가 지출을 저장할 때, 입력값이 유효하다면, 지출이 성공적으로 저장된다")
