@@ -129,6 +129,7 @@ public class SwaggerConfig {
             examples.forEach(exampleHolder -> mediaType.addExamples(exampleHolder.getErrorCode(),
                 exampleHolder.getHolder()));
             content.addMediaType("application/json", mediaType);
+            apiResponse.setDescription("Error response for status code: " + status.toString());
             apiResponse.setContent(content);
             responses.addApiResponse(status.toString(), apiResponse);
         });
