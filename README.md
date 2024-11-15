@@ -1,15 +1,17 @@
 # KAPP짱 - 正산
 > 우리 모임의 지출 관리를 쉽고 편하게!
 
-![Jeongsan-main](./images/Jeongsan-main.png)
+![Jeongsan-main](docs/images/Jeongsan-main.png)
 
 ## 기획 의도
 > 正산은 여행, 동호회 등 다양한 모임에서 발생하는 복잡한 정산 과정을 간편하게 해결해주는 서비스입니다. 기존의 유사 서비스들이 모임 내 지출 금액을 단순히 1/N로 나누는 기능만 제공하는 데 반해, 저희 서비스는 **OCR 기술**을 통해 모임에서 발생한 지출 영수증의 소비된 상품명과 수량을 자동으로 추출하여 **사용자가 실제 소비한 내역을 직접 선택할 수 있는 기능을 지원**합니다. 이를 통해 실제 소비 내역을 기반으로 한 세부적인 정산이 가능합니다. **正산**은 모임 내 정산을 더욱 편리하고 정확하게 만들어 사용자에게 차별화된 정산 경험을 제공합니다.
 
 ## Deploy Link
-> Backend | [Swagger API Spec](http://ecs-alb-50894514.ap-northeast-2.elb.amazonaws.com/swagger-ui/index.html)
+> Backend | _[http://ecs-alb-50894514.ap-northeast-2.elb.amazonaws.com/](http://ecs-alb-50894514.ap-northeast-2.elb.amazonaws.com/)_
 >
-> Android | [OneStore](https://m.onestore.co.kr/ko-kr/apps/appsDetail.omp?prodId=0000779533)
+> API Specs | _[github page release](https://kakao-tech-campus-2nd-step3.github.io/Team23_BE/docs/api-spec.html)_
+> 
+> Android | _[OneStore](https://m.onestore.co.kr/ko-kr/apps/appsDetail.omp?prodId=0000779533)_
 
 ## Contributors
 
@@ -101,7 +103,7 @@
 - 카카오 이메일로 서비스 이용에 필요한 토큰을 발급받는 기능
 
 #### 인증 & 인가
-![Jeongsan-Security](./images/Jeongsan-Security.png)
+![Jeongsan-Security](docs/images/Jeongsan-Security.png)
 - 스프링 시큐리티 필터 체인에 JWT를 접목하여 인증 & 인가 구현
 
 #### 토큰 재발급
@@ -149,7 +151,7 @@
 #### 영수증 내역 분석
 - 영수증 이미지에서 지출 상세 정보를 추출하는 기능
 - **이미지 데이터 추출 과정** <br />
-  ![Jeongsan-Receipt](./images/Jeongsan-Receipt.png)
+  ![Jeongsan-Receipt](docs/images/Jeongsan-Receipt.png)
 - **Naver Clova Document OCR**(영수증 분석 특화 API) 사용의 경우 비용이 높은 편으로
 **Naver Clova General OCR**(단순 이미지 텍스트 추출 API)로 이미지에서 텍스트 추출 후
 미리 학습된 **ChatGPT fine-tuning API**를 통해 해당 텍스트를 영수증 형식으로 파싱
@@ -187,10 +189,10 @@
 ## Project Architecture
 ### Tech Stack
 #### BackEnd
-![BackEnd-Skills](./images/backend-skills.png)
+![BackEnd-Skills](docs/images/backend-skills.png)
 
 #### InfraStructure
-![Infra-Skills](./images/infra-skills.png)
+![Infra-Skills](docs/images/infra-skills.png)
 
 ### Directory Structure
 ```text
@@ -241,7 +243,7 @@
 ```
 
 ### ERD
-![Jeongsan-ERD](./images/Jeongsan-ERD.png)
+![Jeongsan-ERD](docs/images/Jeongsan-ERD.png)
 
 ### System Architecture
-![Jeongsan-Architecture](./images/Jeongsan-Architecture.png)
+![Jeongsan-Architecture](docs/images/Jeongsan-Architecture.png)
