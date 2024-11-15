@@ -1,4 +1,4 @@
-package kappzzang.jeongsan.controller;
+package kappzzang.jeongsan.e2e;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,7 +22,7 @@ import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class MemberControllerTest {
+public class MemberAuthenticationE2ETest {
 
     @LocalServerPort
     private int port;
