@@ -13,8 +13,10 @@ import kappzzang.jeongsan.domain.Team;
 import kappzzang.jeongsan.domain.TeamMember;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestComponent;
+import org.springframework.transaction.annotation.Transactional;
 
 @TestComponent
+@Transactional
 public class TestDataUtil {
 
     private static final String DEFAULT_NAME = "DEFAULT_NAME";
