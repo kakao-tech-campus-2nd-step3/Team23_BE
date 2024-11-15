@@ -1,4 +1,4 @@
-package kappzzang.jeongsan.integration;
+package kappzzang.jeongsan.e2e;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,7 +55,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(MockitoExtension.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class ReceiptAnalyzeIntegrationTest {
+public class ReceiptAnalyzeE2ETest {
 
     private static final String TEST_RECEIPT_TITLE = "김밥천국";
     private static final String TEST_ITEM_NAME_A = "참치김밥";
