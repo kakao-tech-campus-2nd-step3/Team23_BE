@@ -30,7 +30,8 @@ jacocoTestReport {
 	def excludes = [
 			"**/controller/*",
 			"**/dto/*",
-			"**/global/*"
+			"**/global/*",
+			"**/Application.class"
 	]
 
 	classDirectories.setFrom(
