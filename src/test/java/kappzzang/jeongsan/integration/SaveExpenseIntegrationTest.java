@@ -83,7 +83,9 @@ public class SaveExpenseIntegrationTest {
 
     private final Image image = new Image("jpg", null, "base64", "TEST_IMAGE");
 
+    @Transactional
     @BeforeEach
+    @Commit
     void setUp() {
         member = testDataUtil.createAndPersistMember("MemberA", new KakaoPayInfo());
         team = testDataUtil.createAndPersistTeam();
@@ -95,6 +97,9 @@ public class SaveExpenseIntegrationTest {
         RestAssured.defaultParser = Parser.JSON;
 
         token = jwtUtil.createAccessToken(member.getId());
+
+        testDataUtil.commit();
+        testDataUtil.clear();
     }
 
     @DisplayName("사용자가 지출을 저장할 때, 입력값이 유효하다면, 지출이 성공적으로 저장된다")
