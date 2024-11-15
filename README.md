@@ -9,7 +9,7 @@
 ## Deploy Link
 > Backend | _[http://ecs-alb-50894514.ap-northeast-2.elb.amazonaws.com/](http://ecs-alb-50894514.ap-northeast-2.elb.amazonaws.com/)_
 >
-> API Specs | _[github page release](https://kakao-tech-campus-2nd-step3.github.io/Team23_BE/docs/api-spec.html)_
+> API Specs | _[github page release](https://kakao-tech-campus-2nd-step3.github.io/Team23_BE/api-spec.html)_
 > 
 > Android | _[OneStore](https://m.onestore.co.kr/ko-kr/apps/appsDetail.omp?prodId=0000779533)_
 
