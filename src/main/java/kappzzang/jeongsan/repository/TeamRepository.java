@@ -15,5 +15,6 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
         "WHERE tm.member.id = :memberId " +
         "AND tm.isInviteAccepted = true " +
         "AND t.isClosed = :isClosed")
-    List<Team> findByIsClosed(@Param("memberId") Long memberId, @Param("isClosed") Boolean isClosed);
+    List<Team> findByIsClosed(@Param("memberId") Long memberId,
+        @Param("isClosed") Boolean isClosed);
 }
